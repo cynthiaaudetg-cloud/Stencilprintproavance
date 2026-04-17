@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>STENCIL PRINT PRO v56.3 - Maman Sokal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0a0a0c; --card: #16161a; --pink: #ff007f; --cyan: #00e5ff; --green: #39ff14; --red: #ff3131; }
+        * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
+        body { background: var(--bg); color: white; font-family: 'Roboto', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        header { background: #000; padding: 10px 15px; border-bottom: 2px solid var(--pink); flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; }
+        
+        .import-zone { background: #1a1a20; padding: 15px; border: 3px dashed var(--cyan); margin: 10px; border-radius: 12px; text-align: center; cursor: pointer; }
+        .import-zone.success { border-color: var(--green); background: #0a200a; }
+        .btn-load-text { color: var(--cyan); font-weight: bold; font-size: 1rem; text-transform: uppercase; }
+        
+        .action-bar { display: flex; gap: 8px; padding: 0 10px 10px; flex-shrink: 0; }
+        .btn-act { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
+        .btn-save { background: var(--green); color: #000; }
+        .btn-reset { background: var(--red); color: #fff; }
+
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 10px 10px; overflow-y: auto; max-height: 42vh; flex-shrink: 0; border-bottom: 1px solid #333; }
+        .card { background: var(--card); padding: 10px; border-radius: 12px; border: 1px solid #2d2d35; }
+        .card-full { grid-column: span 2; }
+        label { font-size: 0.65rem; color: var(--cyan); font-weight: bold; display: block; margin-bottom: 4px; text-transform: uppercase; }
+        .val { float: right; color: white; font-family: 'Oswald'; font-size: 1rem; }
+        .adj { display: flex; align-items: center; gap: 8px; }
+        .b-step { width: 38px; height: 38px; background: #000; border: 2px solid var(--pink); color: white; border-radius: 8px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        
+        input[type=range] { flex: 1; accent-color: var(--pink); height: 30px; }
+        select { background: #000; color: white; border: 2px solid var(--pink); padding: 10px; border-radius: 10px; width: 100%; font-weight: bold; font-size: 1rem; }
+
+        .viewer { background: #050505; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
+        .gabarit-header { width: 100%; padding: 10px; background: #000; color: var(--cyan); font-family: 'Oswald'; text-align: center; font-size: 0.8rem; border-top: 1px solid #333; }
+        .grid-view { display: grid; gap: 15px; width: 95%; justify-items: center; margin-top: 10px; }
+        .page-output { background: white; width: 100%; border: 1px solid #ddd; display: block; }
+
+        #printZone { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; overflow-y: auto; padding: 20px; }
+        .close-btn { position: sticky; top: 10px; background: var(--pink); color: white; border: none; padding: 20px; border-radius: 12px; width: 100%; font-weight: bold; margin-bottom: 20px; z-index: 1001; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 style="font-family:'Oswald'; font-size:1.1rem;">STENCIL PRINT PRO v56.3</h1>
+    <div style="color:var(--pink); font-size:0.75rem; font-weight:bold;">MAMAN SOKAL 🖤</div>
+</header>
+
+<div class="import-zone" id="dropZone" onclick="document.getElementById('f').click()">
+    <div class="btn-load-text" id="loadStatus">✦ CLIQUEZ POUR IMPORTER ✦</div>
+    <input type="file" id="f" hidden accept="image/*">
+</div>
+
+<div class="action-bar">
+    <button class="btn-act btn-reset" onclick="location.reload()">✖ RESET</button>
+    <button class="btn-act btn-save" id="pBtn" disabled onclick="openPrintZone()">ENREGISTRER A4</button>
+</div>
+
+<div class="controls">
+    <div class="card card-full">
+        <label>MODE DE RENDU</label>
+        <select id="mde" onchange="autoAdjustMode()">
+            <option value="orig">IMAGE ORIGINALE (RÉELLE)</option>
+            <option value="stencil" selected>STENCIL (CONTOURS SEULEMENT)</option>
+            <option value="dotwork">POINTILLISME (DOTWORK RÉALISTE)</option>
+        </select>
+    </div>
+
+    <div class="card"><label>LUMINOSITÉ <span class="val" id="vL">100</span></label>
+        <div class="adj"><button class="b-step" onclick="ch('sL',-5)">-</button><input type="range" id="sL" min="50" max="150" value="100" oninput="proc()"><button class="b-step" onclick="ch('sL',10)">+</button></div>
+    </div>
+    <div class="card"><label>CONTRASTE <span class="val" id="vC">100</span></label>
+        <div class="adj"><button class="b-step" onclick="ch('sC',-5)">-</button><input type="range" id="sC" min="50" max="200" value="100" oninput="proc()"><button class="b-step" onclick="sC.value=parseInt(sC.value)+5;proc()">+</button></div>
+    </div>
+
+    <div class="card"><label>NETTETÉ (SHARPEN) <span class="val" id="vShar">0</span></label>
+        <div class="adj"><button class="b-step" onclick="ch('sShar',-1)">-</button><input type="range" id="sShar" min="0" max="20" value="0" oninput="proc()"><button class="b-step" onclick="ch('sShar',1)">+</button></div>
+    </div>
+    <div class="card"><label>DÉTAILS CONTOURS <span class="val" id="vDet">1</span></label>
+        <div class="adj"><button class="b-step" onclick="ch('sDet',-1)">-</button><input type="range" id="sDet" min="1" max="10" value="1" oninput="proc()"><button class="b-step" onclick="ch('sDet',1)">+</button></div>
+    </div>
+
+    <div class="card"><label id="labelE">ÉPAISSEUR LIGNE</label><span class="val" id="vE">1</span>
+        <div class="adj"><button class="b-step" onclick="ch('sE',-0.5)">-</button><input type="range" id="sE" min="0.5" max="4" step="0.5" value="1" oninput="proc()"><button class="b-step" onclick="ch('sE',0.5)">+</button></div>
+    </div>
+    <div class="card"><label>SEUIL NOIR <span class="val" id="vI">128</span></label>
+        <div class="adj"><button class="b-step" onclick="ch('sT',-10)">-</button><input type="range" id="sT" min="10" max="250" value="128" oninput="proc()"><button class="b-step" onclick="ch('sT',10)">+</button></div>
+    </div>
+
+    <div class="card"><label>ORIENTATION</label>
+        <select id="ort" onchange="render()">
+            <option value="port">PORTRAIT (↑)</option>
+            <option value="land">PAYSAGE (→)</option>
+        </select>
+    </div>
+
+    <div class="card"><label>NOMBRE DE PAGES</label>
+        <select id="pgs" onchange="setG(this.value)">
+            <option value="1">1 PAGE</option><option value="2">2 PAGES</option><option value="4">4 PAGES</option><option value="6">6 PAGES</option><option value="9">9 PAGES</option>
+        </select>
+    </div>
+
+    <div class="card card-full"><label>TAILLE (%) <span class="val" id="vS">100%</span></label>
+        <div class="adj"><button class="b-step" onclick="ch('sS',-10)">-</button><input type="range" id="sS" min="10" max="600" value="100" oninput="up()"><button class="b-step" onclick="ch('sS',10)">+</button></div>
+    </div>
+</div>
+
+<div class="viewer">
+    <div class="gabarit-header">PRÉVISUALISATION DES FEUILLES</div>
+    <div id="gv" class="grid-view"></div>
+</div>
+
+<div id="printZone">
+    <button class="close-btn" onclick="closePrintZone()">✖ RETOUR</button>
+    <div id="printContainer"></div>
+</div>
+
+<script>
+    let A4W = 805, A4H = 1152; 
+    let st = { img: null, res: null, p: 1, sz: 100 };
+
+    document.getElementById('f').onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                st.img = img;
+                document.getElementById('pBtn').disabled = false;
+                document.getElementById('dropZone').classList.add('success');
+                document.getElementById('loadStatus').innerText = "IMAGE CHARGÉE ✓";
+                autoAdjustMode();
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    function ch(id, d) { 
+        let e = document.getElementById(id); let v = parseFloat(e.value) + d; 
+        if(v >= e.min && v <= e.max) { e.value = v; if(id==='sS') up(); else proc(); } 
+    }
+
+    function autoAdjustMode() {
+        const m = document.getElementById('mde').value;
+        const labE = document.getElementById('labelE');
+        if(m === 'orig') { 
+            document.getElementById('sL').value = 100; 
+            document.getElementById('sC').value = 100; 
+            labE.innerText = "DÉTAILS";
+        } else if (m === 'stencil') { 
+            document.getElementById('sL').value = 100; 
+            document.getElementById('sC').value = 150; 
+            document.getElementById('sT').value = 120; 
+            document.getElementById('sE').value = 1; 
+            labE.innerText = "ÉPAISSEUR LIGNE";
+        } else if (m === 'dotwork') { 
+            document.getElementById('sL').value = 100; 
+            document.getElementById('sC').value = 120; 
+            document.getElementById('sT').value = 128; 
+            document.getElementById('sE').value = 1; 
+            labE.innerText = "FINESSE DES DOTS";
+        }
+        proc();
+    }
+
+    function proc() {
+        if(!st.img) return; 
+        const c = document.createElement('canvas'); c.width = st.img.width; c.height = st.img.height; 
+        const x = c.getContext('2d', { willReadFrequently: true });
+        const mode = document.getElementById('mde').value, 
+              l = parseInt(document.getElementById('sL').value), 
+              ct = parseInt(document.getElementById('sC').value), 
+              t = parseInt(document.getElementById('sT').value), 
+              dotSz = parseFloat(document.getElementById('sE').value),
+              shar = parseInt(document.getElementById('sShar').value),
+              det = parseInt(document.getElementById('sDet').value);
+
+        ['vL','vC','vI','vE', 'vShar', 'vDet'].forEach(id => {
+            const el = document.getElementById(id.replace('v','s'));
+            if(el) document.getElementById(id).innerText = el.value;
+        });
+
+        x.filter = `brightness(${l}%) contrast(${ct}%) grayscale(100%)`;
+        if (shar > 0) x.filter += ` contrast(${100 + shar * 5}%)`;
+        x.drawImage(st.img, 0, 0);
+        
+        let idat = x.getImageData(0,0,c.width,c.height), px = idat.data;
+
+        if (mode === 'dotwork') {
+            for (let i = 0; i < px.length; i += 4) {
+                let oldP = px[i], newP = oldP < t ? 0 : 255;
+                px[i] = px[i+1] = px[i+2] = newP;
+                let err = (oldP - newP) / 16;
+                if (i+(4) < px.length) px[i+4] += err * 7;
+                if (i+(c.width*4)-4 < px.length) px[i+(c.width*4)-4] += err * 3;
+                if (i+(c.width*4) < px.length) px[i+(c.width*4)] += err * 5;
+                if (i+(c.width*4)+4 < px.length) px[i+(c.width*4)+4] += err * 1;
+            }
+            x.putImageData(idat, 0, 0);
+            if(dotSz >= 1) {
+                x.fillStyle = "black";
+                let tempDat = x.getImageData(0,0,c.width,c.height).data;
+                for(let i=0; i<tempDat.length; i+=4) if(tempDat[i] === 0) x.fillRect((i/4)%c.width, Math.floor((i/4)/c.width), dotSz, dotSz);
+            }
+        } else if (mode === 'stencil') {
+            let outat = x.createImageData(c.width, c.height), out = outat.data;
+            const w = c.width;
+            for (let i = 0; i < out.length; i += 4) { out[i]=out[i+1]=out[i+2]=255; out[i+3]=255; }
+            
+            const detMult = 1 / det;
+            for(let i=0; i<px.length; i+=4) {
+                let xPos = (i/4)%w, yPos = Math.floor((i/4)/w);
+                if(xPos > 0 && yPos > 0 && xPos < w-1) {
+                    let val = px[i];
+                    let right = px[i+4], down = px[i+(w*4)];
+                    if(Math.abs(val - right) > (255-t)*detMult || Math.abs(val - down) > (255-t)*detMult) {
+                        // Dessin de la ligne avec épaisseur ajustable (supporte 0.5)
+                        let limit = Math.max(1, Math.round(dotSz));
+                        for(let ky=0; ky<limit; ky++) {
+                            for(let kx=0; kx<limit; kx++) {
+                                let idx = i + (kx*4) + (ky*w*4);
+                                if(idx < out.length) { out[idx]=out[idx+1]=out[idx+2]=0; }
+                            }
+                        }
+                    }
+                }
+            }
+            x.putImageData(outat, 0, 0);
+        }
+        st.res = c; render();
+    }
+
+    function setG(v) { st.p = parseInt(v); render(); }
+    function up() { st.sz = document.getElementById('sS').value; document.getElementById('vS').innerText = st.sz+'%'; render(); }
+
+    function render() {
+        if(!st.res) return; 
+        const g = document.getElementById('gv'), o = document.getElementById('ort').value; 
+        g.innerHTML = '';
+        let curW = (o === 'land') ? 1152 : 805, curH = (o === 'land') ? 805 : 1152;
+        const cfg = {1:[1,1], 2:[1,2], 4:[2,2], 6:[2,3], 9:[3,3]}[st.p];
+        g.style.gridTemplateColumns = `repeat(${cfg[1]}, 1fr)`;
+        for(let i=0; i<(cfg[0]*cfg[1]); i++) {
+            const pc = document.createElement('canvas'); pc.width = curW; pc.height = curH; 
+            const ctx = pc.getContext('2d'); ctx.fillStyle = 'white'; ctx.fillRect(0,0,curW,curH);
+            const tW = curW * cfg[1], fW = (tW * st.sz / 100), fH = st.res.height * (fW / st.res.width);
+            const sX = (tW - fW)/2 - ((i%cfg[1]) * curW), sY = (curH * cfg[0] - fH)/2 - (Math.floor(i/cfg[1]) * curH);
+            ctx.drawImage(st.res, sX, sY, fW, fH);
+            const imgEl = new Image(); imgEl.src = pc.toDataURL('image/jpeg', 0.8); imgEl.className = "page-output";
+            g.appendChild(imgEl);
+        }
+    }
+
+    function openPrintZone() {
+        const zone = document.getElementById('printZone'), container = document.getElementById('printContainer');
+        container.innerHTML = '';
+        document.querySelectorAll('.page-output').forEach((img, idx) => {
+            const wrap = document.createElement('div'); wrap.style.marginBottom = "30px";
+            wrap.innerHTML = `<label style="color:white;display:block;text-align:center;margin-bottom:10px;font-family:'Oswald';">FEUILLE ${idx+1}</label>`;
+            const nImg = new Image(); nImg.src = img.src; nImg.style.width = "100%"; nImg.style.border = "1px solid #555";
+            wrap.appendChild(nImg); container.appendChild(wrap);
+        });
+        zone.style.display = 'block';
+    }
+    function closePrintZone() { document.getElementById('printZone').style.display = 'none'; }
+</script>
+</body>
+</html>
