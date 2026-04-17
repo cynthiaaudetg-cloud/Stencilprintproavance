@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>STENCIL PRINT PRO - v20 ULTIMATE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0a0a0c; --card: #16161a; --pink: #ff007f; --cyan: #00e5ff; --green: #39ff14; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: white; font-family: 'Roboto', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        header { background: #000; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--pink); }
+        .top-bar { display: flex; gap: 6px; padding: 6px; }
+        .btn-top { flex: 1; padding: 10px; border: none; border-radius: 4px; font-weight: bold; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; }
+        .btn-load { background: var(--cyan); color: #000; }
+        .btn-print { background: var(--green); color: #000; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 0 6px 6px 6px; overflow-y: auto; max-height: 45vh; }
+        .card { background: var(--card); padding: 6px; border-radius: 5px; border: 1px solid #2d2d35; }
+        .card-full { grid-column: span 2; }
+        label { font-size: 0.55rem; color: var(--cyan); font-weight: bold; display: block; }
+        .val { float: right; color: white; font-family: 'Oswald'; font-size: 0.75rem; }
+        .adj { display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+        .b-step { width: 32px; height: 32px; background: #000; border: 1px solid var(--pink); color: white; border-radius: 4px; font-size: 1rem; cursor: pointer; }
+        input[type=range] { flex: 1; accent-color: var(--pink); height: 12px; }
+        select { background: #000; color: white; border: 1px solid var(--pink); padding: 5px; border-radius: 4px; width: 100%; font-size: 0.7rem; font-weight: bold; }
+        .viewer { background: #000; flex: 1; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; border-top: 1px solid #222; }
+        .grid-view { display: grid; gap: 8px; padding: 10px; }
+        canvas { background: white; width: 100%; height: auto; border: 1px solid #444; }
+        .tgl-group { display: flex; gap: 4px; }
+        .tgl-btn { flex: 1; padding: 8px; background: #000; border: 1px solid var(--pink); color: white; border-radius: 4px; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
+        .tgl-btn.active { background: var(--pink); }
+    </style>
+</head>
+<body>
+<header><h1 style="font-family:'Oswald'; font-size:0.9rem;">STENCIL PRINT PRO v20</h1><div style="color:var(--pink); font-size:0.7rem; font-weight:bold;">Maman Sokal 🖤</div></header>
+<div class="top-bar">
+    <label class="btn-top btn-load" for="f" style="display:flex; align-items:center; justify-content:center;">✦ CHARGER</label>
+    <input type="file" id="f" hidden accept="image/*">
+    <button class="btn-top btn-print" id="pBtn" disabled onclick="window.print()">IMPRIMER</button>
+</div>
+<div class="controls">
+    <div class="card"><label>GABARIT DE PAGES</label>
+        <select id="pgs" onchange="setG(this.value)">
+            <option value="1">1 Page</option>
+            <option value="2">2 Pages (1x2)</option>
+            <option value="4">4 Pages (2x2)</option>
+            <option value="6">6 Pages (2x3)</option>
+            <option value="9">9 Pages (3x3)</option>
+            <option value="12">12 Pages (4x3)</option>
+        </select>
+    </div>
+    <div class="card"><label>ORIENTATION PAPIER</label>
+        <div class="tgl-group">
+            <button class="tgl-btn active" id="oP" onclick="setO('P')">PORTRAIT</button>
+            <button class="tgl-btn" id="oL" onclick="setO('L')">PAYSAGE</button>
+        </div>
+    </div>
+    <div class="card"><label>NETTETÉ <span class="val" id="vN">10</span></label>
+        <div class="adj"><button class="b-step" onclick="ch('sN',-1)">-</button><input type="range" id="sN" min="0" max="30" value="10" oninput="proc()"><button class="b-step" onclick="ch('sN',1)">+</button></div>
+    </div>
+    <div class="card"><label>INTENSITÉ NOIR <span class="val" id="vI">150</span></label>
+        <div class="adj"><button class="b-step" onclick="ch('sT',-10)">-</button><input type="range" id="sT" min="10" max="250" value="150" oninput="proc()"><button class="b-step" onclick="ch('sT',10)">+</button></div>
+    </div>
+    <div class="card"><label>LUMINOSITÉ <span class="val" id="vB">0</span></label>
+        <div class="adj"><button class="b-step" onclick="ch('sB',-5)">-</button><input type="range" id="sB" min="-100" max="100" value="0" oninput="proc()"><button class="b-step" onclick="ch('sB',5)">+</button></div>
+    </div>
+    <div class="card"><label>TAILLE IMAGE <span class="val" id="vS">100%</span></label>
+        <div class="adj"><button class="b-step" onclick="ch('sS',-5)">-</button><input type="range" id="sS" min="10" max="500" value="100" oninput="up()"><button class="b-step" onclick="ch('sS',5)">+</button></div>
+    </div>
+</div>
+<div class="viewer"><div id="gv" class="grid-view"></div></div>
+<script>
+    let A4W = 805, A4H = 1152; let st = { img: null, res: null, p: 1, sz: 100, ori: 'P' };
+    function ch(id, d) { let e = document.getElementById(id); let v = parseInt(e.value) + d; if(v >= e.min && v <= e.max) { e.value = v; if(id==='sS') up(); else proc(); } }
+    function setO(o) { st.ori = o; A4W = (o === 'P') ? 805 : 1152; A4H = (o === 'P') ? 1152 : 805; 
+        document.getElementById('oP').classList.toggle('active', o === 'P'); document.getElementById('oL').classList.toggle('active', o === 'L'); render(); }
+    document.getElementById('f').onchange = (e) => {
+        const r = new FileReader(); r.onload = (ev) => {
+            const i = new Image(); i.onload = () => { st.img = i; document.getElementById('pBtn').disabled = false; proc(); }; i.src = ev.target.result;
+        }; r.readAsDataURL(e.target.files[0]);
+    };
+    function proc() {
+        if(!st.img) return; const c = document.createElement('canvas'); c.width = st.img.width; c.height = st.img.height; const x = c.getContext('2d');
+        const n = document.getElementById('sN').value, b = document.getElementById('sB').value, t = document.getElementById('sT').value;
+        document.getElementById('vN').innerText = n; document.getElementById('vB').innerText = b; document.getElementById('vI').innerText = t;
+        x.filter = `grayscale(100%) brightness(${100+parseInt(b)}%) contrast(${100+n*5}%)`; x.drawImage(st.img, 0, 0);
+        let idat = x.getImageData(0,0,c.width,c.height), px = idat.data;
+        for(let i=0; i<px.length; i+=4) { let v = (px[i] > (255-t)) ? 255 : 0; px[i]=px[i+1]=px[i+2]=v; } x.putImageData(idat, 0, 0);
+        const r = new Image(); r.onload = () => { st.res = r; render(); }; r.src = c.toDataURL();
+    }
+    function setG(v) { st.p = parseInt(v); render(); }
+    function up() { st.sz = document.getElementById('sS').value; document.getElementById('vS').innerText = st.sz+'%'; render(); }
+    function render() {
+        if(!st.res) return; const g = document.getElementById('gv'); g.innerHTML = '';
+        // Configuration précise des grilles [Lignes, Colonnes]
+        const cfg = {1:[1,1], 2:[1,2], 4:[2,2], 6:[2,3], 9:[3,3], 12:[4,3]}[st.p];
+        g.style.gridTemplateColumns = `repeat(${cfg[1]}, 1fr)`;
+        for(let i=0; i<(cfg[0]*cfg[1]); i++) {
+            const c = document.createElement('canvas'); c.width = A4W; c.height = A4H; const x = c.getContext('2d');
+            x.fillStyle = 'white'; x.fillRect(0,0,A4W,A4H);
+            const w = (A4W * cfg[1] * st.sz / 100), h = st.res.height * (w / st.res.width);
+            const sx = (A4W * cfg[1] - w)/2 - ((i%cfg[1]) * A4W), sy = (A4H * cfg[0] - h)/2 - (Math.floor(i/cfg[1]) * A4H);
+            x.drawImage(st.res, sx, sy, w, h); g.appendChild(c);
+        }
+    }
+</script>
+</body>
+</html>
