@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+<title>STENCIL PRINT PRO v58.0 - Maman Sokal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--bg:#0a0a0c;
+--card:#16161a;
+--pink:#ff007f;
+--cyan:#00e5ff;
+--green:#39ff14;
+}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+body{
+background:var(--bg);
+color:#fff;
+font-family:'Roboto',sans-serif;
+height:100vh;
+overflow:hidden;
+display:flex;
+flex-direction:column;
+}
+
+header{
+background:#000;
+padding:12px;
+border-bottom:2px solid var(--pink);
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-shrink:0;
+}
+
+header h1{
+font-family:'Oswald';
+font-size:1.2rem;
+}
+
+.import-zone{
+margin:10px;
+padding:18px;
+border:3px dashed var(--green);
+border-radius:14px;
+background:#042004;
+text-align:center;
+cursor:pointer;
+}
+
+.btn-load-text{
+font-size:1rem;
+font-weight:bold;
+color:var(--cyan);
+}
+
+.action-bar{
+display:flex;
+gap:10px;
+padding:0 10px 10px;
+}
+
+.btn-act{
+flex:1;
+padding:16px;
+border:none;
+border-radius:12px;
+font-weight:bold;
+font-size:1rem;
+cursor:pointer;
+text-transform:uppercase;
+}
+
+.btn-save{
+background:var(--green);
+color:#000;
+}
+
+.btn-compare{
+background:#111;
+color:#fff;
+border:2px solid var(--pink);
+}
+
+.controls{
+padding:0 10px 10px;
+overflow-y:auto;
+flex-shrink:0;
+max-height:58vh;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.card{
+background:#111118;
+border:1px solid #2c2c33;
+border-radius:16px;
+padding:12px;
+}
+
+.card-full{
+grid-column:span 2;
+}
+
+label{
+display:block;
+font-size:.7rem;
+margin-bottom:8px;
+color:var(--cyan);
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.val{
+float:right;
+color:#fff;
+font-size:1.2rem;
+font-family:'Oswald';
+}
+
+.adj{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.b-step{
+width:50px;
+height:50px;
+border-radius:14px;
+border:2px solid var(--pink);
+background:#000;
+color:#fff;
+font-size:1.4rem;
+font-weight:bold;
+cursor:pointer;
+}
+
+input[type=range]{
+flex:1;
+accent-color:var(--pink);
+}
+
+select{
+width:100%;
+padding:14px;
+background:#000;
+color:#fff;
+border:2px solid var(--pink);
+border-radius:12px;
+font-weight:bold;
+font-size:1rem;
+}
+
+.viewer{
+flex:1;
+overflow:auto;
+background:#000;
+padding-bottom:80px;
+}
+
+.gabarit-header{
+padding:12px;
+background:#000;
+color:var(--cyan);
+font-family:'Oswald';
+text-align:center;
+font-size:1rem;
+border-top:1px solid #333;
+}
+
+.grid-view{
+display:grid;
+gap:20px;
+padding:10px;
+justify-items:center;
+}
+
+.page-output{
+background:#fff;
+width:95%;
+border:1px solid #444;
+}
+
+.btn-toggle{
+flex:1;
+padding:14px;
+background:#111;
+color:#fff;
+border:2px solid var(--pink);
+border-radius:12px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.btn-toggle.active{
+background:var(--pink);
+color:#000;
+border:none;
+}
+
+.info{
+font-size:.72rem;
+opacity:.7;
+margin-top:6px;
+line-height:1.4;
+}
+
+#printZone{
+display:none;
+position:fixed;
+inset:0;
+background:#000;
+z-index:999;
+overflow:auto;
+padding:20px;
+}
+
+.close-btn{
+width:100%;
+padding:18px;
+background:var(--pink);
+border:none;
+border-radius:14px;
+font-weight:bold;
+font-size:1rem;
+color:#fff;
+margin-bottom:20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>STENCIL PRINT PRO v58.0</h1>
+<div style="color:var(--pink);font-weight:bold;">MAMAN SOKAL 🖤🖋️</div>
+</header>
+
+<div class="import-zone" onclick="document.getElementById('f').click()">
+<div class="btn-load-text" id="loadStatus">✦ CHARGER VOTRE DESIGN ✦</div>
+<input type="file" id="f" hidden accept="image/*">
+</div>
+
+<div class="action-bar">
+<button class="btn-act btn-save" onclick="openPrintZone()">EXPORTER EN A4</button>
+<button class="btn-act btn-compare" onclick="toggleCompare()">AVANT / APRÈS</button>
+</div>
+
+<div class="controls">
+
+<div class="card card-full">
+<label>MODE DE RENDU</label>
+
+<select id="mde" onchange="setMode(this.value)">
+<option value="orig">MODE ORIGINAL (PHOTO)</option>
+<option value="stencil" selected>MODE LIVRE À COLORIER / STENCIL PRO</option>
+<option value="dotwork">MODE DOTWORK (POINTS)</option>
+</select>
+</div>
+
+<div class="card card-full">
+<label>ÉPAISSEUR TRAITS</label>
+
+<div class="adj">
+<button class="b-step" onclick="ch('sThin',-1)">-</button>
+<input type="range" id="sThin" min="-10" max="10" value="0" oninput="proc()">
+<button class="b-step" onclick="ch('sThin',1)">+</button>
+</div>
+
+<div class="info">← plus fin · → plus épais</div>
+</div>
+
+<div class="card card-full">
+<label>⬛→⬜ SEUIL BLANC</label>
+
+<div class="adj">
+<button class="b-step" onclick="ch('sSeuil',-2)">-</button>
+<input type="range" id="sSeuil" min="120" max="255" value="208" oninput="proc()">
+<button class="b-step" onclick="ch('sSeuil',2)">+</button>
+</div>
+
+<div class="info">
+Monte pour nettoyer le fond · baisse pour garder plus de matière
+</div>
+</div>
+
+<div class="card">
+<label>NETTETÉ CONTOURS <span class="val" id="vN">2</span></label>
+
+<div class="adj">
+<button class="b-step" onclick="ch('sN',-1)">-</button>
+<input type="range" id="sN" min="0" max="15" value="2" oninput="proc()">
+<button class="b-step" onclick="ch('sN',1)">+</button>
+</div>
+</div>
+
+<div class="card">
+<label>EXTRACTION MICRO-DÉTAILS <span class="val" id="vHD">3</span></label>
+
+<div class="adj">
+<button class="b-step" onclick="ch('sHD',-1)">-</button>
+<input type="range" id="sHD" min="0" max="20" value="3" oninput="proc()">
+<button class="b-step" onclick="ch('sHD',1)">+</button>
+</div>
+</div>
+
+<div class="card">
+<label>INTENSITÉ <span class="val" id="vP">42</span></label>
+
+<div class="adj">
+<button class="b-step" onclick="ch('sP',-2)">-</button>
+<input type="range" id="sP" min="0" max="100" value="42" oninput="proc()">
+<button class="b-step" onclick="ch('sP',2)">+</button>
+</div>
+</div>
+
+<div class="card">
+<label>CONTRASTE <span class="val" id="vC">108</span></label>
+
+<div class="adj">
+<button class="b-step" onclick="ch('sC',-2)">-</button>
+<input type="range" id="sC" min="50" max="200" value="108" oninput="proc()">
+<button class="b-step" onclick="ch('sC',2)">+</button>
+</div>
+</div>
+
+<div class="card">
+<label>LUMINOSITÉ <span class="val" id="vL">112</span></label>
+
+<div class="adj">
+<button class="b-step" onclick="ch('sL',-2)">-</button>
+<input type="range" id="sL" min="50" max="200" value="112" oninput="proc()">
+<button class="b-step" onclick="ch('sL',2)">+</button>
+</div>
+</div>
+
+<div class="card">
+<label>ÉPAISSEUR / DOT SIZE</label>
+
+<div class="adj">
+<button class="b-step" onclick="ch('sE',-1)">-</button>
+<input type="range" id="sE" min="1" max="8" value="1" oninput="proc()">
+<button class="b-step" onclick="ch('sE',1)">+</button>
+</div>
+</div>
+
+<div class="card">
+<label>GABARIT PAGES</label>
+
+<select id="pgs" onchange="setG(this.value)">
+<option value="1">1 PAGE</option>
+<option value="2">2 PAGES (CÔTE À CÔTE)</option>
+<option value="4">4 PAGES (2X2)</option>
+<option value="6">6 PAGES (2X3)</option>
+<option value="9">9 PAGES (3X3)</option>
+<option value="12">12 PAGES (3X4)</option>
+</select>
+</div>
+
+<div class="card">
+<label>ZOOM (%)</label>
+
+<div class="adj">
+<button class="b-step" onclick="ch('sS',-10)">-</button>
+<input type="range" id="sS" min="10" max="500" value="100" oninput="up()">
+<button class="b-step" onclick="ch('sS',10)">+</button>
+</div>
+</div>
+
+</div>
+
+<div class="viewer">
+<div class="gabarit-header">✦ PRÉVISUALISATION — STENCIL PRINT PRO ✦</div>
+<div id="gv" class="grid-view"></div>
+</div>
+
+<div id="printZone">
+<button class="close-btn" onclick="closePrintZone()">FERMER</button>
+<div id="printContainer"></div>
+</div>
+
+<script>
+
+let st={
+img:null,
+res:null,
+original:null,
+compare:false,
+p:1,
+sz:100
+};
+
+document.getElementById('f').onchange=(e)=>{
+
+const file=e.target.files[0];
+if(!file)return;
+
+const r=new FileReader();
+
+r.onload=(ev)=>{
+
+const img=new Image();
+
+img.onload=()=>{
+
+st.img=img;
+st.original=img;
+
+document.getElementById('loadStatus').innerText='DESIGN CHARGÉ ✓';
+
+proc();
+
+};
+
+img.src=ev.target.result;
+
+};
+
+r.readAsDataURL(file);
+
+};
+
+function ch(id,d){
+
+const el=document.getElementById(id);
+
+let v=parseFloat(el.value)+d;
+
+if(v<parseFloat(el.min))v=parseFloat(el.min);
+if(v>parseFloat(el.max))v=parseFloat(el.max);
+
+el.value=v;
+
+if(id==='sS'){
+up();
+}else{
+proc();
+}
+
+}
+
+function syncVals(){
+
+vN.innerText=sN.value;
+vHD.innerText=sHD.value;
+vP.innerText=sP.value;
+vC.innerText=sC.value;
+vL.innerText=sL.value;
+
+}
+
+function setMode(mode){
+
+if(mode==='stencil'){
+
+sL.value=112;
+sC.value=108;
+sN.value=2;
+sHD.value=3;
+sP.value=42;
+sSeuil.value=208;
+sThin.value=0;
+
+}
+
+if(mode==='orig'){
+
+sL.value=100;
+sC.value=100;
+sN.value=4;
+sHD.value=8;
+sP.value=100;
+sThin.value=0;
+
+}
+
+if(mode==='dotwork'){
+
+sL.value=100;
+sC.value=135;
+sN.value=4;
+sHD.value=8;
+sP.value=100;
+sThin.value=0;
+
+}
+
+proc();
+
+}
+
+function proc(){
+
+if(!st.img)return;
+
+syncVals();
+
+const c=document.createElement('canvas');
+
+c.width=st.img.width;
+c.height=st.img.height;
+
+const x=c.getContext('2d',{willReadFrequently:true});
+
+const mode=mde.value;
+
+const lum=parseInt(sL.value);
+const cont=parseInt(sC.value);
+const sharp=parseInt(sN.value);
+const micro=parseInt(sHD.value);
+const intensity=parseInt(sP.value);
+const seuil=parseInt(sSeuil.value);
+const thin=parseInt(sThin.value);
+
+x.filter=`brightness(${lum}%) contrast(${cont}%) grayscale(100%)`;
+
+x.drawImage(st.img,0,0);
+
+if(mode==='orig'){
+
+st.res=c;
+render();
+return;
+
+}
+
+let img=x.getImageData(0,0,c.width,c.height);
+
+let d=img.data;
+
+for(let i=0;i<d.length;i+=4){
+
+let gray=d[i];
+
+gray=gray-(sharp*1.5);
+
+if(gray<seuil){
+
+gray=0;
+
+}else{
+
+gray=255;
+
+}
+
+d[i]=gray;
+d[i+1]=gray;
+d[i+2]=gray;
+
+}
+
+x.putImageData(img,0,0);
+
+st.res=c;
+
+render();
+
+}
+
+function render(){
+
+if(!st.res)return;
+
+const g=document.getElementById('gv');
+
+g.innerHTML='';
+
+const img=document.createElement('img');
+
+img.className='page-output';
+
+img.src=st.compare ? st.original.src : st.res.toDataURL('image/jpeg',0.95);
+
+g.appendChild(img);
+
+}
+
+function toggleCompare(){
+
+st.compare=!st.compare;
+
+render();
+
+}
+
+function setG(v){
+
+st.p=parseInt(v);
+
+render();
+
+}
+
+function up(){
+
+st.sz=sS.value;
+
+render();
+
+}
+
+function openPrintZone(){
+
+const zone=document.getElementById('printZone');
+
+const cont=document.getElementById('printContainer');
+
+cont.innerHTML='';
+
+const img=document.createElement('img');
+
+img.src=st.res.toDataURL('image/jpeg',0.95);
+
+img.style.width='100%';
+
+cont.appendChild(img);
+
+zone.style.display='block';
+
+}
+
+function closePrintZone(){
+
+printZone.style.display='none';
+
+}
+
+</script>
+
+</body>
+</html>
