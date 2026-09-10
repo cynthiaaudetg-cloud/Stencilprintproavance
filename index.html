@@ -1,586 +1,99 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>STENCIL PRINT PRO v74.1 - Maman Sokal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>STENCIL PRINT PRO v75 - Maman Sokal</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0a0a0c; --card:#111118; --pink:#ff007f; --cyan:#00e5ff; --green:#39ff14; --line:#2d2d35;
-}
-*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0c;--card:#15151b;--cyan:#00e5ff;--yellow:#ffd400;--mauve:#c77dff;--green:#39ff14;--line:#2d2d35}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overscroll-behavior:none}
-body{
-  background:var(--bg); color:#fff; font-family:'Roboto',sans-serif;
-  display:flex; flex-direction:column; overflow:hidden;
-}
-header{
-  background:#000; border-bottom:2px solid var(--pink);
-  padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;
-}
-header h1{font:700 1.12rem 'Oswald',sans-serif}
-.brand{color:var(--pink);font-weight:700;font-size:.8rem}
-.import-zone{
-  margin:10px; padding:14px; border:3px dashed var(--cyan); border-radius:14px;
-  background:#16161a; text-align:center; cursor:pointer; flex-shrink:0;
-}
-.import-zone.success{border-color:var(--green); background:#092009}
-.btn-load-text{color:var(--cyan); font-weight:700; font-size:1rem}
-.action-bar{display:flex; gap:8px; padding:0 10px 10px; flex-shrink:0}
-.action-bar .btn-act{min-width:0}
-@media (max-width:700px){.action-bar{flex-wrap:wrap}.action-bar .btn-act{flex:1 1 calc(50% - 4px)}}
-.btn-act{
-  flex:1; border:none; border-radius:12px; padding:14px; font-weight:700; font-size:.95rem;
-  text-transform:uppercase; cursor:pointer;
-}
-.btn-save{background:var(--green); color:#000}
-.btn-original{background:#fff; color:#000}
-.btn-original.active{background:var(--cyan); color:#000}
-.btn-compare{background:#111; color:#fff; border:2px solid var(--pink)}
-.btn-compare.active{background:var(--pink); color:#000; border:none}
-
-.app-main{
-  display:flex; flex-direction:column; flex:1; min-height:0;
-}
-.preview-zone{
-  flex:0 0 46vh; min-height:240px; background:#000; border-top:1px solid #222; border-bottom:1px solid #222;
-  display:flex; flex-direction:column; min-width:0;
-}
-.preview-header{
-  padding:10px; text-align:center; color:var(--cyan); font:700 .95rem 'Oswald',sans-serif; flex-shrink:0;
-}
-.preview-scroll{
-  flex:1; overflow:auto; -webkit-overflow-scrolling:touch; padding:8px 10px 18px;
-}
-.grid-view{
-  display:grid; gap:14px; width:100%; justify-items:center;
-}
-.page-output{
-  background:#fff; border:1px solid #444; width:100%; display:block; border-radius:4px;
-}
-.controls-zone{
-  flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch; padding:10px;
-}
-.controls{
-  display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-bottom:24px;
-}
-.card{
-  background:var(--card); border:1px solid var(--line); border-radius:16px; padding:12px;
-}
-.card-full{grid-column:span 2}
-label{
-  display:block; color:var(--cyan); font-size:.72rem; font-weight:700; text-transform:uppercase; margin-bottom:8px;
-}
-.val{float:right; color:#fff; font:700 1rem 'Oswald',sans-serif}
-.adj{display:flex; align-items:center; gap:8px}
-.b-step{
-  width:44px; height:44px; border-radius:12px; background:#000; color:#fff;
-  border:2px solid var(--pink); font-size:1.25rem; font-weight:700; cursor:pointer; flex-shrink:0;
-}
-input[type=range]{flex:1; accent-color:var(--pink); height:28px; touch-action:none}
-select{
-  width:100%; background:#000; color:#fff; border:2px solid var(--pink); border-radius:12px;
-  padding:12px; font-weight:700; font-size:.98rem; text-transform:uppercase;
-}
-.btn-toggle{
-  flex:1; padding:12px; border-radius:12px; background:#111; color:#fff;
-  border:2px solid var(--pink); font-weight:700; cursor:pointer; text-transform:uppercase;
-}
-.btn-toggle.active{background:var(--pink); color:#000; border:none}
-.mini{font-size:.62rem; color:#9a9aa5; margin-top:6px; line-height:1.35}
-.size-info{margin-top:9px;padding:9px;border-radius:10px;background:#09090c;border:1px solid #2d2d35;color:#fff;font-size:.72rem;line-height:1.4;text-align:center}
-.joystick-container{
-  display:flex; justify-content:center; align-items:center; background:#000; border-radius:15px;
-  padding:10px; border:1px solid #333;
-}
-.joy-grid{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:6px}
-.btn-joy{
-  background:var(--card); border:2px solid var(--pink); color:#fff; border-radius:10px;
-  display:flex; align-items:center; justify-content:center; font-size:1.1rem; cursor:pointer;
-}
-#printZone{
-  display:none; position:fixed; inset:0; background:#000; z-index:999; overflow:auto; padding:16px;
-}
-.close-btn{
-  width:100%; padding:16px; border:none; border-radius:14px; background:var(--pink); color:#fff;
-  font-weight:700; margin-bottom:16px; cursor:pointer;
-}
-.print-tip{
-  background:rgba(0,229,255,.07); border:1px solid rgba(0,229,255,.18); border-radius:12px;
-  padding:12px; color:var(--cyan); font-size:.82rem; line-height:1.5; margin-bottom:16px;
-}
-@media (max-width:700px){
-  .controls{grid-template-columns:1fr 1fr}
-}
-.control-block{margin-top:12px;padding-top:10px;border-top:1px solid #222}.control-block:first-of-type{border-top:0;padding-top:0}
-
-/* v74.1 — interface simplifiée inspirée du flux TattStencil */
-#cardColoring,#cardDot,#cardDotSize,#cardDotContrast,#cardOriginal{display:none!important}
-#cardStencil,#cardClean,#cardWidth,#cardReinforce,#cardDetail{display:block}
-#cardStencil label:before{content:"NETTETÉ / SEUIL ";}
-/* Le sélecteur de mode reste dans le DOM pour la compatibilité, mais n’est plus affiché. */
-.controls > .card:first-child{display:none}
+body{background:var(--bg);color:#fff;font-family:Roboto,Arial,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+button,input,select{font:inherit}
+header{height:52px;flex:0 0 52px;background:#000;border-bottom:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;padding:0 12px;position:relative}
+header h1{font:700 1.05rem Oswald,sans-serif;letter-spacing:.4px} .brand{position:absolute;right:10px;color:var(--mauve);font-size:.62rem;font-weight:700}
+.import-zone{margin:8px 10px;padding:12px;border:2px dashed var(--cyan);border-radius:14px;background:#121218;text-align:center;cursor:pointer;min-height:52px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;touch-action:manipulation}
+.import-zone.success{border-color:var(--green);background:#092009}.btn-load-text{color:var(--cyan);font-weight:700;font-size:.9rem}
+.app-main{display:flex;flex-direction:column;flex:1;min-height:0}
+.preview-zone{flex:0 0 46vh;min-height:235px;background:#000;border-top:1px solid #222;border-bottom:1px solid #222;display:flex;flex-direction:column;min-width:0}
+.preview-header{height:34px;display:flex;align-items:center;justify-content:center;color:var(--cyan);font:700 .82rem Oswald,sans-serif;flex:0 0 34px}
+.preview-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:6px 8px 14px}.grid-view{display:grid;gap:12px;width:100%;justify-items:center}.page-output{background:#fff;border:1px solid #444;width:100%;display:block;border-radius:3px}
+.controls-zone{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:9px 10px 22px}
+.controls{display:grid;grid-template-columns:1fr;gap:9px;max-width:900px;margin:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:12px}.card h2{font:700 .9rem Oswald,sans-serif;color:#fff;margin-bottom:9px}.mini{font-size:.63rem;color:#92929c;margin-top:6px;line-height:1.35}
+.adjust-card{border-color:#3a3a45}.adjust-label{display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:.78rem;font-weight:700;text-transform:uppercase;margin-bottom:8px}.value{font:700 1rem Oswald,sans-serif;color:var(--cyan)}
+.adjust-row{display:grid;grid-template-columns:54px 1fr 54px;gap:9px;align-items:center}.step{width:54px;height:54px;border:2px solid var(--cyan);border-radius:14px;background:#08080b;color:#fff;font-size:1.45rem;font-weight:700;touch-action:manipulation;user-select:none}.step:active{transform:scale(.96);background:#182127}
+input[type=range]{width:100%;height:44px;accent-color:var(--cyan);touch-action:none}
+.action-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:7px 10px 9px;background:#0b0b0e;border-top:1px solid #222;flex:0 0 auto}
+.action{min-height:48px;border:0;border-radius:12px;font-weight:700;font-size:.75rem;text-transform:uppercase;touch-action:manipulation}.original{background:#fff;color:#000}.compare{background:#15151b;color:#fff;border:2px solid var(--mauve)}.compare.active{background:var(--mauve);color:#000}.print{background:var(--yellow);color:#000}
+.advanced{display:none}.advanced.open{display:grid;grid-template-columns:1fr 1fr;gap:9px}.advanced .card-full{grid-column:1/-1}
+.btn-small{width:100%;min-height:48px;border-radius:12px;border:2px solid var(--mauve);background:#111;color:#fff;font-weight:700;touch-action:manipulation}.btn-small.active{background:var(--mauve);color:#000}
+.joy{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);gap:6px;justify-content:center}.joy button{border:2px solid var(--mauve);background:#101014;color:#fff;border-radius:10px;font-size:1rem}.joy .reset{border-color:var(--cyan);font-size:.65rem}
+.toggle-advanced{width:100%;min-height:44px;border:1px solid #383842;border-radius:12px;background:#101014;color:#aaa;font-weight:700;touch-action:manipulation}
+#printZone{display:none;position:fixed;inset:0;background:#000;z-index:9999;overflow:auto;padding:14px;padding-bottom:30px}.close-btn{width:100%;min-height:52px;border:0;border-radius:13px;background:var(--mauve);color:#000;font-weight:700;margin-bottom:12px}.print-tip{padding:11px;border-radius:11px;background:#10151a;border:1px solid #26353a;color:var(--cyan);font-size:.78rem;line-height:1.4;margin-bottom:12px}
+@media(min-width:768px){.preview-zone{flex-basis:50vh}.controls{max-width:760px}.adjust-card{padding:15px}.step{width:58px;height:58px}.adjust-row{grid-template-columns:58px 1fr 58px}}
 </style>
 </head>
 <body>
-
-<header>
-  <h1>STENCIL PRINT PRO v74.1</h1>
-  <div class="brand">MAMAN SOKAL 🖤🖋️</div>
-</header>
-
-<div class="import-zone" id="dropZone" onclick="document.getElementById('f').click()">
-  <div class="btn-load-text" id="loadStatus">✦ CHARGER VOTRE DESIGN ✦</div>
-  <input type="file" id="f" hidden accept="image/*">
-</div>
-
-<div class="action-bar">
-  <button class="btn-act btn-original" id="originalBtn" onclick="quickOriginal()">ORIGINAL</button>
-  <button class="btn-act btn-save" id="pBtn" disabled onclick="openPrintZone()">EXPORTER EN A4</button>
-  <button class="btn-act btn-compare" id="compareBtn" onclick="toggleCompare()">AVANT / APRÈS</button>
-</div>
-
+<header><h1>STENCIL PRINT PRO v75</h1><div class="brand">MAMAN SOKAL</div></header>
+<div class="import-zone" id="dropZone"><div class="btn-load-text" id="loadStatus">✦ CHARGER VOTRE DESIGN ✦</div><input type="file" id="f" hidden accept="image/*"></div>
 <div class="app-main">
-  <section class="preview-zone">
-    <div class="preview-header">✦ PRÉVISUALISATION — STENCIL PRINT PRO ✦</div>
-    <div class="preview-scroll">
-      <div id="gv" class="grid-view"></div>
-    </div>
-  </section>
-
-  <section class="controls-zone">
-    <div class="controls">
-
-      <div class="card card-full">
-        <label>MODE DE RENDU</label>
-        <select id="mde">
-          <option value="orig">MODE ORIGINAL</option>
-          <option value="stencil" selected>MODE STENCIL — LIGNES PROPRES</option>
-          <option value="outline">MODE CONTOURS PURS</option>
-          <option value="dotwork">MODE DOTWORK</option>
-          <option value="coloring">MODE LIVRE À COLORIER</option>
-        </select>
-      </div>
-
-      <div class="card card-full" id="cardStencil">
-        <label>SEUIL DES LIGNES <span class="val" id="vSeuil">80</span></label>
-        <div class="adj"><button class="b-step" data-step="sSeuil" data-d="-2">-</button><input type="range" id="sSeuil" min="20" max="180" value="80"><button class="b-step" data-step="sSeuil" data-d="2">+</button></div>
-        <div class="mini">Objectif : lignes noires propres sur fond blanc, sans aplats noirs.</div>
-      </div>
-
-      <div class="card" id="cardClean">
-        <label>NETTOYAGE FOND BLANC <span class="val" id="vClean">200</span></label>
-        <div class="adj"><button class="b-step" data-step="sClean" data-d="-2">-</button><input type="range" id="sClean" min="120" max="240" value="200"><button class="b-step" data-step="sClean" data-d="2">+</button></div>
-      </div>
-
-      <div class="card" id="cardWidth">
-        <label>ÉPAISSEUR DES LIGNES <span class="val" id="vWidth">1</span></label>
-        <div class="adj"><button class="b-step" data-step="sWidth" data-d="-1">-</button><input type="range" id="sWidth" min="0" max="4" value="1"><button class="b-step" data-step="sWidth" data-d="1">+</button></div>
-        <div class="mini">0 = fin · 4 = plus épais</div>
-      </div>
-
-      <div class="card" id="cardReinforce">
-        <label>RENFORCEMENT CONTOURS <span class="val" id="vReinforce">25</span></label>
-        <div class="adj"><button class="b-step" data-step="sReinforce" data-d="-5">-</button><input type="range" id="sReinforce" min="0" max="100" value="25"><button class="b-step" data-step="sReinforce" data-d="5">+</button></div>
-      </div>
-
-      <div class="card" id="cardDetail">
-        <label>DÉTAILS FINS <span class="val" id="vDetail">45</span></label>
-        <div class="adj"><button class="b-step" data-step="sDetail" data-d="-5">-</button><input type="range" id="sDetail" min="0" max="100" value="45"><button class="b-step" data-step="sDetail" data-d="5">+</button></div>
-      </div>
-
-      <div class="card card-full" id="cardDot" style="display:none">
-        <label>DENSITÉ DOTWORK <span class="val" id="vDensity">55</span></label>
-        <div class="adj"><button class="b-step" data-step="sDensity" data-d="-5">-</button><input type="range" id="sDensity" min="10" max="90" value="55"><button class="b-step" data-step="sDensity" data-d="5">+</button></div>
-      </div>
-
-      <div class="card" id="cardDotSize" style="display:none">
-        <label>TAILLE DES POINTS <span class="val" id="vDotSize">1.2</span></label>
-        <div class="adj"><button class="b-step" data-step="sDotSize" data-d="0.2">-</button><input type="range" id="sDotSize" min="0.6" max="3" step="0.2" value="1.2"><button class="b-step" data-step="sDotSize" data-d="0.2">+</button></div>
-      </div>
-
-      <div class="card" id="cardDotContrast" style="display:none">
-        <label>CONTRASTE DOTWORK <span class="val" id="vDotContrast">50</span></label>
-        <div class="adj"><button class="b-step" data-step="sDotContrast" data-d="-5">-</button><input type="range" id="sDotContrast" min="10" max="100" value="50"><button class="b-step" data-step="sDotContrast" data-d="5">+</button></div>
-      </div>
-
-      
-      <div class="card card-full" id="cardColoring" style="display:none">
-        <label>STYLE LIVRE À COLORIER</label>
-        <div class="mini">Objectif : contours nets, intérieur blanc et suppression de l’ombrage.</div>
-
-        <div class="control-block">
-          <label>CONTRASTES <span class="val" id="vCBContrast">130</span></label>
-          <div class="adj">
-            <button class="b-step" data-step="sCBContrast" data-d="-5">-</button>
-            <input type="range" id="sCBContrast" min="80" max="180" value="130">
-            <button class="b-step" data-step="sCBContrast" data-d="5">+</button>
-          </div>
-        </div>
-
-        <div class="control-block">
-          <label>NETTETÉ <span class="val" id="vCBSharp">70</span></label>
-          <div class="adj">
-            <button class="b-step" data-step="sCBSharp" data-d="-5">-</button>
-            <input type="range" id="sCBSharp" min="0" max="100" value="70">
-            <button class="b-step" data-step="sCBSharp" data-d="5">+</button>
-          </div>
-        </div>
-
-        <div class="control-block">
-          <label>ESPACES NÉGATIFS BLANCS <span class="val" id="vCBWhite">80</span></label>
-          <div class="adj">
-            <button class="b-step" data-step="sCBWhite" data-d="-5">-</button>
-            <input type="range" id="sCBWhite" min="0" max="100" value="80">
-            <button class="b-step" data-step="sCBWhite" data-d="5">+</button>
-          </div>
-          <div class="mini">Plus haut = plus de nettoyage du gris et des petites marques à l’intérieur.</div>
-        </div>
-
-        <div class="control-block">
-          <label>ÉPAISSEUR DES CONTOURS <span class="val" id="vCBWidth">4</span></label>
-          <div class="adj">
-            <button class="b-step" data-step="sCBWidth" data-d="-1">-</button>
-            <input type="range" id="sCBWidth" min="1" max="8" value="4">
-            <button class="b-step" data-step="sCBWidth" data-d="1">+</button>
-          </div>
-          <div class="mini">Monte ce réglage pour obtenir des contours vraiment épais.</div>
-        </div>
-      </div>
-
-<div class="card card-full" id="cardOriginal" style="display:none">
-        <label>LUMINOSITÉ <span class="val" id="vBright">100</span> · CONTRASTE <span class="val" id="vContrast">100</span></label>
-        <div class="adj"><button class="b-step" data-step="sBright" data-d="-2">-</button><input type="range" id="sBright" min="70" max="140" value="100"><button class="b-step" data-step="sBright" data-d="2">+</button></div>
-        <div class="adj" style="margin-top:8px"><button class="b-step" data-step="sContrast" data-d="-2">-</button><input type="range" id="sContrast" min="70" max="150" value="100"><button class="b-step" data-step="sContrast" data-d="2">+</button></div>
-      </div>
-
-      <div class="card card-full">
-        <label>DIMENSION RÉELLE</label>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input id="targetSize" type="number" min="1" max="200" step="0.1" value="20" style="flex:1;background:#000;color:#fff;border:2px solid var(--pink);border-radius:12px;padding:12px;font-weight:700">
-          <select id="unit" style="width:115px"><option value="cm">cm</option><option value="in">pouces</option></select>
-        </div>
-        <div class="mini">La largeur totale du dessin est réglée en dimension réelle, peu importe le nombre de pages.</div>
-        <div id="sizeInfo" class="size-info">—</div>
-      </div>
-
-      <div class="card">
-        <label>GABARIT PAGES</label>
-        <select id="pgs">
-          <option value="1">1 PAGE</option><option value="2">2 PAGES (1×2)</option><option value="4">4 PAGES (2×2)</option><option value="6">6 PAGES (2×3)</option><option value="9">9 PAGES (3×3)</option><option value="12">12 PAGES (3×4)</option>
-        </select>
-      </div>
-
-      <div class="card">
-        <label>ZOOM APERÇU <span class="val" id="vS">100%</span></label>
-        <div class="adj"><button class="b-step" data-step="sS" data-d="-10">-</button><input type="range" id="sS" min="50" max="250" value="100"><button class="b-step" data-step="sS" data-d="10">+</button></div>
-      </div>
-
-      <div class="card card-full">
-        <label>ROTATION</label><div style="display:flex;gap:8px"><button id="btnR0" class="btn-toggle active">0°</button><button id="btnR90" class="btn-toggle">90°</button><button id="btnR180" class="btn-toggle">180°</button><button id="btnR270" class="btn-toggle">270°</button></div>
-      </div>
-
-      <div class="card card-full">
-        <label>MIROIR</label><div style="display:flex;gap:8px"><button id="btnMirH" class="btn-toggle">↔ HORIZONTAL</button><button id="btnMirV" class="btn-toggle">↕ VERTICAL</button></div>
-      </div>
-
-      <div class="card card-full">
-        <label>ORIENTATION DU GABARIT</label><div style="display:flex;gap:8px"><button id="btnPort" class="btn-toggle active">▯ PORTRAIT</button><button id="btnLand" class="btn-toggle">▭ PAYSAGE</button></div>
-      </div>
-
-      <div class="card card-full">
-        <label>ACTIONS</label>
-        <div style="display:flex;gap:8px">
-          <button id="resetAllBtn" class="btn-toggle" style="flex:1">↻ RÉINITIALISER LES RÉGLAGES</button>
-        </div>
-      </div>
-
-      <div class="card card-full">
-        <label>POSITIONNEMENT</label><div class="joystick-container"><div class="joy-grid"><div></div><button class="btn-joy" id="upBtn">▲</button><div></div><button class="btn-joy" id="leftBtn">◀</button><button class="btn-joy" id="resetBtn" style="border-color:var(--cyan);font-size:.75rem">RST</button><button class="btn-joy" id="rightBtn">▶</button><div></div><button class="btn-joy" id="downBtn">▼</button><div></div></div></div>
-      </div>
-    </div>
-  </section>
+<section class="preview-zone"><div class="preview-header">✦ PRÉVISUALISATION — STENCIL PRO ✦</div><div class="preview-scroll"><div id="gv" class="grid-view"></div></div></section>
+<div class="action-bar">
+<button class="action original" id="originalBtn">ORIGINAL</button>
+<button class="action compare" id="compareBtn">AVANT / APRÈS</button>
+<button class="action print" id="pBtn" disabled>A4</button>
 </div>
-
-<div id="printZone">
-  <button class="close-btn" onclick="closePrintZone()">FERMER</button>
-  <div class="print-tip">Appuie longuement sur chaque image pour l’enregistrer. Imprime ensuite en A4.</div>
-  <div id="printContainer"></div>
+<section class="controls-zone"><div class="controls">
+<div class="card adjust-card"><div class="adjust-label"><span>NETTETÉ</span><span class="value" id="vSharp">50</span></div><div class="adjust-row"><button class="step" data-id="sharp" data-d="-2">−</button><input id="sharp" type="range" min="0" max="100" value="50"><button class="step" data-id="sharp" data-d="2">+</button></div><div class="mini">Conserve les contours et les petits détails.</div></div>
+<div class="card adjust-card"><div class="adjust-label"><span>INTENSITÉ</span><span class="value" id="vIntensity">55</span></div><div class="adjust-row"><button class="step" data-id="intensity" data-d="-2">−</button><input id="intensity" type="range" min="0" max="100" value="55"><button class="step" data-id="intensity" data-d="2">+</button></div><div class="mini">Ajoute ou retire de la matière et des détails.</div></div>
+<div class="card adjust-card"><div class="adjust-label"><span>CONTRASTE</span><span class="value" id="vContrast">50</span></div><div class="adjust-row"><button class="step" data-id="contrast" data-d="-2">−</button><input id="contrast" type="range" min="0" max="100" value="50"><button class="step" data-id="contrast" data-d="2">+</button></div><div class="mini">Sépare davantage les zones claires et foncées.</div></div>
+<button class="toggle-advanced" id="advancedBtn">⚙ MISE EN PAGE / IMPRESSION</button>
+<div class="advanced" id="advanced">
+<div class="card"><h2>GABARIT</h2><select id="pages" style="width:100%;height:48px;background:#08080b;color:#fff;border:2px solid var(--mauve);border-radius:12px;padding:0 10px;font-weight:700"><option value="1">1 PAGE</option><option value="2">2 PAGES</option><option value="4">4 PAGES</option><option value="6">6 PAGES</option><option value="9">9 PAGES</option><option value="12">12 PAGES</option></select></div>
+<div class="card"><h2>ZOOM</h2><input id="zoom" type="range" min="50" max="250" value="100"><div class="mini" id="zoomVal">100%</div></div>
+<div class="card card-full"><h2>ROTATION</h2><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px"><button class="btn-small active" data-rot="0">0°</button><button class="btn-small" data-rot="90">90°</button><button class="btn-small" data-rot="180">180°</button><button class="btn-small" data-rot="270">270°</button></div></div>
+<div class="card"><h2>MIROIR</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px"><button class="btn-small" id="mirH">↔ H</button><button class="btn-small" id="mirV">↕ V</button></div></div>
+<div class="card"><h2>ORIENTATION</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px"><button class="btn-small active" id="portrait">▯</button><button class="btn-small" id="landscape">▭</button></div></div>
+<div class="card card-full"><h2>POSITION</h2><div class="joy"><div></div><button data-mv="0,-25">▲</button><div></div><button data-mv="-25,0">◀</button><button class="reset" id="resetPos">RST</button><button data-mv="25,0">▶</button><div></div><button data-mv="0,25">▼</button><div></div></div></div>
 </div>
-
+</div></section></div>
+<div id="printZone"><button class="close-btn" id="closePrint">FERMER</button><div class="print-tip">Appuie longuement sur l’image pour l’enregistrer. En mode multipage, chaque page est séparée pour l’impression A4.</div><div id="printContainer"></div></div>
 <script>
 'use strict';
-const state={img:null,res:null,compare:false,p:1,sz:100,offX:0,offY:0,orient:'portrait',rot:0,mirH:false,mirV:false,showOriginal:false};
 const $=id=>document.getElementById(id);
-const controls=['sSeuil','sClean','sWidth','sReinforce','sDetail','sDensity','sDotSize','sDotContrast','sBright','sContrast','sCBContrast','sCBSharp','sCBWhite','sCBWidth','sS','targetSize','unit'];
-const values={sSeuil:'vSeuil',sClean:'vClean',sWidth:'vWidth',sReinforce:'vReinforce',sDetail:'vDetail',sDensity:'vDensity',sDotSize:'vDotSize',sDotContrast:'vDotContrast',sBright:'vBright',sContrast:'vContrast',sCBContrast:'vCBContrast',sCBSharp:'vCBSharp',sCBWhite:'vCBWhite',sCBWidth:'vCBWidth',sS:'vS'};
-const fileInput=$('f');
-function syncVals(){ for(const [a,b] of Object.entries(values)){ if($(a)&&$(b)) $(b).textContent=$(a).value+(a==='sS'?'%':''); } }
-function safeNumber(id){return parseFloat($(id).value)||0;}
-function applyModeUI(){
- const mode=$('mde').value;
- const stencil=mode==='stencil', outline=mode==='outline', dot=mode==='dotwork', orig=mode==='orig', coloring=mode==='coloring';
- $('cardColoring').style.display=coloring?'':'none';
- $('cardStencil').style.display=(stencil||outline)?'':'none';
- $('cardClean').style.display=stencil?'':'none';
- $('cardWidth').style.display=(stencil||outline)?'':'none';
- $('cardReinforce').style.display=(stencil||outline)?'':'none';
- $('cardDetail').style.display=(stencil||outline)?'':'none';
- $('cardDot').style.display=dot?'':'none';
- $('cardDotSize').style.display=dot?'':'none';
- $('cardDotContrast').style.display=dot?'':'none';
- $('cardOriginal').style.display=orig?'':'none';
-}
-function setMode(mode){
- $('mde').value=mode;
- if(mode==='stencil'){ $('sSeuil').value=82; $('sClean').value=240; $('sWidth').value=1; $('sReinforce').value=20; $('sDetail').value=38; }
- if(mode==='outline'){ $('sSeuil').value=95; $('sWidth').value=1; $('sReinforce').value=35; $('sDetail').value=55; }
- if(mode==='coloring'){ $('sCBContrast').value=130; $('sCBSharp').value=70; $('sCBWhite').value=80; $('sCBWidth').value=4; }
- if(mode==='dotwork'){ $('sDensity').value=55; $('sDotSize').value=1.2; $('sDotContrast').value=50; }
- if(mode==='orig'){ $('sBright').value=100; $('sContrast').value=100; }
- applyModeUI(); syncVals(); proc();
-}
-function proc(){
-  if(!state.img)return;
-  syncVals();
-  const w=state.img.naturalWidth||state.img.width, h=state.img.naturalHeight||state.img.height;
-  const c=document.createElement('canvas'); c.width=w; c.height=h;
-  const ctx=c.getContext('2d',{willReadFrequently:true});
-  ctx.filter='grayscale(100%)'; ctx.drawImage(state.img,0,0);
-  const im=ctx.getImageData(0,0,w,h), d=im.data;
-  const gray=new Float32Array(w*h);
-  for(let i=0,p=0;i<d.length;i+=4,p++) gray[p]=(d[i]+d[i+1]+d[i+2])/3;
-
-  const threshold=safeNumber('sSeuil');
-  const detail=safeNumber('sDetail')/100;
-  const reinforce=safeNumber('sReinforce')/100;
-  const width=Math.round(safeNumber('sWidth'));
-
-  // Léger lissage 3×3 : évite les doubles contours et le bruit de compression.
-  const smooth=new Float32Array(w*h);
-  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-    const i=y*w+x;
-    smooth[i]=(gray[i]*4+gray[i-1]*2+gray[i+1]*2+gray[i-w]*2+gray[i+w]*2+
-      gray[i-w-1]+gray[i-w+1]+gray[i+w-1]+gray[i+w+1])/16;
-  }
-  for(let x=0;x<w;x++){smooth[x]=gray[x];smooth[(h-1)*w+x]=gray[(h-1)*w+x];}
-  for(let y=0;y<h;y++){smooth[y*w]=gray[y*w];smooth[y*w+w-1]=gray[y*w+w-1];}
-
-  const mag=new Float32Array(w*h), ang=new Float32Array(w*h);
-  let maxMag=1;
-  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-    const i=y*w+x;
-    const gx=-smooth[i-w-1]+smooth[i-w+1]-2*smooth[i-1]+2*smooth[i+1]-smooth[i+w-1]+smooth[i+w+1];
-    const gy=-smooth[i-w-1]-2*smooth[i-w]-smooth[i-w+1]+smooth[i+w-1]+2*smooth[i+w]+smooth[i+w+1];
-    const m=Math.hypot(gx,gy); mag[i]=m; ang[i]=Math.atan2(gy,gx); if(m>maxMag)maxMag=m;
-  }
-
-  // Non-maximum suppression : conserve une ligne centrale plutôt qu’une bande noire.
-  const nms=new Float32Array(w*h);
-  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-    const i=y*w+x, a=ang[i]*180/Math.PI, m=mag[i];
-    const dir=((a%180)+180)%180;
-    let m1,m2;
-    if(dir<22.5||dir>=157.5){m1=mag[i-1];m2=mag[i+1];}
-    else if(dir<67.5){m1=mag[i-w+1];m2=mag[i+w-1];}
-    else if(dir<112.5){m1=mag[i-w];m2=mag[i+w];}
-    else {m1=mag[i-w-1];m2=mag[i+w+1];}
-    if(m>=m1&&m>=m2)nms[i]=m;
-  }
-
-  // Seuil principal + hystérésis légère pour reconnecter les contours utiles.
-  const base=Math.max(18,Math.min(180,105+(threshold-80)*0.55-detail*28-reinforce*20));
-  const high=base, low=base*(0.48+reinforce*0.16);
-  const edge=new Uint8Array(w*h), strong=new Uint8Array(w*h);
-  const stack=[];
-  for(let i=0;i<w*h;i++) if(nms[i]>=high){strong[i]=1;edge[i]=1;stack.push(i);}
-  while(stack.length){
-    const i=stack.pop(), x=i%w, y=(i/w)|0;
-    for(let yy=-1;yy<=1;yy++)for(let xx=-1;xx<=1;xx++){
-      if(!xx&&!yy)continue; const nx=x+xx,ny=y+yy;
-      if(nx<1||ny<1||nx>=w-1||ny>=h-1)continue;
-      const ni=ny*w+nx;
-      if(!edge[ni]&&nms[ni]>=low){edge[ni]=1;stack.push(ni);}
-    }
-  }
-
-  // Nettoyage conservateur : retire les points isolés, garde les petits détails reliés.
-  const cleaned=new Uint8Array(w*h);
-  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-    const i=y*w+x;if(!edge[i])continue;
-    let n=0;for(let yy=-1;yy<=1;yy++)for(let xx=-1;xx<=1;xx++)if((xx||yy)&&edge[(y+yy)*w+x+xx])n++;
-    if(n>=1)cleaned[i]=1;
-  }
-
-  const out=new Uint8ClampedArray(d.length);out.fill(255);
-  const radius=Math.max(0,Math.min(2,width));
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-    const i=y*w+x;if(!cleaned[i])continue;
-    for(let yy=-radius;yy<=radius;yy++)for(let xx=-radius;xx<=radius;xx++){
-      if(xx*xx+yy*yy>radius*radius)continue;
-      const nx=x+xx,ny=y+yy;if(nx<0||ny<0||nx>=w||ny>=h)continue;
-      const oi=(ny*w+nx)*4;out[oi]=out[oi+1]=out[oi+2]=0;
-    }
-  }
-  im.data.set(out);ctx.putImageData(im,0,0);state.res=c;render();
-}
-function getSource(){if(!state.img)return null;if(state.compare){const c=document.createElement('canvas');c.width=state.img.width;c.height=state.img.height;c.getContext('2d').drawImage(state.img,0,0);return c;}return state.res;}
-function transformed(){const src=getSource();if(!src)return null;const sw=src.width,sh=src.height,rot=state.rot,rw=(rot===90||rot===270)?sh:sw,rh=(rot===90||rot===270)?sw:sh;const c=document.createElement('canvas');c.width=rw;c.height=rh;const x=c.getContext('2d');x.translate(rw/2,rh/2);x.rotate(rot*Math.PI/180);x.scale(state.mirH?-1:1,state.mirV?-1:1);x.drawImage(src,-sw/2,-sh/2);return c;}
-function render(){
-  const src=transformed();
-  if(!src)return;
-  const g=$('gv'); g.innerHTML='';
-  const land=state.orient==='landscape';
-  const pw=land?1152:805, ph=land?805:1152;
-  const cfg={1:[1,1],2:[1,2],4:[2,2],6:[2,3],9:[3,3],12:[3,4]}[state.p]||[1,1];
-  const rows=cfg[0], cols=cfg[1];
-  g.style.gridTemplateColumns=`repeat(${cols},1fr)`;
-  const totalW=pw*cols,totalH=ph*rows;
-  const target=Math.max(0.1,parseFloat($('targetSize').value)||20);
-  const unit=$('unit').value;
-  const inches=unit==='cm'?target/2.54:target;
-  const pxPerIn=300;
-  const requestedW=Math.max(20,inches*pxPerIn);
-  const margin=40;
-  const maxW=pw-margin, maxH=ph-margin;
-  const fitW=Math.min(requestedW,maxW,maxH*(src.width/src.height));
-  const fW=state.p===1?fitW:requestedW;
-  const fH=src.height*(fW/src.width);
-  const actualInchesW=fW/pxPerIn;
-  const actualInchesH=fH/pxPerIn;
-  const physicalH=actualInchesH;
-  const displayUnit=unit==='cm'?'cm':'pouces';
-  const pageLabel=state.p===1?'page':'pages';
-  const info=$('sizeInfo');
-  if(info){
-    info.textContent=`DESSIN : ${(actualInchesW*(unit==='cm'?2.54:1)).toFixed(1)} ${displayUnit} × ${(physicalH*(unit==='cm'?2.54:1)).toFixed(1)} ${displayUnit} · ${state.p} ${pageLabel} A4 · 300 DPI`;
-  }
-  const imgX=(totalW-fW)/2+state.offX;
-  const imgY=(totalH-fH)/2+state.offY;
-  for(let i=0;i<rows*cols;i++){
-    const col=i%cols,row=Math.floor(i/cols);
-    const pc=document.createElement('canvas');
-    pc.width=pw; pc.height=ph;
-    const x=pc.getContext('2d',{alpha:false});
-    x.fillStyle='#fff'; x.fillRect(0,0,pw,ph);
-    x.drawImage(src,imgX-col*pw,imgY-row*ph,fW,fH);
-    const el=document.createElement('img');
-    el.className='page-output';
-    el.alt=`Stencil page ${i+1}`;
-    el.decoding='async';
-    el.src=pc.toDataURL('image/png');
-    el.style.width=`${state.sz}%`;
-    el.style.maxWidth='none';
-    g.appendChild(el);
-  }
-}
-function change(id,d){const e=$(id);if(!e)return;let v=parseFloat(e.value)+d;v=Math.max(parseFloat(e.min),Math.min(parseFloat(e.max),v));e.value=v;if(id==='sS'){state.sz=v;syncVals();render();}else{syncVals();proc();}}
-function move(x,y){state.offX+=x;state.offY+=y;render();}
-function setRot(v){state.rot=v;['0','90','180','270'].forEach(n=>$('btnR'+n).classList.toggle('active',+n===v));render();}
-function setOrient(v){state.orient=v;$('btnPort').classList.toggle('active',v==='portrait');$('btnLand').classList.toggle('active',v==='landscape');render();}
-fileInput.addEventListener('change',e=>{
-  const file=e.target.files&&e.target.files[0];
-  if(!file)return;
-  if(!file.type.startsWith('image/')){
-    $('loadStatus').textContent='ERREUR — FORMAT NON PRIS EN CHARGE';
-    fileInput.value='';
-    return;
-  }
-  $('loadStatus').textContent='CHARGEMENT…';
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const img=new Image();
-    img.onload=()=>{
-      state.img=img;
-      state.offX=0; state.offY=0;
-      $('pBtn').disabled=false;
-      $('dropZone').classList.add('success');
-      $('loadStatus').textContent='DESIGN CHARGÉ ✓';
-      setMode($('mde').value);
-      $('originalBtn').classList.remove('active');
-    };
-    img.onerror=()=>{
-      $('loadStatus').textContent='ERREUR — IMAGE NON LUE';
-      state.img=null; state.res=null; $('pBtn').disabled=true;
-    };
-    img.src=ev.target.result;
-  };
-  reader.onerror=()=>{
-    $('loadStatus').textContent='ERREUR — FICHIER NON LU';
-    state.img=null; state.res=null; $('pBtn').disabled=true;
-  };
-  reader.readAsDataURL(file);
-  // Allows selecting the exact same file again after an error or replacement.
-  setTimeout(()=>{fileInput.value='';},0);
-});
-
-$('dropZone').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fileInput.click();}});$('dropZone').setAttribute('tabindex','0');
-function openPrintZone(){
-  if(!$('gv').children.length)return;
-  const zone=$('printZone'), cont=$('printContainer');
-  cont.innerHTML='';
-  document.querySelectorAll('.page-output').forEach((im,i)=>{
-    const wrap=document.createElement('div');
-    wrap.className='page-print-wrap';
-    wrap.style.marginBottom='22px';
-    const lbl=document.createElement('div');
-    lbl.style.cssText='color:#fff;text-align:center;margin-bottom:8px;font-family:Oswald,sans-serif';
-    lbl.textContent='PAGE '+(i+1);
-    const x=document.createElement('img');
-    x.src=im.src;
-    x.alt='Stencil page '+(i+1);
-    x.draggable=false;
-    x.style.cssText='width:100%;display:block;border:1px solid #555';
-    wrap.append(lbl,x);
-    cont.appendChild(wrap);
-  });
-  zone.style.display='block';
-}
-function toggleCompare(){
-  if(!state.img)return;
-  state.compare=!state.compare;
-  $('compareBtn').classList.toggle('active',state.compare);
-  $('originalBtn').classList.remove('active');
-  render();
-}
-function closePrintZone(){ $('printZone').style.display='none'; }
-function quickOriginal(){
-  if(!state.img)return;
-  setMode('orig');
-  $('originalBtn').classList.add('active');
-  $('compareBtn').classList.remove('active');
-  state.compare=false;
-}
-function resetAll(){ $('sCBContrast').value=120; $('sCBSharp').value=65; $('sCBWhite').value=75; $('sCBWidth').value=3;
-  $('mde').value='stencil';
-  $('sSeuil').value=80; $('sClean').value=200; $('sWidth').value=1;
-  $('sReinforce').value=25; $('sDetail').value=45;
-  $('sDensity').value=55; $('sDotSize').value=1.2; $('sDotContrast').value=50;
-  $('sBright').value=100; $('sContrast').value=100; $('sCBContrast').value=130; $('sCBSharp').value=70; $('sCBWhite').value=80; $('sCBWidth').value=4; $('sS').value=100;
-  $('targetSize').value=20; $('unit').value='cm'; $('pgs').value='1';
-  state.p=1; state.sz=100; state.offX=0; state.offY=0;
-  state.orient='portrait'; state.rot=0; state.mirH=false; state.mirV=false; state.compare=false;
-  $('btnMirH').classList.remove('active'); $('btnMirV').classList.remove('active');
-  $('compareBtn').classList.remove('active'); $('originalBtn').classList.remove('active');
-  setRot(0); setOrient('portrait'); applyModeUI(); syncVals();
-  if(state.img)proc();
-}
-$('mde').addEventListener('change',e=>{
-  setMode(e.target.value);
-  $('originalBtn').classList.toggle('active',e.target.value==='orig');
-});$('pgs').addEventListener('change',e=>{state.p=parseInt(e.target.value,10);render();});$('sS').addEventListener('input',()=>{state.sz=parseInt($('sS').value,10);syncVals();render();});['sSeuil','sClean','sWidth','sReinforce','sDetail','sDensity','sDotSize','sDotContrast','sBright','sContrast','sCBContrast','sCBSharp','sCBWhite','sCBWidth'].forEach(id=>$(id).addEventListener('input',proc));$('targetSize').addEventListener('input',render);$('unit').addEventListener('change',render);
-document.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click',()=>change(b.dataset.step,parseFloat(b.dataset.d))));
-$('btnR0').onclick=()=>setRot(0);$('btnR90').onclick=()=>setRot(90);$('btnR180').onclick=()=>setRot(180);$('btnR270').onclick=()=>setRot(270);$('btnMirH').onclick=()=>{state.mirH=!state.mirH;$('btnMirH').classList.toggle('active',state.mirH);render();};$('btnMirV').onclick=()=>{state.mirV=!state.mirV;$('btnMirV').classList.toggle('active',state.mirV);render();};$('btnPort').onclick=()=>setOrient('portrait');$('btnLand').onclick=()=>setOrient('landscape');$('upBtn').onclick=()=>move(0,-25);$('downBtn').onclick=()=>move(0,25);$('leftBtn').onclick=()=>move(-25,0);$('rightBtn').onclick=()=>move(25,0);$('resetBtn').onclick=()=>{state.offX=0;state.offY=0;render();};$('compareBtn').onclick=()=>{
-  state.compare=!state.compare;
-  $('compareBtn').classList.toggle('active',state.compare);
-  $('originalBtn').classList.remove('active');
-  render();
-};
-$('resetAllBtn').onclick=resetAll;
-$('pBtn').onclick=()=>{if(!$('gv').children.length)return;const zone=$('printZone'),cont=$('printContainer');cont.innerHTML='';document.querySelectorAll('.page-output').forEach((im,i)=>{const wrap=document.createElement('div');wrap.style.marginBottom='22px';const lbl=document.createElement('div');lbl.style.cssText='color:#fff;text-align:center;margin-bottom:8px;font-family:Oswald,sans-serif';lbl.textContent='PAGE '+(i+1);const x=document.createElement('img');x.src=im.src;x.alt='Stencil page '+(i+1);x.draggable=false;x.style.cssText='width:100%;display:block;border:1px solid #555';wrap.append(lbl,x);cont.appendChild(wrap);});zone.style.display='block';};
-$('printZone').querySelector('.close-btn').onclick=()=>{$('printZone').style.display='none';};
-syncVals();applyModeUI();
+const state={img:null,res:null,compare:false,original:false,pages:1,zoom:100,offX:0,offY:0,rot:0,mirH:false,mirV:false,orient:'portrait'};
+const controls={sharp:$('sharp'),intensity:$('intensity'),contrast:$('contrast')};
+const vals={sharp:$('vSharp'),intensity:$('vIntensity'),contrast:$('vContrast')};
+function sync(){Object.keys(controls).forEach(k=>vals[k].textContent=controls[k].value)}
+function touchButton(el,fn){el.addEventListener('pointerup',e=>{e.preventDefault();fn()},{passive:false})}
+function adjust(id,d){const el=$(id);el.value=Math.max(+el.min,Math.min(+el.max,+el.value+d));process()}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function importImage(file){if(!file||!file.type.startsWith('image/'))return;const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{state.img=img;state.compare=false;state.original=false;state.offX=0;state.offY=0;state.rot=0;state.mirH=false;state.mirV=false;state.pages=1;$('pages').value='1';$('dropZone').classList.add('success');$('loadStatus').textContent='DESIGN CHARGÉ ✓';$('pBtn').disabled=false;process()};img.src=e.target.result};r.readAsDataURL(file)}
+$('dropZone').addEventListener('pointerup',e=>{if(e.target!==$('f'))$('f').click()});$('f').addEventListener('change',e=>importImage(e.target.files[0]));
+function process(){if(!state.img)return;sync();const w=state.img.naturalWidth||state.img.width,h=state.img.naturalHeight||state.img.height;const src=document.createElement('canvas');src.width=w;src.height=h;const sctx=src.getContext('2d',{willReadFrequently:true});sctx.drawImage(state.img,0,0,w,h);if(state.original){state.res=src;render();return}
+const maxSide=1400,scale=Math.min(1,maxSide/Math.max(w,h));const W=Math.max(1,Math.round(w*scale)),H=Math.max(1,Math.round(h*scale));const c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(state.img,0,0,W,H);const data=ctx.getImageData(0,0,W,H).data;const N=W*H;const gray=new Float32Array(N);
+const cval=(+controls.contrast.value-50)/50;for(let i=0,p=0;i<data.length;i+=4,p++){let g=.299*data[i]+.587*data[i+1]+.114*data[i+2];g=128+(g-128)*(1+cval*.55);gray[p]=clamp(g,0,255)}
+const blur=new Float32Array(N);for(let y=0;y<H;y++){for(let x=0;x<W;x++){let sum=0,n=0;for(let ky=-1;ky<=1;ky++){const yy=y+ky;if(yy<0||yy>=H)continue;for(let kx=-1;kx<=1;kx++){const xx=x+kx;if(xx<0||xx>=W)continue;sum+=gray[yy*W+xx];n++}}blur[y*W+x]=sum/n}}
+const sharp=+controls.sharp.value/100;const g2=new Float32Array(N);for(let i=0;i<N;i++)g2[i]=clamp(gray[i]+(gray[i]-blur[i])*(.25+sharp*1.6),0,255);
+const mag=new Float32Array(N);const dir=new Uint8Array(N);for(let y=1;y<H-1;y++){for(let x=1;x<W-1;x++){const i=y*W+x;const tl=g2[i-W-1],tc=g2[i-W],tr=g2[i-W+1],ml=g2[i-1],mr=g2[i+1],bl=g2[i+W-1],bc=g2[i+W],br=g2[i+W+1];const gx=-tl+tr-2*ml+2*mr-bl+br,gy=-tl-2*tc-tr+bl+2*bc+br;const a=Math.atan2(gy,gx)*180/Math.PI;let q=Math.abs(a);if(q>180)q-=180;if(q<22.5||q>=157.5)dir[i]=0;else if(q<67.5)dir[i]=1;else if(q<112.5)dir[i]=2;else dir[i]=3;mag[i]=Math.sqrt(gx*gx+gy*gy)}}
+const nms=new Float32Array(N);for(let y=1;y<H-1;y++){for(let x=1;x<W-1;x++){const i=y*W+x,m=mag[i];let a=0,b=0;if(dir[i]===0){a=mag[i-1];b=mag[i+1]}else if(dir[i]===1){a=mag[i-W+1];b=mag[i+W-1]}else if(dir[i]===2){a=mag[i-W];b=mag[i+W]}else{a=mag[i-W-1];b=mag[i+W+1]}if(m>=a&&m>=b)nms[i]=m}}
+const edges=new Uint8Array(N);const base=72-(+controls.intensity.value-50)*.42-(+controls.sharp.value-50)*.16;const hi=clamp(base,28,105),lo=hi*.48;const strong=new Uint8Array(N);for(let i=0;i<N;i++)if(nms[i]>=hi)strong[i]=1;for(let y=1;y<H-1;y++){for(let x=1;x<W-1;x++){const i=y*W+x;if(strong[i]){edges[i]=1;continue}if(nms[i]>=lo){let keep=false;for(let ky=-1;ky<=1&&!keep;ky++)for(let kx=-1;kx<=1;kx++)if(strong[(y+ky)*W+x+kx]){keep=true;break}if(keep)edges[i]=1}}}
+const clean=new Uint8Array(edges);for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const i=y*W+x;if(!edges[i])continue;let n=0;for(let ky=-1;ky<=1;ky++)for(let kx=-1;kx<=1;kx++)if((kx||ky)&&edges[(y+ky)*W+x+kx])n++;if(n===0)clean[i]=0}
+const out=ctx.createImageData(W,H);for(let i=0;i<N;i++){const oi=i*4;out.data[oi]=out.data[oi+1]=out.data[oi+2]=255;out.data[oi+3]=255;if(clean[i])out.data[oi]=out.data[oi+1]=out.data[oi+2]=0}
+const dotStrength=clamp((+controls.intensity.value-25)/75,0,1);const spacing=Math.max(5,Math.round(10-5*dotStrength));const dotThresh=clamp(208-(+controls.intensity.value*.9)-(+controls.contrast.value*.25),105,205);const dotRadius=+controls.sharp.value>65?1:0;for(let y=2;y<H-2;y+=spacing){for(let x=2;x<W-2;x+=spacing){const i=y*W+x;if(clean[i])continue;const tone=g2[i];if(tone<dotThresh){const darkness=(dotThresh-tone)/(dotThresh-45);if(darkness>.05){const oi=i*4;out.data[oi]=out.data[oi+1]=out.data[oi+2]=0;if(dotRadius){for(let ky=-1;ky<=1;ky++)for(let kx=-1;kx<=1;kx++){if(kx*kx+ky*ky>1)continue;const q=((y+ky)*W+x+kx)*4;out.data[q]=out.data[q+1]=out.data[q+2]=0}}}}}}
+const small=document.createElement('canvas');small.width=W;small.height=H;small.getContext('2d').putImageData(out,0,0);const result=document.createElement('canvas');result.width=w;result.height=h;const rctx=result.getContext('2d');rctx.fillStyle='#fff';rctx.fillRect(0,0,w,h);rctx.imageSmoothingEnabled=true;rctx.imageSmoothingQuality='high';rctx.drawImage(small,0,0,w,h);state.res=result;render()}
+function sourceCanvas(){if(!state.img)return null;if(state.original||state.compare){const c=document.createElement('canvas');c.width=state.img.width;c.height=state.img.height;c.getContext('2d').drawImage(state.img,0,0);return c}return state.res}
+function transformed(){const src=sourceCanvas();if(!src)return null;const rot=state.rot,sw=src.width,sh=src.height,rw=(rot===90||rot===270)?sh:sw,rh=(rot===90||rot===270)?sw:sh;const c=document.createElement('canvas');c.width=rw;c.height=rh;const x=c.getContext('2d');x.save();x.translate(rw/2,rh/2);x.rotate(rot*Math.PI/180);x.scale(state.mirH?-1:1,state.mirV?-1:1);x.drawImage(src,-sw/2,-sh/2);x.restore();return c}
+function render(){const src=transformed();if(!src)return;$('gv').innerHTML='';const pw=state.orient==='landscape'?1152:805,ph=state.orient==='landscape'?805:1152,cfg={1:[1,1],2:[1,2],4:[2,2],6:[2,3],9:[3,3],12:[3,4]}[state.pages],rows=cfg[0],cols=cfg[1];$('gv').style.gridTemplateColumns=`repeat(${cols},1fr)`;const totalW=pw*cols,totalH=ph*rows;let fw=totalW*state.zoom/100,fh=src.height*(fw/src.width);if(state.pages===1){const margin=28,maxW=pw-margin,maxH=ph-margin,fit=Math.min(fw,maxW,maxH*(src.width/src.height));fw=fit;fh=src.height*(fw/src.width)}for(let i=0;i<rows*cols;i++){const col=i%cols,row=Math.floor(i/cols),pc=document.createElement('canvas');pc.width=pw;pc.height=ph;const c=pc.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,pw,ph);const x=(totalW-fw)/2+state.offX-col*pw,y=(totalH-fh)/2+state.offY-row*ph;c.drawImage(src,x,y,fw,fh);const im=document.createElement('img');im.className='page-output';im.src=pc.toDataURL('image/jpeg',.96);$('gv').appendChild(im)}}
+function openPrint(){if(!state.res)return;$('printContainer').innerHTML='';document.querySelectorAll('.page-output').forEach((im,i)=>{const w=document.createElement('div');w.style.marginBottom='20px';const l=document.createElement('div');l.textContent='PAGE '+(i+1);l.style.cssText='color:#fff;text-align:center;font:700 16px Oswald;margin:0 0 7px';const x=document.createElement('img');x.src=im.src;x.style.cssText='width:100%;display:block;border:1px solid #444';w.append(l,x);$('printContainer').appendChild(w)});$('printZone').style.display='block'}
+function toggleOriginal(){state.original=!state.original;state.compare=false;$('originalBtn').style.opacity=state.original?'1':'.75';$('compareBtn').classList.remove('active');render()}
+function toggleCompare(){state.compare=!state.compare;state.original=false;$('originalBtn').style.opacity='.75';$('compareBtn').classList.toggle('active',state.compare);render()}
+function setPages(v){state.pages=+v;render()}function setZoom(v){state.zoom=+v;$('zoomVal').textContent=v+'%';render()}function setRot(v){state.rot=v;document.querySelectorAll('[data-rot]').forEach(b=>b.classList.toggle('active',+b.dataset.rot===v));render()}function setOrient(v){state.orient=v;$('portrait').classList.toggle('active',v==='portrait');$('landscape').classList.toggle('active',v==='landscape');render()}function move(dx,dy){state.offX+=dx;state.offY+=dy;render()}
+Object.entries(controls).forEach(([k,el])=>el.addEventListener('input',process));document.querySelectorAll('.step').forEach(b=>touchButton(b,()=>adjust(b.dataset.id,+b.dataset.d)));touchButton($('originalBtn'),toggleOriginal);touchButton($('compareBtn'),toggleCompare);touchButton($('pBtn'),openPrint);touchButton($('closePrint'),()=>$('printZone').style.display='none');touchButton($('advancedBtn'),()=>{$('advanced').classList.toggle('open');$('advancedBtn').textContent=$('advanced').classList.contains('open')?'⚙ MASQUER MISE EN PAGE':'⚙ MISE EN PAGE / IMPRESSION'});$('pages').addEventListener('change',e=>setPages(e.target.value));$('zoom').addEventListener('input',e=>setZoom(e.target.value));document.querySelectorAll('[data-rot]').forEach(b=>touchButton(b,()=>setRot(+b.dataset.rot)));touchButton($('mirH'),()=>{state.mirH=!state.mirH;$('mirH').classList.toggle('active',state.mirH);render()});touchButton($('mirV'),()=>{state.mirV=!state.mirV;$('mirV').classList.toggle('active',state.mirV);render()});touchButton($('portrait'),()=>setOrient('portrait'));touchButton($('landscape'),()=>setOrient('landscape'));document.querySelectorAll('[data-mv]').forEach(b=>touchButton(b,()=>{const [x,y]=b.dataset.mv.split(',').map(Number);move(x,y)}));touchButton($('resetPos'),()=>{state.offX=0;state.offY=0;render()});sync();
 </script>
 </body>
 </html>
