@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>STENCIL PRINT PRO v68 - Maman Sokal</title>
+<title>STENCIL PRINT PRO v73 - Maman Sokal</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
+#modeCard,#cardReinforce,#cardOriginal,#cardDot,#cardDotSize,#cardDotContrast{display:none !important}
 :root{
-  --bg:#0a0a0c; --card:#111118; --pink:#ff007f; --cyan:#00e5ff; --green:#39ff14; --line:#2d2d35;
+  --bg:#0a0a0c; --card:#111118; --pink:#b77cff; --cyan:#19e6ff; --green:#63ff4f; --yellow:#ffe14a; --line:#2d2d35;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overscroll-behavior:none}
@@ -16,11 +17,11 @@ body{
   display:flex; flex-direction:column; overflow:hidden;
 }
 header{
-  background:#000; border-bottom:2px solid var(--pink);
+  background:#000; border-bottom:2px solid var(--cyan);
   padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;
 }
 header h1{font:700 1.12rem 'Oswald',sans-serif}
-.brand{color:var(--pink);font-weight:700;font-size:.8rem}
+.brand{color:var(--yellow);font-weight:700;font-size:.8rem}
 .import-zone{
   margin:10px; padding:14px; border:3px dashed var(--cyan); border-radius:14px;
   background:#16161a; text-align:center; cursor:pointer; flex-shrink:0;
@@ -114,12 +115,23 @@ select{
   .controls{grid-template-columns:1fr 1fr}
 }
 .control-block{margin-top:12px;padding-top:10px;border-top:1px solid #222}.control-block:first-of-type{border-top:0;padding-top:0}
+
+.preview-zone{position:relative}
+.quick-rail{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:30}
+.quick-left{left:7px}.quick-right{right:7px}
+.quick-btn{width:52px;min-height:52px;border-radius:15px;background:#111118;color:#fff;font-weight:900;font-size:.58rem;line-height:1.05;padding:4px;border:2px solid;box-shadow:0 5px 16px rgba(0,0,0,.55);cursor:pointer}
+.quick-btn.stencil{border-color:#19e6ff;background:#19e6ff;color:#061014}
+.quick-btn.dot{border-color:#b77cff;color:#b77cff}
+.quick-btn.original{border-color:#ffe14a;color:#ffe14a}
+.quick-btn.print{border-color:#63ff4f;color:#63ff4f}
+.quick-btn.compare{border-color:#b77cff;color:#b77cff}
+@media(max-width:700px){.quick-rail{gap:7px}.quick-btn{width:46px;min-height:48px;font-size:.52rem;border-radius:13px}.quick-left{left:5px}.quick-right{right:5px}.preview-scroll{padding-left:60px;padding-right:60px}}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>STENCIL PRINT PRO v68</h1>
+  <h1>STENCIL PRINT PRO v73</h1>
   <div class="brand">MAMAN SOKAL 🖤🖋️</div>
 </header>
 
@@ -128,15 +140,18 @@ select{
   <input type="file" id="f" hidden accept="image/*">
 </div>
 
-<div class="action-bar">
-  <button class="btn-act btn-original" id="originalBtn" onclick="quickOriginal()">ORIGINAL</button>
-  <button class="btn-act btn-save" id="pBtn" disabled onclick="openPrintZone()">EXPORTER EN A4</button>
-  <button class="btn-act btn-compare" id="compareBtn" onclick="toggleCompare()">AVANT / APRÈS</button>
-</div>
-
 <div class="app-main">
   <section class="preview-zone">
     <div class="preview-header">✦ PRÉVISUALISATION — STENCIL PRINT PRO ✦</div>
+    <div class="quick-rail quick-left">
+      <button class="quick-btn stencil" onclick="setMode('stencil')">STENCIL</button>
+      <button class="quick-btn dot" onclick="setMode('dotwork')">DOT</button>
+      <button class="quick-btn original" onclick="quickOriginal()">ORIGINAL</button>
+    </div>
+    <div class="quick-rail quick-right">
+      <button class="quick-btn print" onclick="openPrintZone()">A4</button>
+      <button class="quick-btn compare" onclick="toggleCompare()">AVANT<br>APRÈS</button>
+    </div>
     <div class="preview-scroll">
       <div id="gv" class="grid-view"></div>
     </div>
@@ -145,14 +160,13 @@ select{
   <section class="controls-zone">
     <div class="controls">
 
-      <div class="card card-full">
+      <div class="card card-full" id="modeCard" style="display:none">
         <label>MODE DE RENDU</label>
         <select id="mde">
           <option value="orig">MODE ORIGINAL</option>
           <option value="stencil" selected>MODE STENCIL — LIGNES PROPRES</option>
           <option value="outline">MODE CONTOURS PURS</option>
           <option value="dotwork">MODE DOTWORK</option>
-          <option value="coloring">MODE LIVRE À COLORIER</option>
         </select>
       </div>
 
@@ -168,9 +182,9 @@ select{
       </div>
 
       <div class="card" id="cardWidth">
-        <label>ÉPAISSEUR DES LIGNES <span class="val" id="vWidth">1</span></label>
-        <div class="adj"><button class="b-step" data-step="sWidth" data-d="-1">-</button><input type="range" id="sWidth" min="0" max="4" value="1"><button class="b-step" data-step="sWidth" data-d="1">+</button></div>
-        <div class="mini">0 = fin · 4 = plus épais</div>
+        <label>ÉPAISSEUR DES LIGNES <span class="val" id="vWidth">0</span></label>
+        <div class="adj"><button class="b-step" data-step="sWidth" data-d="-1">-</button><input type="range" id="sWidth" min="0" max="2" value="0"><button class="b-step" data-step="sWidth" data-d="1">+</button></div>
+        <div class="mini">0 = ultra-fin · 2 = légèrement plus épais</div>
       </div>
 
       <div class="card" id="cardReinforce">
@@ -196,50 +210,6 @@ select{
       <div class="card" id="cardDotContrast" style="display:none">
         <label>CONTRASTE DOTWORK <span class="val" id="vDotContrast">50</span></label>
         <div class="adj"><button class="b-step" data-step="sDotContrast" data-d="-5">-</button><input type="range" id="sDotContrast" min="10" max="100" value="50"><button class="b-step" data-step="sDotContrast" data-d="5">+</button></div>
-      </div>
-
-      
-      <div class="card card-full" id="cardColoring" style="display:none">
-        <label>STYLE LIVRE À COLORIER</label>
-        <div class="mini">Objectif : contours nets, intérieur blanc et suppression de l’ombrage.</div>
-
-        <div class="control-block">
-          <label>CONTRASTES <span class="val" id="vCBContrast">130</span></label>
-          <div class="adj">
-            <button class="b-step" data-step="sCBContrast" data-d="-5">-</button>
-            <input type="range" id="sCBContrast" min="80" max="180" value="130">
-            <button class="b-step" data-step="sCBContrast" data-d="5">+</button>
-          </div>
-        </div>
-
-        <div class="control-block">
-          <label>NETTETÉ <span class="val" id="vCBSharp">70</span></label>
-          <div class="adj">
-            <button class="b-step" data-step="sCBSharp" data-d="-5">-</button>
-            <input type="range" id="sCBSharp" min="0" max="100" value="70">
-            <button class="b-step" data-step="sCBSharp" data-d="5">+</button>
-          </div>
-        </div>
-
-        <div class="control-block">
-          <label>ESPACES NÉGATIFS BLANCS <span class="val" id="vCBWhite">80</span></label>
-          <div class="adj">
-            <button class="b-step" data-step="sCBWhite" data-d="-5">-</button>
-            <input type="range" id="sCBWhite" min="0" max="100" value="80">
-            <button class="b-step" data-step="sCBWhite" data-d="5">+</button>
-          </div>
-          <div class="mini">Plus haut = plus de nettoyage du gris et des petites marques à l’intérieur.</div>
-        </div>
-
-        <div class="control-block">
-          <label>ÉPAISSEUR DES CONTOURS <span class="val" id="vCBWidth">4</span></label>
-          <div class="adj">
-            <button class="b-step" data-step="sCBWidth" data-d="-1">-</button>
-            <input type="range" id="sCBWidth" min="1" max="8" value="4">
-            <button class="b-step" data-step="sCBWidth" data-d="1">+</button>
-          </div>
-          <div class="mini">Monte ce réglage pour obtenir des contours vraiment épais.</div>
-        </div>
       </div>
 
 <div class="card card-full" id="cardOriginal" style="display:none">
@@ -327,9 +297,9 @@ function applyModeUI(){
 }
 function setMode(mode){
  $('mde').value=mode;
- if(mode==='stencil'){ $('sSeuil').value=82; $('sClean').value=240; $('sWidth').value=1; $('sReinforce').value=20; $('sDetail').value=38; }
+ if(mode==='stencil'){ $('sSeuil').value=82; $('sClean').value=240; $('sWidth').value=0; $('sReinforce').value=20; $('sDetail').value=38; }
  if(mode==='outline'){ $('sSeuil').value=95; $('sWidth').value=1; $('sReinforce').value=35; $('sDetail').value=55; }
- if(mode==='coloring'){ $('sCBContrast').value=130; $('sCBSharp').value=70; $('sCBWhite').value=80; $('sCBWidth').value=4; }
+ if(mode==='coloring'){}
  if(mode==='dotwork'){ $('sDensity').value=55; $('sDotSize').value=1.2; $('sDotContrast').value=50; }
  if(mode==='orig'){ $('sBright').value=100; $('sContrast').value=100; }
  applyModeUI(); syncVals(); proc();
