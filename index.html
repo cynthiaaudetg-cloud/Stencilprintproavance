@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>STENCIL PRINT PRO v73 - Maman Sokal</title>
+<title>STENCIL PRINT PRO v74.1 - Maman Sokal</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
-#modeCard,#cardReinforce,#cardOriginal,#cardDot,#cardDotSize,#cardDotContrast{display:none !important}
 :root{
-  --bg:#0a0a0c; --card:#111118; --pink:#b77cff; --cyan:#19e6ff; --green:#63ff4f; --yellow:#ffe14a; --line:#2d2d35;
+  --bg:#0a0a0c; --card:#111118; --pink:#ff007f; --cyan:#00e5ff; --green:#39ff14; --line:#2d2d35;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overscroll-behavior:none}
@@ -17,11 +16,11 @@ body{
   display:flex; flex-direction:column; overflow:hidden;
 }
 header{
-  background:#000; border-bottom:2px solid var(--cyan);
+  background:#000; border-bottom:2px solid var(--pink);
   padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;
 }
 header h1{font:700 1.12rem 'Oswald',sans-serif}
-.brand{color:var(--yellow);font-weight:700;font-size:.8rem}
+.brand{color:var(--pink);font-weight:700;font-size:.8rem}
 .import-zone{
   margin:10px; padding:14px; border:3px dashed var(--cyan); border-radius:14px;
   background:#16161a; text-align:center; cursor:pointer; flex-shrink:0;
@@ -116,22 +115,18 @@ select{
 }
 .control-block{margin-top:12px;padding-top:10px;border-top:1px solid #222}.control-block:first-of-type{border-top:0;padding-top:0}
 
-.preview-zone{position:relative}
-.quick-rail{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:30}
-.quick-left{left:7px}.quick-right{right:7px}
-.quick-btn{width:52px;min-height:52px;border-radius:15px;background:#111118;color:#fff;font-weight:900;font-size:.58rem;line-height:1.05;padding:4px;border:2px solid;box-shadow:0 5px 16px rgba(0,0,0,.55);cursor:pointer}
-.quick-btn.stencil{border-color:#19e6ff;background:#19e6ff;color:#061014}
-.quick-btn.dot{border-color:#b77cff;color:#b77cff}
-.quick-btn.original{border-color:#ffe14a;color:#ffe14a}
-.quick-btn.print{border-color:#63ff4f;color:#63ff4f}
-.quick-btn.compare{border-color:#b77cff;color:#b77cff}
-@media(max-width:700px){.quick-rail{gap:7px}.quick-btn{width:46px;min-height:48px;font-size:.52rem;border-radius:13px}.quick-left{left:5px}.quick-right{right:5px}.preview-scroll{padding-left:60px;padding-right:60px}}
+/* v74.1 — interface simplifiée inspirée du flux TattStencil */
+#cardColoring,#cardDot,#cardDotSize,#cardDotContrast,#cardOriginal{display:none!important}
+#cardStencil,#cardClean,#cardWidth,#cardReinforce,#cardDetail{display:block}
+#cardStencil label:before{content:"NETTETÉ / SEUIL ";}
+/* Le sélecteur de mode reste dans le DOM pour la compatibilité, mais n’est plus affiché. */
+.controls > .card:first-child{display:none}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>STENCIL PRINT PRO v73</h1>
+  <h1>STENCIL PRINT PRO v74.1</h1>
   <div class="brand">MAMAN SOKAL 🖤🖋️</div>
 </header>
 
@@ -140,18 +135,15 @@ select{
   <input type="file" id="f" hidden accept="image/*">
 </div>
 
+<div class="action-bar">
+  <button class="btn-act btn-original" id="originalBtn" onclick="quickOriginal()">ORIGINAL</button>
+  <button class="btn-act btn-save" id="pBtn" disabled onclick="openPrintZone()">EXPORTER EN A4</button>
+  <button class="btn-act btn-compare" id="compareBtn" onclick="toggleCompare()">AVANT / APRÈS</button>
+</div>
+
 <div class="app-main">
   <section class="preview-zone">
     <div class="preview-header">✦ PRÉVISUALISATION — STENCIL PRINT PRO ✦</div>
-    <div class="quick-rail quick-left">
-      <button class="quick-btn stencil" onclick="setMode('stencil')">STENCIL</button>
-      <button class="quick-btn dot" onclick="setMode('dotwork')">DOT</button>
-      <button class="quick-btn original" onclick="quickOriginal()">ORIGINAL</button>
-    </div>
-    <div class="quick-rail quick-right">
-      <button class="quick-btn print" onclick="openPrintZone()">A4</button>
-      <button class="quick-btn compare" onclick="toggleCompare()">AVANT<br>APRÈS</button>
-    </div>
     <div class="preview-scroll">
       <div id="gv" class="grid-view"></div>
     </div>
@@ -160,13 +152,14 @@ select{
   <section class="controls-zone">
     <div class="controls">
 
-      <div class="card card-full" id="modeCard" style="display:none">
+      <div class="card card-full">
         <label>MODE DE RENDU</label>
         <select id="mde">
           <option value="orig">MODE ORIGINAL</option>
           <option value="stencil" selected>MODE STENCIL — LIGNES PROPRES</option>
           <option value="outline">MODE CONTOURS PURS</option>
           <option value="dotwork">MODE DOTWORK</option>
+          <option value="coloring">MODE LIVRE À COLORIER</option>
         </select>
       </div>
 
@@ -182,9 +175,9 @@ select{
       </div>
 
       <div class="card" id="cardWidth">
-        <label>ÉPAISSEUR DES LIGNES <span class="val" id="vWidth">0</span></label>
-        <div class="adj"><button class="b-step" data-step="sWidth" data-d="-1">-</button><input type="range" id="sWidth" min="0" max="2" value="0"><button class="b-step" data-step="sWidth" data-d="1">+</button></div>
-        <div class="mini">0 = ultra-fin · 2 = légèrement plus épais</div>
+        <label>ÉPAISSEUR DES LIGNES <span class="val" id="vWidth">1</span></label>
+        <div class="adj"><button class="b-step" data-step="sWidth" data-d="-1">-</button><input type="range" id="sWidth" min="0" max="4" value="1"><button class="b-step" data-step="sWidth" data-d="1">+</button></div>
+        <div class="mini">0 = fin · 4 = plus épais</div>
       </div>
 
       <div class="card" id="cardReinforce">
@@ -210,6 +203,50 @@ select{
       <div class="card" id="cardDotContrast" style="display:none">
         <label>CONTRASTE DOTWORK <span class="val" id="vDotContrast">50</span></label>
         <div class="adj"><button class="b-step" data-step="sDotContrast" data-d="-5">-</button><input type="range" id="sDotContrast" min="10" max="100" value="50"><button class="b-step" data-step="sDotContrast" data-d="5">+</button></div>
+      </div>
+
+      
+      <div class="card card-full" id="cardColoring" style="display:none">
+        <label>STYLE LIVRE À COLORIER</label>
+        <div class="mini">Objectif : contours nets, intérieur blanc et suppression de l’ombrage.</div>
+
+        <div class="control-block">
+          <label>CONTRASTES <span class="val" id="vCBContrast">130</span></label>
+          <div class="adj">
+            <button class="b-step" data-step="sCBContrast" data-d="-5">-</button>
+            <input type="range" id="sCBContrast" min="80" max="180" value="130">
+            <button class="b-step" data-step="sCBContrast" data-d="5">+</button>
+          </div>
+        </div>
+
+        <div class="control-block">
+          <label>NETTETÉ <span class="val" id="vCBSharp">70</span></label>
+          <div class="adj">
+            <button class="b-step" data-step="sCBSharp" data-d="-5">-</button>
+            <input type="range" id="sCBSharp" min="0" max="100" value="70">
+            <button class="b-step" data-step="sCBSharp" data-d="5">+</button>
+          </div>
+        </div>
+
+        <div class="control-block">
+          <label>ESPACES NÉGATIFS BLANCS <span class="val" id="vCBWhite">80</span></label>
+          <div class="adj">
+            <button class="b-step" data-step="sCBWhite" data-d="-5">-</button>
+            <input type="range" id="sCBWhite" min="0" max="100" value="80">
+            <button class="b-step" data-step="sCBWhite" data-d="5">+</button>
+          </div>
+          <div class="mini">Plus haut = plus de nettoyage du gris et des petites marques à l’intérieur.</div>
+        </div>
+
+        <div class="control-block">
+          <label>ÉPAISSEUR DES CONTOURS <span class="val" id="vCBWidth">4</span></label>
+          <div class="adj">
+            <button class="b-step" data-step="sCBWidth" data-d="-1">-</button>
+            <input type="range" id="sCBWidth" min="1" max="8" value="4">
+            <button class="b-step" data-step="sCBWidth" data-d="1">+</button>
+          </div>
+          <div class="mini">Monte ce réglage pour obtenir des contours vraiment épais.</div>
+        </div>
       </div>
 
 <div class="card card-full" id="cardOriginal" style="display:none">
@@ -274,7 +311,7 @@ select{
 
 <script>
 'use strict';
-const state={img:null,res:null,compare:false,p:1,sz:100,offX:0,offY:0,orient:'portrait',rot:0,mirH:false,mirV:false};
+const state={img:null,res:null,compare:false,p:1,sz:100,offX:0,offY:0,orient:'portrait',rot:0,mirH:false,mirV:false,showOriginal:false};
 const $=id=>document.getElementById(id);
 const controls=['sSeuil','sClean','sWidth','sReinforce','sDetail','sDensity','sDotSize','sDotContrast','sBright','sContrast','sCBContrast','sCBSharp','sCBWhite','sCBWidth','sS','targetSize','unit'];
 const values={sSeuil:'vSeuil',sClean:'vClean',sWidth:'vWidth',sReinforce:'vReinforce',sDetail:'vDetail',sDensity:'vDensity',sDotSize:'vDotSize',sDotContrast:'vDotContrast',sBright:'vBright',sContrast:'vContrast',sCBContrast:'vCBContrast',sCBSharp:'vCBSharp',sCBWhite:'vCBWhite',sCBWidth:'vCBWidth',sS:'vS'};
@@ -297,217 +334,96 @@ function applyModeUI(){
 }
 function setMode(mode){
  $('mde').value=mode;
- if(mode==='stencil'){ $('sSeuil').value=82; $('sClean').value=240; $('sWidth').value=0; $('sReinforce').value=20; $('sDetail').value=38; }
+ if(mode==='stencil'){ $('sSeuil').value=82; $('sClean').value=240; $('sWidth').value=1; $('sReinforce').value=20; $('sDetail').value=38; }
  if(mode==='outline'){ $('sSeuil').value=95; $('sWidth').value=1; $('sReinforce').value=35; $('sDetail').value=55; }
- if(mode==='coloring'){}
+ if(mode==='coloring'){ $('sCBContrast').value=130; $('sCBSharp').value=70; $('sCBWhite').value=80; $('sCBWidth').value=4; }
  if(mode==='dotwork'){ $('sDensity').value=55; $('sDotSize').value=1.2; $('sDotContrast').value=50; }
  if(mode==='orig'){ $('sBright').value=100; $('sContrast').value=100; }
  applyModeUI(); syncVals(); proc();
 }
 function proc(){
- if(!state.img)return;
- syncVals();
- const mode=$('mde').value, w=state.img.naturalWidth||state.img.width, h=state.img.naturalHeight||state.img.height;
- const c=document.createElement('canvas'); c.width=w;c.height=h;
- const ctx=c.getContext('2d',{willReadFrequently:true});
+  if(!state.img)return;
+  syncVals();
+  const w=state.img.naturalWidth||state.img.width, h=state.img.naturalHeight||state.img.height;
+  const c=document.createElement('canvas'); c.width=w; c.height=h;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.filter='grayscale(100%)'; ctx.drawImage(state.img,0,0);
+  const im=ctx.getImageData(0,0,w,h), d=im.data;
+  const gray=new Float32Array(w*h);
+  for(let i=0,p=0;i<d.length;i+=4,p++) gray[p]=(d[i]+d[i+1]+d[i+2])/3;
 
- if(mode==='orig'){
-   ctx.filter=`brightness(${safeNumber('sBright')}%) contrast(${safeNumber('sContrast')}%)`;
-   ctx.drawImage(state.img,0,0); state.res=c; render(); return;
- }
+  const threshold=safeNumber('sSeuil');
+  const detail=safeNumber('sDetail')/100;
+  const reinforce=safeNumber('sReinforce')/100;
+  const width=Math.round(safeNumber('sWidth'));
 
- ctx.filter='grayscale(100%)';
- ctx.drawImage(state.img,0,0);
- const im=ctx.getImageData(0,0,w,h), d=im.data;
- const gray=new Float32Array(w*h);
- for(let i=0,p=0;i<d.length;i+=4,p++) gray[p]=d[i];
+  // Léger lissage 3×3 : évite les doubles contours et le bruit de compression.
+  const smooth=new Float32Array(w*h);
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+    const i=y*w+x;
+    smooth[i]=(gray[i]*4+gray[i-1]*2+gray[i+1]*2+gray[i-w]*2+gray[i+w]*2+
+      gray[i-w-1]+gray[i-w+1]+gray[i+w-1]+gray[i+w+1])/16;
+  }
+  for(let x=0;x<w;x++){smooth[x]=gray[x];smooth[(h-1)*w+x]=gray[(h-1)*w+x];}
+  for(let y=0;y<h;y++){smooth[y*w]=gray[y*w];smooth[y*w+w-1]=gray[y*w+w-1];}
 
- const out=new Uint8ClampedArray(d.length); out.fill(255);
+  const mag=new Float32Array(w*h), ang=new Float32Array(w*h);
+  let maxMag=1;
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+    const i=y*w+x;
+    const gx=-smooth[i-w-1]+smooth[i-w+1]-2*smooth[i-1]+2*smooth[i+1]-smooth[i+w-1]+smooth[i+w+1];
+    const gy=-smooth[i-w-1]-2*smooth[i-w]-smooth[i-w+1]+smooth[i+w-1]+2*smooth[i+w]+smooth[i+w+1];
+    const m=Math.hypot(gx,gy); mag[i]=m; ang[i]=Math.atan2(gy,gx); if(m>maxMag)maxMag=m;
+  }
 
- if(mode==='dotwork'){
-    // DOTWORK / POINTILLISME : points séparés, tailles variables,
-    // beaucoup de blanc et aucun aplat noir.
-    const density=safeNumber('sDensity')/100;
-    const size=safeNumber('sDotSize');
-    const contrast=safeNumber('sDotContrast')/100;
-    const step=Math.max(4,Math.round(8-(density*3.2)));
-    const threshold=195-contrast*65;
+  // Non-maximum suppression : conserve une ligne centrale plutôt qu’une bande noire.
+  const nms=new Float32Array(w*h);
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+    const i=y*w+x, a=ang[i]*180/Math.PI, m=mag[i];
+    const dir=((a%180)+180)%180;
+    let m1,m2;
+    if(dir<22.5||dir>=157.5){m1=mag[i-1];m2=mag[i+1];}
+    else if(dir<67.5){m1=mag[i-w+1];m2=mag[i+w-1];}
+    else if(dir<112.5){m1=mag[i-w];m2=mag[i+w];}
+    else {m1=mag[i-w-1];m2=mag[i+w+1];}
+    if(m>=m1&&m>=m2)nms[i]=m;
+  }
 
-    for(let y=step/2;y<h;y+=step){
-      const row=Math.floor(y/step);
-      const xOffset=(row%2)*step*0.5;
-      for(let x=step/2+xOffset;x<w;x+=step){
-        const ix=Math.min(w-1,Math.max(0,Math.round(x)));
-        const iy=Math.min(h-1,Math.max(0,Math.round(y)));
-        const v=gray[iy*w+ix];
-        if(v>=threshold)continue;
-
-        const darkness=Math.max(0,Math.min(1,(threshold-v)/Math.max(1,threshold)));
-        const r=Math.max(.28,Math.min(size*1.15,size*(.30+darkness*.95)));
-
-        for(let yy=Math.floor(y-r);yy<=Math.ceil(y+r);yy++)for(let xx=Math.floor(x-r);xx<=Math.ceil(x+r);xx++){
-          if(xx<0||yy<0||xx>=w||yy>=h)continue;
-          if(Math.hypot(xx-x,yy-y)<=r){
-            const oi=(yy*w+xx)*4;
-            out[oi]=out[oi+1]=out[oi+2]=0;
-          }
-        }
-      }
-    }
-
-    // Contours légers pour conserver la lisibilité du dessin.
-    const edge=new Float32Array(w*h);
-    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-      const i=y*w+x;
-      const gx=-gray[i-w-1]+gray[i-w+1]-2*gray[i-1]+2*gray[i+1]-gray[i+w-1]+gray[i+w+1];
-      const gy=-gray[i-w-1]-2*gray[i-w]-gray[i-w+1]+gray[i+w-1]+2*gray[i+w]+gray[i+w+1];
-      edge[i]=Math.hypot(gx,gy);
-    }
-    const contourT=115-(contrast*25);
-    const contourStep=Math.max(2,Math.round(step*.75));
-
-    for(let y=1;y<h-1;y+=contourStep)for(let x=1;x<w-1;x+=contourStep){
-      const i=y*w+x;
-      if(edge[i]<contourT)continue;
-      const r=Math.max(.25,Math.min(.65,size*.42));
-      for(let yy=Math.floor(y-r);yy<=Math.ceil(y+r);yy++)for(let xx=Math.floor(x-r);xx<=Math.ceil(x+r);xx++){
-        if(xx<0||yy<0||xx>=w||yy>=h)continue;
-        if(Math.hypot(xx-x,yy-y)<=r){
-          const oi=(yy*w+xx)*4;
-          out[oi]=out[oi+1]=out[oi+2]=0;
-        }
-      }
-    }
-}else if(mode==='coloring'){
-   // Livre à colorier :
-   // - on accentue les transitions;
-   // - on extrait uniquement les contours;
-   // - on élimine les petites marques isolées;
-   // - on épaissit les contours;
-   // - les zones intérieures restent blanches.
-   const contrast=safeNumber('sCBContrast')/100;
-   const sharp=safeNumber('sCBSharp')/100;
-   const white=safeNumber('sCBWhite')/100;
-   const width=Math.max(1,Math.round(safeNumber('sCBWidth')));
-
-   const adj=new Float32Array(w*h);
-   for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-     const i=y*w+x;
-     let v=(gray[i]-128)*contrast+128;
-     if(sharp>0 && x>0 && x<w-1 && y>0 && y<h-1){
-       const local=(gray[i-1]+gray[i+1]+gray[i-w]+gray[i+w])*.25;
-       v += (v-local)*(1.15*sharp);
-     }
-     adj[i]=Math.max(0,Math.min(255,v));
-   }
-
-   const edge=new Float32Array(w*h);
-   for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-     const i=y*w+x;
-     const gx=-adj[i-w-1]+adj[i-w+1]-2*adj[i-1]+2*adj[i+1]-adj[i+w-1]+adj[i+w+1];
-     const gy=-adj[i-w-1]-2*adj[i-w]-adj[i-w+1]+adj[i+w-1]+2*adj[i+w]+adj[i+w+1];
-     edge[i]=Math.hypot(gx,gy);
-   }
-
-   // Le réglage "espaces négatifs blancs" rend l'extraction plus sélective.
-   const edgeT=22 + white*1.25;
-   const contour=new Uint8Array(w*h);
-
-   for(let i=0;i<w*h;i++){
-     if(edge[i]>=edgeT) contour[i]=1;
-   }
-
-   // Suppression des petits points isolés : on garde seulement les pixels
-   // qui appartiennent à une vraie structure de contour.
-   const cleaned=new Uint8Array(w*h);
-   const minNeighbors=white>=70?2:1;
-   for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-     const i=y*w+x;
-     if(!contour[i])continue;
-     let n=0;
-     for(let yy=-1;yy<=1;yy++)for(let xx=-1;xx<=1;xx++){
-       if(xx===0&&yy===0)continue;
-       if(contour[(y+yy)*w+x+xx])n++;
-     }
-     if(n>=minNeighbors)cleaned[i]=1;
-   }
-
-   // Épaississement circulaire des contours.
-   const radius=Math.max(0,width-1);
-   for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-     const i=y*w+x;
-     if(!cleaned[i])continue;
-     for(let yy=-radius;yy<=radius;yy++)for(let xx=-radius;xx<=radius;xx++){
-       if(xx*xx+yy*yy>radius*radius)continue;
-       const nx=x+xx,ny=y+yy;
-       if(nx<0||ny<0||nx>=w||ny>=h)continue;
-       const oi=(ny*w+nx)*4;
-       out[oi]=out[oi+1]=out[oi+2]=0;
-     }
-   }
-  }else{
-    // STENCIL / CONTOURS :
-    // uniquement les transitions de l'image. Les zones sombres ne sont
-    // JAMAIS copiées comme des aplats noirs.
-    const threshold=safeNumber('sSeuil');
-    const detail=safeNumber('sDetail')/100;
-    const reinforce=safeNumber('sReinforce')/100;
-
-    const edge=new Float32Array(w*h);
-    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-      const i=y*w+x;
-      const gx=-gray[i-w-1]+gray[i-w+1]-2*gray[i-1]+2*gray[i+1]-gray[i+w-1]+gray[i+w+1];
-      const gy=-gray[i-w-1]-2*gray[i-w]-gray[i-w+1]+gray[i+w-1]+2*gray[i+w]+gray[i+w+1];
-      edge[i]=Math.hypot(gx,gy);
-    }
-
-    const edgeT=Math.max(24,105+(threshold-80)*.65-detail*34-reinforce*22);
-    const contour=new Uint8Array(w*h);
-
-    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-      const i=y*w+x;
-      const e=edge[i];
-
-      if(e>=edgeT) contour[i]=1;
-
-      if(detail>.18 && e>=edgeT*.72){
-        let n=0;
-        for(let yy=-1;yy<=1;yy++)for(let xx=-1;xx<=1;xx++){
-          if(xx===0&&yy===0)continue;
-          if(edge[(y+yy)*w+x+xx]>=edgeT*.85)n++;
-        }
-        if(n>=1) contour[i]=1;
-      }
-    }
-
-    const cleaned=new Uint8Array(w*h);
-    const minNeighbors=reinforce>.55?2:1;
-
-    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-      const i=y*w+x;
-      if(!contour[i])continue;
-      let n=0;
-      for(let yy=-1;yy<=1;yy++)for(let xx=-1;xx<=1;xx++){
-        if(xx===0&&yy===0)continue;
-        if(contour[(y+yy)*w+x+xx])n++;
-      }
-      if(n>=minNeighbors)cleaned[i]=1;
-    }
-
-    const radius=Math.round(safeNumber('sWidth'));
-    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-      const i=y*w+x;
-      if(!cleaned[i])continue;
-      for(let yy=-radius;yy<=radius;yy++)for(let xx=-radius;xx<=radius;xx++){
-        if(xx*xx+yy*yy>radius*radius)continue;
-        const nx=x+xx,ny=y+yy;
-        if(nx<0||ny<0||nx>=w||ny>=h)continue;
-        const oi=(ny*w+nx)*4;
-        out[oi]=out[oi+1]=out[oi+2]=0;
-      }
+  // Seuil principal + hystérésis légère pour reconnecter les contours utiles.
+  const base=Math.max(18,Math.min(180,105+(threshold-80)*0.55-detail*28-reinforce*20));
+  const high=base, low=base*(0.48+reinforce*0.16);
+  const edge=new Uint8Array(w*h), strong=new Uint8Array(w*h);
+  const stack=[];
+  for(let i=0;i<w*h;i++) if(nms[i]>=high){strong[i]=1;edge[i]=1;stack.push(i);}
+  while(stack.length){
+    const i=stack.pop(), x=i%w, y=(i/w)|0;
+    for(let yy=-1;yy<=1;yy++)for(let xx=-1;xx<=1;xx++){
+      if(!xx&&!yy)continue; const nx=x+xx,ny=y+yy;
+      if(nx<1||ny<1||nx>=w-1||ny>=h-1)continue;
+      const ni=ny*w+nx;
+      if(!edge[ni]&&nms[ni]>=low){edge[ni]=1;stack.push(ni);}
     }
   }
-im.data.set(out);ctx.putImageData(im,0,0);state.res=c;render();
+
+  // Nettoyage conservateur : retire les points isolés, garde les petits détails reliés.
+  const cleaned=new Uint8Array(w*h);
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+    const i=y*w+x;if(!edge[i])continue;
+    let n=0;for(let yy=-1;yy<=1;yy++)for(let xx=-1;xx<=1;xx++)if((xx||yy)&&edge[(y+yy)*w+x+xx])n++;
+    if(n>=1)cleaned[i]=1;
+  }
+
+  const out=new Uint8ClampedArray(d.length);out.fill(255);
+  const radius=Math.max(0,Math.min(2,width));
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const i=y*w+x;if(!cleaned[i])continue;
+    for(let yy=-radius;yy<=radius;yy++)for(let xx=-radius;xx<=radius;xx++){
+      if(xx*xx+yy*yy>radius*radius)continue;
+      const nx=x+xx,ny=y+yy;if(nx<0||ny<0||nx>=w||ny>=h)continue;
+      const oi=(ny*w+nx)*4;out[oi]=out[oi+1]=out[oi+2]=0;
+    }
+  }
+  im.data.set(out);ctx.putImageData(im,0,0);state.res=c;render();
 }
 function getSource(){if(!state.img)return null;if(state.compare){const c=document.createElement('canvas');c.width=state.img.width;c.height=state.img.height;c.getContext('2d').drawImage(state.img,0,0);return c;}return state.res;}
 function transformed(){const src=getSource();if(!src)return null;const sw=src.width,sh=src.height,rot=state.rot,rw=(rot===90||rot===270)?sh:sw,rh=(rot===90||rot===270)?sw:sh;const c=document.createElement('canvas');c.width=rw;c.height=rh;const x=c.getContext('2d');x.translate(rw/2,rh/2);x.rotate(rot*Math.PI/180);x.scale(state.mirH?-1:1,state.mirV?-1:1);x.drawImage(src,-sw/2,-sh/2);return c;}
@@ -525,15 +441,20 @@ function render(){
   const unit=$('unit').value;
   const inches=unit==='cm'?target/2.54:target;
   const pxPerIn=300;
-  const designW=Math.max(20,inches*pxPerIn);
-  const fW=designW;
+  const requestedW=Math.max(20,inches*pxPerIn);
+  const margin=40;
+  const maxW=pw-margin, maxH=ph-margin;
+  const fitW=Math.min(requestedW,maxW,maxH*(src.width/src.height));
+  const fW=state.p===1?fitW:requestedW;
   const fH=src.height*(fW/src.width);
-  const physicalH=inches*(src.height/src.width);
+  const actualInchesW=fW/pxPerIn;
+  const actualInchesH=fH/pxPerIn;
+  const physicalH=actualInchesH;
   const displayUnit=unit==='cm'?'cm':'pouces';
   const pageLabel=state.p===1?'page':'pages';
   const info=$('sizeInfo');
   if(info){
-    info.textContent=`DESSIN : ${target.toFixed(1)} ${displayUnit} × ${(physicalH*(unit==='cm'?2.54:1)).toFixed(1)} ${displayUnit} · ${state.p} ${pageLabel} A4 · 300 DPI`;
+    info.textContent=`DESSIN : ${(actualInchesW*(unit==='cm'?2.54:1)).toFixed(1)} ${displayUnit} × ${(physicalH*(unit==='cm'?2.54:1)).toFixed(1)} ${displayUnit} · ${state.p} ${pageLabel} A4 · 300 DPI`;
   }
   const imgX=(totalW-fW)/2+state.offX;
   const imgY=(totalH-fH)/2+state.offY;
