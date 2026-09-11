@@ -3,22 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>STENCIL PRINT PRO v79 - Maman Sokal</title>
+<title>STENCIL PRINT PRO v91.9 - Maman Sokal</title>
 </head>
 <body style="margin:0;background:#0a0a0c;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;height:100vh">
-<div id="status">Chargement de STENCIL PRINT PRO v79…</div>
+<div id="status">Chargement de STENCIL PRINT PRO…</div>
 <script>
 (async()=>{
 try{
- const r=await fetch('v79.payload.b64?v=79',{cache:'no-store'});
+ const r=await fetch('v79.payload.b64?v=91.9',{cache:'no-store'});
  if(!r.ok)throw new Error('Payload introuvable');
  const b64=(await r.text()).trim();
  const bin=atob(b64);const bytes=new Uint8Array(bin.length);
  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
  const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
- const html=await new Response(stream).text();
+ let html=await new Response(stream).text();
+ const fix=`
+<script>
+(function(){
+'use strict';
+var d=document;
+function fire(el){['input','change'].forEach(function(t){el.dispatchEvent(new Event(t,{bubbles:true}));});}
+function sizeCtl(){return d.getElementById('sizeCm')||d.querySelector('input[type=range][id*=size i]');}
+function pagesCtl(){return d.getElementById('pages')||d.querySelector('select');}
+function install(){
+ var pages=pagesCtl(), size=sizeCtl();
+ if(pages){pages.style.pointerEvents='auto';pages.style.touchAction='manipulation';pages.setAttribute('aria-label','Nombre de pages');}
+ if(size){size.min='0.1';size.max='300';size.step='0.1';size.style.touchAction='pan-x';}
+ var host=size&&size.parentElement;
+ if(host&&!host.dataset.sokal91){
+   host.dataset.sokal91='1';host.style.position='relative';
+   var minus=d.createElement('button'),plus=d.createElement('button');
+   minus.type=plus.type='button';minus.textContent='−';plus.textContent='+';
+   minus.className='sokal91-minus';plus.className='sokal91-plus';
+   minus.setAttribute('aria-label','Rapetisser le dessin');plus.setAttribute('aria-label','Agrandir le dessin');
+   host.appendChild(minus);host.appendChild(plus);
+   function step(delta){var r=sizeCtl();if(!r)return;var v=parseFloat(r.value);if(!isFinite(v))v=1;var nv=Math.round((v+delta)*10)/10;nv=Math.max(0.1,Math.min(300,nv));r.value=String(nv);fire(r);}
+   function hold(btn,delta){var timer=0;btn.addEventListener('pointerdown',function(e){e.preventDefault();e.stopPropagation();step(delta);timer=setInterval(function(){step(delta);},220);});['pointerup','pointercancel','pointerleave','lostpointercapture'].forEach(function(x){btn.addEventListener(x,function(){clearInterval(timer);timer=0;});});}
+   hold(minus,-1);hold(plus,1);
+ }
+ addDimensions();
+ applyPaper();
+}
+function addDimensions(){
+ if(d.getElementById('sokal91-dimensions'))return;
+ var anchor=d.getElementById('pages')||d.querySelector('select');if(!anchor)return;
+ var box=d.createElement('div');box.id='sokal91-dimensions';
+ box.innerHTML='<div class="s91-title">MESURE RÉELLE DU DESSIN</div><div class="s91-row"><label>Largeur <input id="s91w" type="number" min="0.1" step="0.1" value="10"> cm</label><label>Hauteur <input id="s91h" type="number" min="0.1" step="0.1" value="15"> cm</label><label class="s91-lock"><input id="s91lock" type="checkbox" checked> proportions</label></div><div class="s91-info">La feuille reste à sa vraie dimension. Le dessin peut être plus petit ou dépasser largement la feuille.</div>';
+ anchor.parentElement.appendChild(box);
+ var w=box.querySelector('#s91w'),h=box.querySelector('#s91h'),lock=box.querySelector('#s91lock');
+ function update(from){
+   var a=parseFloat(w.value),b=parseFloat(h.value);if(!(a>0&&b>0))return;
+   var r=sizeCtl();if(r){var val=from==='h'?b:a;r.value=String(Math.max(0.1,Math.min(300,val)));fire(r);}
+ }
+ w.addEventListener('change',function(){if(lock.checked){var old=parseFloat(w.dataset.old||w.value);var oldh=parseFloat(h.dataset.old||h.value);if(old>0&&oldh>0)h.value=(parseFloat(w.value)*oldh/old).toFixed(1);}update('w');w.dataset.old=w.value;h.dataset.old=h.value;});
+ h.addEventListener('change',function(){if(lock.checked){var old=parseFloat(h.dataset.old||h.value);var oldw=parseFloat(w.dataset.old||w.value);if(old>0&&oldw>0)w.value=(parseFloat(h.value)*oldw/old).toFixed(1);}update('h');w.dataset.old=w.value;h.dataset.old=h.value;});
+ w.dataset.old=w.value;h.dataset.old=h.value;
+}
+function applyPaper(){
+ var pages=pagesCtl();if(!pages)return;
+ var n=parseInt(pages.value,10)||1;
+ var map={1:[1,1],2:[2,1],4:[2,2],6:[3,2],9:[3,3],12:[4,3]},m=map[n]||map[1];
+ var frames=d.querySelectorAll('.page-frame');
+ for(var i=0;i<frames.length;i++){frames[i].style.boxSizing='border-box';frames[i].style.overflow='visible';}
+ var outs=d.querySelectorAll('.page-output');
+ for(var j=0;j<outs.length;j++){outs[j].style.boxSizing='border-box';outs[j].style.aspectRatio='8.5 / 11';outs[j].style.width='100%';outs[j].style.maxWidth='none';}
+ var grids=d.querySelectorAll('.grid-view');
+ for(var k=0;k<grids.length;k++){grids[k].style.gridTemplateColumns='repeat('+m[0]+',minmax(0,1fr))';grids[k].style.gridAutoRows='auto';grids[k].style.overflow='visible';}
+}
+var st=d.createElement('style');st.textContent='\n.sokal91-minus,.sokal91-plus{position:absolute;top:50%;transform:translateY(-50%);z-index:30;width:46px;height:44px;border:0;border-radius:10px;background:#222;color:#fff;font-size:27px;font-weight:700;touch-action:manipulation}.sokal91-minus{left:2px}.sokal91-plus{right:2px}.sokal91-minus:active,.sokal91-plus:active{transform:translateY(-50%) scale(.96)}.sokal91-minus~input[type=range],.sokal91-plus~input[type=range]{width:calc(100% - 104px)!important;margin-left:52px!important}.s91-title{font-weight:800;margin-bottom:8px}.s91-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.s91-row label{font-size:13px}.s91-row input[type=number]{width:70px;box-sizing:border-box;padding:8px;border-radius:8px;border:1px solid #555;background:#111;color:#fff}.s91-lock{display:flex;align-items:center;gap:4px}.s91-info{font-size:11px;opacity:.75;margin-top:6px}.page-frame,.page-output,.grid-view{overflow:visible!important}@media(max-width:600px){.s91-row{gap:6px}.s91-row input[type=number]{width:64px}.sokal91-minus,.sokal91-plus{width:44px;height:44px}}';d.head.appendChild(st);
+ install();
+ var mo=new MutationObserver(function(){install();});
+ mo.observe(d.body,{subtree:true,childList:true});
+ setTimeout(install,250);setTimeout(install,1000);
+})();
+<\/script>`;
+ html=html.replace('</body>',fix+'</body>');
  document.open();document.write(html);document.close();
-}catch(e){document.getElementById('status').textContent='Impossible de charger v79 : '+e.message;console.error(e)}
+}catch(e){document.getElementById('status').textContent='Impossible de charger STENCIL PRINT PRO : '+e.message;console.error(e)}
 })();
 </script>
 </body>
