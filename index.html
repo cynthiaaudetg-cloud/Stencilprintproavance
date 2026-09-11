@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>STENCIL PRINT PRO v91.14 - Maman Sokal</title>
+<title>STENCIL PRINT PRO v91.15 - Maman Sokal</title>
 </head>
 <body style="margin:0;background:#0a0a0c;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;height:100vh">
 <div id="status">Chargement de STENCIL PRINT PRO…</div>
 <script>
 (async()=>{
 try{
- const r=await fetch('v79.payload.b64?v=91.14',{cache:'no-store'});
+ const r=await fetch('v79.payload.b64?v=91.15',{cache:'no-store'});
  if(!r.ok)throw new Error('Payload introuvable');
  const b64=(await r.text()).trim();
  const bin=atob(b64);const bytes=new Uint8Array(bin.length);
@@ -58,16 +58,11 @@ function moveButtonsToBottom(){
  var dock=d.getElementById('sokal91-bottom-buttons');
  if(!dock){dock=d.createElement('div');dock.id='sokal91-bottom-buttons';dock.setAttribute('aria-label','Boutons d’ajustement');d.body.appendChild(dock);}
  var buttons=d.querySelectorAll('.b-step');
- for(var i=0;i<buttons.length;i++){
-   var b=buttons[i];
-   if(b.parentElement!==dock)dock.appendChild(b);
- }
+ for(var i=0;i<buttons.length;i++){var b=buttons[i];if(b.parentElement!==dock)dock.appendChild(b);}
 }
 function applyMobileLayout(){
  if(window.innerWidth>700)return;
- var main=d.querySelector('.app-main');
- var preview=d.querySelector('.preview-zone');
- var controls=d.querySelector('.controls-zone');
+ var main=d.querySelector('.app-main'),preview=d.querySelector('.preview-zone'),controls=d.querySelector('.controls-zone');
  if(main){main.style.display='flex';main.style.flexDirection='column';main.style.flex='1';main.style.minHeight='0';main.style.width='100%';}
  if(preview){preview.style.order='0';preview.style.flex='0 0 46vh';preview.style.height='46vh';preview.style.minHeight='240px';preview.style.maxHeight='55vh';preview.style.width='100%';preview.style.minWidth='0';preview.style.overflow='hidden';}
  if(controls){controls.style.order='1';controls.style.flex='1 1 auto';controls.style.width='100%';controls.style.minHeight='0';controls.style.overflowY='auto';controls.style.overflowX='hidden';controls.style.paddingBottom='100px';}
@@ -76,13 +71,13 @@ function applyMobileLayout(){
  moveButtonsToBottom();
 }
 var st=d.createElement('style');st.textContent='\n#sokal91-bottom-buttons{display:none}@media(max-width:700px){body{display:flex!important;flex-direction:column!important;overflow:hidden!important;width:100%!important;height:100%!important}.preview-zone{display:flex!important;flex-direction:column!important;flex:0 0 46vh!important;height:46vh!important;min-height:240px!important;max-height:55vh!important}.preview-scroll{display:block!important;flex:1 1 auto!important;min-height:0!important;overflow:auto!important;-webkit-overflow-scrolling:touch!important}.grid-view{display:grid!important;width:100%!important;justify-items:center!important}.controls-zone{display:block!important;flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;padding-bottom:100px!important}.controls{display:grid!important;grid-template-columns:1fr!important;width:100%!important}.card-full{grid-column:span 1!important}.action-bar{flex-shrink:0!important}.import-zone{flex-shrink:0!important}#sokal91-bottom-buttons{position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:99999!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;padding:8px max(8px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-right))!important;background:rgba(17,17,24,.97)!important;border-top:1px solid #2d2d35!important;box-sizing:border-box!important;max-height:24vh!important;overflow-y:auto!important}.b-step{position:static!important;display:block!important;width:100%!important;height:42px!important;margin:0!important;border-radius:9px!important;font-size:22px!important;touch-action:manipulation!important}.adj .b-step{flex:initial!important}}@media print{@page{size:Letter portrait;margin:0}.grid-view{display:block!important}.page-frame{width:8.5in!important;height:11in!important;padding:0!important;margin:0!important;break-after:page;page-break-after:always}.page-output{width:8.5in!important;height:11in!important;aspect-ratio:auto!important;max-width:none!important}.page-frame:last-child{break-after:auto;page-break-after:auto}}';d.head.appendChild(st);
- install();
- var mo=new MutationObserver(function(){install();});
- mo.observe(d.body,{subtree:true,childList:true});
- setTimeout(install,250);setTimeout(install,1000);
+install();
+var mo=new MutationObserver(function(){install();});
+mo.observe(d.body,{subtree:true,childList:true});
+setTimeout(install,250);setTimeout(install,1000);
 })();
 <\/script>`;
- html=html.replace('</body>',fix+'</body>');
+ html=html.replace('</body>',fix+'<script src="simple-mode.js?v=1"></script></body>');
  document.open();document.write(html);document.close();
 }catch(e){document.getElementById('status').textContent='Impossible de charger STENCIL PRINT PRO : '+e.message;console.error(e)}
 })();
