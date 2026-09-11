@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>STENCIL PRINT PRO v91.10 - Maman Sokal</title>
+<title>STENCIL PRINT PRO v91.11 - Maman Sokal</title>
 </head>
 <body style="margin:0;background:#0a0a0c;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;height:100vh">
 <div id="status">Chargement de STENCIL PRINT PRO…</div>
 <script>
 (async()=>{
 try{
- const r=await fetch('v79.payload.b64?v=91.10',{cache:'no-store'});
+ const r=await fetch('v79.payload.b64?v=91.11',{cache:'no-store'});
  if(!r.ok)throw new Error('Payload introuvable');
  const b64=(await r.text()).trim();
  const bin=atob(b64);const bytes=new Uint8Array(bin.length);
@@ -27,7 +27,7 @@ function sizeCtl(){return d.getElementById('sizeCm')||d.querySelector('input[typ
 function pagesCtl(){return d.getElementById('pages')||d.querySelector('select');}
 function install(){
  var pages=pagesCtl(), size=sizeCtl();
- if(pages){pages.style.pointerEvents='auto';pages.style.touchAction='manipulation';pages.setAttribute('aria-label','Nombre de pages');if(!pages.dataset.sokal91change){pages.dataset.sokal91change='1';pages.addEventListener('change',function(){setTimeout(applyPaper,0);});}}
+ if(pages){pages.style.pointerEvents='auto';pages.style.touchAction='manipulation';pages.setAttribute('aria-label','Nombre de pages');if(!pages.dataset.sokal91change){pages.dataset.sokal91change='1';pages.addEventListener('change',function(){setTimeout(applyPaper,0);});pages.addEventListener('input',function(){setTimeout(applyPaper,0);});}}
  if(size){size.min='0.1';size.max='300';size.step='0.1';size.style.touchAction='pan-x';size.style.position='relative';size.style.zIndex='5';size.style.width='calc(100% - 104px)';size.style.marginLeft='52px';size.style.marginRight='52px';size.style.boxSizing='border-box';}
  var host=size&&size.parentElement;
  if(host&&!host.dataset.sokal91){
@@ -61,10 +61,10 @@ function applyPaper(){
  var n=parseInt(pages.value,10)||1;
  var map={1:[1,1],2:[2,1],4:[2,2],6:[3,2],9:[3,3],12:[4,3]},m=map[n]||map[1];
  var frames=d.querySelectorAll('.page-frame');for(var i=0;i<frames.length;i++){frames[i].style.boxSizing='border-box';frames[i].style.overflow='visible';}
- var outs=d.querySelectorAll('.page-output');for(var j=0;j<outs.length;j++){outs[j].style.boxSizing='border-box';outs[j].style.aspectRatio='8.5 / 11';outs[j].style.width='100%';outs[j].style.maxWidth='none';}
- var grids=d.querySelectorAll('.grid-view');for(var k=0;k<grids.length;k++){grids[k].style.gridTemplateColumns='repeat('+m[0]+',minmax(0,1fr))';grids[k].style.gridAutoRows='auto';grids[k].style.overflow='visible';}
+ var outs=d.querySelectorAll('.page-output');for(var j=0;j<outs.length;j++){outs[j].style.boxSizing='border-box';outs[j].style.aspectRatio='8.5 / 11';outs[j].style.width='100%';outs[j].style.height='auto';outs[j].style.maxWidth='none';outs[j].style.flex='0 0 auto';}
+ var grids=d.querySelectorAll('.grid-view');for(var k=0;k<grids.length;k++){grids[k].style.gridTemplateColumns='repeat('+m[0]+',minmax(0,1fr))';grids[k].style.gridAutoRows='auto';grids[k].style.overflow='visible';grids[k].style.alignItems='start';}
 }
-var st=d.createElement('style');st.textContent='\n.sokal91-minus,.sokal91-plus{position:absolute;top:50%;transform:translateY(-50%);z-index:50;width:46px;height:46px;border:0;border-radius:10px;background:#222;color:#fff;font-size:28px;font-weight:700;line-height:46px;padding:0;margin:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}.sokal91-minus{left:2px}.sokal91-plus{right:2px}.sokal91-minus:active,.sokal91-plus:active{transform:translateY(-50%) scale(.94);background:#444}.s91-title{font-weight:800;margin-bottom:8px}.s91-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.s91-row label{font-size:13px}.s91-row input[type=number]{width:70px;box-sizing:border-box;padding:8px;border-radius:8px;border:1px solid #555;background:#111;color:#fff}.s91-lock{display:flex;align-items:center;gap:4px}.s91-info{font-size:11px;opacity:.75;margin-top:6px}.page-frame,.page-output,.grid-view{overflow:visible!important}@media(max-width:600px){.s91-row{gap:6px}.s91-row input[type=number]{width:64px}.sokal91-minus,.sokal91-plus{width:44px;height:44px;line-height:44px}}';d.head.appendChild(st);
+var st=d.createElement('style');st.textContent='\n.sokal91-minus,.sokal91-plus{position:absolute;top:50%;transform:translateY(-50%);z-index:50;width:46px;height:46px;border:0;border-radius:10px;background:#222;color:#fff;font-size:28px;font-weight:700;line-height:46px;padding:0;margin:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}.sokal91-minus{left:2px}.sokal91-plus{right:2px}.sokal91-minus:active,.sokal91-plus:active{transform:translateY(-50%) scale(.94);background:#444}.s91-title{font-weight:800;margin-bottom:8px}.s91-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.s91-row label{font-size:13px}.s91-row input[type=number]{width:70px;box-sizing:border-box;padding:8px;border-radius:8px;border:1px solid #555;background:#111;color:#fff}.s91-lock{display:flex;align-items:center;gap:4px}.s91-info{font-size:11px;opacity:.75;margin-top:6px}.page-frame,.page-output,.grid-view{overflow:visible!important}@media(max-width:600px){.s91-row{gap:6px}.s91-row input[type=number]{width:64px}.sokal91-minus,.sokal91-plus{width:44px;height:44px;line-height:44px}}@media print{@page{size:Letter portrait;margin:0}.grid-view{display:block!important}.page-frame{width:8.5in!important;height:11in!important;padding:0!important;margin:0!important;break-after:page;page-break-after:always}.page-output{width:8.5in!important;height:11in!important;aspect-ratio:auto!important;max-width:none!important}.page-frame:last-child{break-after:auto;page-break-after:auto}}';d.head.appendChild(st);
  install();
  var mo=new MutationObserver(function(){install();});
  mo.observe(d.body,{subtree:true,childList:true});
