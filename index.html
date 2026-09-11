@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>STENCIL PRINT PRO v91.11 - Maman Sokal</title>
+<title>STENCIL PRINT PRO v91.12 - Maman Sokal</title>
 </head>
 <body style="margin:0;background:#0a0a0c;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;height:100vh">
 <div id="status">Chargement de STENCIL PRINT PRO…</div>
@@ -25,6 +25,23 @@ var d=document;
 function fire(el){['input','change'].forEach(function(t){el.dispatchEvent(new Event(t,{bubbles:true}));});}
 function sizeCtl(){return d.getElementById('sizeCm')||d.querySelector('input[type=range][id*=size i]');}
 function pagesCtl(){return d.getElementById('pages')||d.querySelector('select');}
+function getImageRatio(){
+ var c=d.querySelector('canvas');
+ if(c&&c.width>0&&c.height>0)return c.width/c.height;
+ var img=d.querySelector('img');
+ if(img&&img.naturalWidth>0&&img.naturalHeight>0)return img.naturalWidth/img.naturalHeight;
+ return 1;
+}
+function syncDimensions(from){
+ var w=d.getElementById('s91w'),h=d.getElementById('s91h');if(!w||!h)return;
+ var a=parseFloat(w.value),b=parseFloat(h.value),ratio=getImageRatio();
+ if(!(ratio>0))ratio=1;
+ if(from==='w'&&a>0)h.value=(a/ratio).toFixed(1);
+ if(from==='h'&&b>0)w.value=(b*ratio).toFixed(1);
+ var r=sizeCtl();
+ if(r){var widthCm=parseFloat(w.value);if(widthCm>0){r.value=String(Math.max(0.1,Math.min(300,widthCm)));fire(r);}}
+ w.dataset.old=w.value;h.dataset.old=h.value;
+}
 function install(){
  var pages=pagesCtl(), size=sizeCtl();
  if(pages){pages.style.pointerEvents='auto';pages.style.touchAction='manipulation';pages.setAttribute('aria-label','Nombre de pages');if(!pages.dataset.sokal91change){pages.dataset.sokal91change='1';pages.addEventListener('change',function(){setTimeout(applyPaper,0);});pages.addEventListener('input',function(){setTimeout(applyPaper,0);});}}
@@ -51,9 +68,16 @@ function addDimensions(){
  box.innerHTML='<div class="s91-title">MESURE RÉELLE DU DESSIN</div><div class="s91-row"><label>Largeur <input id="s91w" type="number" min="0.1" step="0.1" value="10"> cm</label><label>Hauteur <input id="s91h" type="number" min="0.1" step="0.1" value="15"> cm</label><label class="s91-lock"><input id="s91lock" type="checkbox" checked> proportions</label></div><div class="s91-info">La feuille reste à sa vraie dimension. Le dessin peut être plus petit ou dépasser largement la feuille.</div>';
  anchor.parentElement.appendChild(box);
  var w=box.querySelector('#s91w'),h=box.querySelector('#s91h'),lock=box.querySelector('#s91lock');
- function update(from){var a=parseFloat(w.value),b=parseFloat(h.value);if(!(a>0&&b>0))return;var r=sizeCtl();if(r){var val=from==='h'?b:a;r.value=String(Math.max(0.1,Math.min(300,val)));fire(r);}}
- w.addEventListener('change',function(){if(lock.checked){var old=parseFloat(w.dataset.old||w.value);var oldh=parseFloat(h.dataset.old||h.value);if(old>0&&oldh>0)h.value=(parseFloat(w.value)*oldh/old).toFixed(1);}update('w');w.dataset.old=w.value;h.dataset.old=h.value;});
- h.addEventListener('change',function(){if(lock.checked){var old=parseFloat(h.dataset.old||h.value);var oldw=parseFloat(w.dataset.old||w.value);if(old>0&&oldw>0)w.value=(parseFloat(h.value)*oldw/old).toFixed(1);}update('h');w.dataset.old=w.value;h.dataset.old=h.value;});
+ function update(from){
+   if(lock.checked){syncDimensions(from);return;}
+   var a=parseFloat(w.value),b=parseFloat(h.value);if(!(a>0&&b>0))return;
+   var r=sizeCtl();if(r){var val=from==='h'?b:a;r.value=String(Math.max(0.1,Math.min(300,val)));fire(r);}
+   w.dataset.old=w.value;h.dataset.old=h.value;
+ }
+ w.addEventListener('change',function(){update('w');});
+ h.addEventListener('change',function(){update('h');});
+ w.addEventListener('input',function(){if(lock.checked)syncDimensions('w');});
+ h.addEventListener('input',function(){if(lock.checked)syncDimensions('h');});
  w.dataset.old=w.value;h.dataset.old=h.value;
 }
 function applyPaper(){
