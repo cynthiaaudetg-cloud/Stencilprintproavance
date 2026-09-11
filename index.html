@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>STENCIL PRINT PRO v91.13 - Maman Sokal</title>
+<title>STENCIL PRINT PRO v91.14 - Maman Sokal</title>
 </head>
 <body style="margin:0;background:#0a0a0c;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;height:100vh">
 <div id="status">Chargement de STENCIL PRINT PRO…</div>
@@ -32,44 +32,45 @@ function getImageRatio(){
  if(img&&img.naturalWidth>0&&img.naturalHeight>0)return img.naturalWidth/img.naturalHeight;
  return 1;
 }
-function syncHeight(){
- var w=d.getElementById('s91w'),h=d.getElementById('s91h'),r=sizeCtl();
- if(!w||!h)return;
- var width=r?parseFloat(r.value):parseFloat(w.value),ratio=getImageRatio();
+function syncDimensions(){
+ var w=d.getElementById('s91w'),h=d.getElementById('s91h'),wi=d.getElementById('s91wi'),hi=d.getElementById('s91hi'),r=sizeCtl();
+ if(!w||!h||!r)return;
+ var width=parseFloat(r.value),ratio=getImageRatio();
  if(!(width>0)||!(ratio>0))return;
- w.value=width.toFixed(1);
- h.value=(width/ratio).toFixed(1);
+ var height=width/ratio;
+ w.value=width.toFixed(1);h.value=height.toFixed(1);
+ if(wi)wi.textContent=(width/2.54).toFixed(2)+' po';
+ if(hi)hi.textContent=(height/2.54).toFixed(2)+' po';
 }
 function install(){
  var pages=pagesCtl(),size=sizeCtl();
  if(pages){pages.style.pointerEvents='auto';pages.style.touchAction='manipulation';pages.setAttribute('aria-label','Nombre de pages');if(!pages.dataset.sokal91change){pages.dataset.sokal91change='1';pages.addEventListener('change',function(){setTimeout(applyPaper,0);});pages.addEventListener('input',function(){setTimeout(applyPaper,0);});}}
- if(size){size.min='5';size.max='100';size.step='0.5';size.style.touchAction='pan-x';size.style.position='relative';size.style.zIndex='5';size.style.width='calc(100% - 112px)';size.style.marginLeft='56px';size.style.marginRight='56px';size.style.boxSizing='border-box';if(!size.dataset.sokal91dim){size.dataset.sokal91dim='1';size.addEventListener('input',function(){setTimeout(syncHeight,0);});size.addEventListener('change',function(){setTimeout(syncHeight,0);});}}
+ if(size){size.min='5';size.max='100';size.step='0.5';size.style.touchAction='pan-x';size.style.position='relative';size.style.zIndex='5';size.style.width='100%';size.style.margin='0';size.style.boxSizing='border-box';if(!size.dataset.sokal91dim){size.dataset.sokal91dim='1';size.addEventListener('input',function(){setTimeout(syncDimensions,0);});size.addEventListener('change',function(){setTimeout(syncDimensions,0);});}}
  var host=size&&size.parentElement;
  if(host&&!host.dataset.sokal91){
-   host.dataset.sokal91='1';host.style.position='relative';host.style.overflow='visible';host.style.paddingLeft='0';host.style.paddingRight='0';
+   host.dataset.sokal91='1';
+   host.style.position='relative';host.style.overflow='visible';host.style.padding='0';
    var minus=d.createElement('button'),plus=d.createElement('button');
    minus.type='button';plus.type='button';minus.textContent='−';plus.textContent='+';
    minus.className='sokal91-minus';plus.className='sokal91-plus';
    minus.setAttribute('aria-label','Rapetisser le dessin');plus.setAttribute('aria-label','Agrandir le dessin');
-   host.appendChild(minus);host.appendChild(plus);
-   function step(delta){var r=sizeCtl();if(!r)return;var v=parseFloat(r.value);if(!isFinite(v))v=20;var nv=Math.round((v+delta*0.5)*2)/2;nv=Math.max(5,Math.min(100,nv));r.value=String(nv);fire(r);setTimeout(syncHeight,0);}
+   var bar=d.createElement('div');bar.className='sokal91-sizebar';bar.appendChild(minus);bar.appendChild(plus);
+   var preview=d.querySelector('.page-frame')||d.querySelector('.page-output')||d.querySelector('canvas');
+   if(preview&&preview.parentElement){preview.parentElement.insertBefore(bar,preview.nextSibling);}else{host.appendChild(bar);}
+   function step(delta){var r=sizeCtl();if(!r)return;var v=parseFloat(r.value);if(!isFinite(v))v=20;var nv=Math.round((v+delta*0.5)*2)/2;nv=Math.max(5,Math.min(100,nv));r.value=String(nv);fire(r);setTimeout(syncDimensions,0);}
    function hold(btn,delta){var timer=0;function stop(){if(timer){clearInterval(timer);timer=0;}}btn.addEventListener('pointerdown',function(e){e.preventDefault();e.stopPropagation();try{btn.setPointerCapture(e.pointerId);}catch(_){ }step(delta);timer=setInterval(function(){step(delta);},220);});['pointerup','pointercancel','pointerleave','lostpointercapture'].forEach(function(x){btn.addEventListener(x,stop);});btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();});}
    hold(minus,-1);hold(plus,1);
  }
  addDimensions();
- syncHeight();
+ syncDimensions();
  applyPaper();
 }
 function addDimensions(){
  if(d.getElementById('sokal91-dimensions'))return;
  var anchor=d.getElementById('pages')||d.querySelector('select');if(!anchor)return;
  var box=d.createElement('div');box.id='sokal91-dimensions';
- box.innerHTML='<div class="s91-title">MESURE RÉELLE DU DESSIN</div><div class="s91-row"><label>Largeur <input id="s91w" type="number" min="5" max="100" step="0.5"> cm</label><label>Hauteur <input id="s91h" type="text" readonly aria-readonly="true"> cm</label></div><div class="s91-info">La largeur contrôle la taille du dessin. La hauteur est calculée automatiquement pour conserver exactement les proportions.</div>';
+ box.innerHTML='<div class="s91-title">MESURE RÉELLE DU DESSIN</div><div class="s91-row"><label>Largeur <input id="s91w" type="text" readonly aria-readonly="true"> <span>cm</span></label><label>Hauteur <input id="s91h" type="text" readonly aria-readonly="true"> <span>cm</span></label></div><div class="s91-row s91-inches"><span>Largeur : <b id="s91wi">— po</b></span><span>Hauteur : <b id="s91hi">— po</b></span></div><div class="s91-info">La largeur contrôle la taille réelle du dessin. La hauteur est calculée automatiquement pour conserver exactement les proportions. À l'impression Letter, 8,5 × 11 po, la taille choisie est conservée.</div>';
  anchor.parentElement.appendChild(box);
- var w=box.querySelector('#s91w'),h=box.querySelector('#s91h');
- w.readOnly=true;
- var size=sizeCtl();
- if(size){w.value=parseFloat(size.value||20).toFixed(1);}
 }
 function applyPaper(){
  var pages=pagesCtl();if(!pages)return;
@@ -79,7 +80,7 @@ function applyPaper(){
  var outs=d.querySelectorAll('.page-output');for(var j=0;j<outs.length;j++){outs[j].style.boxSizing='border-box';outs[j].style.aspectRatio='8.5 / 11';outs[j].style.width='100%';outs[j].style.height='auto';outs[j].style.maxWidth='none';outs[j].style.flex='0 0 auto';}
  var grids=d.querySelectorAll('.grid-view');for(var k=0;k<grids.length;k++){grids[k].style.gridTemplateColumns='repeat('+m[0]+',minmax(0,1fr))';grids[k].style.gridAutoRows='auto';grids[k].style.overflow='visible';grids[k].style.alignItems='start';}
 }
-var st=d.createElement('style');st.textContent='\n.sokal91-minus,.sokal91-plus{position:absolute;top:50%;transform:translateY(-50%);z-index:50;width:48px;height:48px;border:0;border-radius:10px;background:#222;color:#fff;font-size:28px;font-weight:700;line-height:48px;padding:0;margin:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}.sokal91-minus{left:2px}.sokal91-plus{right:2px}.sokal91-minus:active,.sokal91-plus:active{transform:translateY(-50%) scale(.94);background:#444}.s91-title{font-weight:800;margin-bottom:8px}.s91-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.s91-row label{font-size:13px}.s91-row input[type=number],.s91-row input[readonly]{width:70px;box-sizing:border-box;padding:8px;border-radius:8px;border:1px solid #555;background:#111;color:#fff}.s91-row input[readonly]{opacity:.75;cursor:default}.s91-info{font-size:11px;opacity:.75;margin-top:6px}.page-frame,.page-output,.grid-view{overflow:visible!important}@media(max-width:600px){.s91-row{gap:6px}.s91-row input[type=number],.s91-row input[readonly]{width:64px}.sokal91-minus,.sokal91-plus{width:46px;height:46px;line-height:46px}}@media print{@page{size:Letter portrait;margin:0}.grid-view{display:block!important}.page-frame{width:8.5in!important;height:11in!important;padding:0!important;margin:0!important;break-after:page;page-break-after:always}.page-output{width:8.5in!important;height:11in!important;aspect-ratio:auto!important;max-width:none!important}.page-frame:last-child{break-after:auto;page-break-after:auto}}';d.head.appendChild(st);
+var st=d.createElement('style');st.textContent='\n.sokal91-sizebar{display:flex;justify-content:center;align-items:center;gap:18px;width:100%;box-sizing:border-box;padding:10px 8px 14px;position:relative;z-index:60}.sokal91-minus,.sokal91-plus{position:static;transform:none;z-index:60;width:52px;height:48px;border:0;border-radius:10px;background:#222;color:#fff;font-size:28px;font-weight:700;line-height:48px;padding:0;margin:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}.sokal91-minus:active,.sokal91-plus:active{transform:scale(.94);background:#444}.s91-title{font-weight:800;margin-bottom:8px}.s91-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.s91-row label,.s91-inches{font-size:13px}.s91-row input[readonly]{width:70px;box-sizing:border-box;padding:8px;border-radius:8px;border:1px solid #555;background:#111;color:#fff;opacity:.9;cursor:default}.s91-inches{gap:18px;margin-top:5px}.s91-info{font-size:11px;opacity:.75;margin-top:6px}.page-frame,.page-output,.grid-view{overflow:visible!important}@media(max-width:600px){.sokal91-sizebar{padding:8px 8px 14px;gap:20px}.sokal91-minus,.sokal91-plus{width:56px;height:50px;line-height:50px}.s91-row{gap:8px}.s91-row input[readonly]{width:66px}}@media print{@page{size:Letter portrait;margin:0}.grid-view{display:block!important}.page-frame{width:8.5in!important;height:11in!important;padding:0!important;margin:0!important;break-after:page;page-break-after:always}.page-output{width:8.5in!important;height:11in!important;aspect-ratio:auto!important;max-width:none!important}.page-frame:last-child{break-after:auto;page-break-after:auto}.sokal91-sizebar,#sokal91-dimensions{display:none!important}}';d.head.appendChild(st);
  install();
  var mo=new MutationObserver(function(){install();});
  mo.observe(d.body,{subtree:true,childList:true});
