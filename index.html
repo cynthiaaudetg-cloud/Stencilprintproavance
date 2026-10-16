@@ -2,392 +2,79 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>SOKAL STENCIL PRO EXACT | Maman Sokal</title>
-<meta name="description" content="Sokal Stencil Pro Exact — Transforme tes dessins en stencils tattoo facilement! Ajustement facile, mesure exacte du mini flash au grand format, impression multi-pages. Compatible papiers Spirit, Ozer et A4. Par Maman Sokal.">
-<meta name="keywords" content="stencil tattoo, pochoir tatouage, stencil pro, impression stencil, tattoo stencil maker, pochoir tattoo, stencil exact, mesure exacte, ajustement facile, Spirit, Ozer, Maman Sokal, Sokal Stencil">
-<meta name="author" content="Maman Sokal">
-<meta property="og:title" content="SOKAL STENCIL PRO EXACT">
-<meta property="og:description" content="Tes stencils tattoo, du mini au grand format — facile! Grandeurs exactes, impression multi-pages.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://cynthiaaudetg-cloud.github.io/Stencilprintproavance/">
-<meta name="theme-color" content="#08080f">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOKAL STENCIL PRO EXACT — par Maman Sokal</title>
 <style>
-:root{
-  --pink:#ff2d87; --pink-hi:#ff5da2; --pink-d:#c2185b;
-  --violet:#8b2ff7; --violet-d:#5b1bb8;
-  --cyan:#00e5ff; --gold:#ffc93d; --green:#00e676;
-  --bg:#08080f; --card:#12121c; --card2:#181826;
-  --line:#2a2a40; --line-hi:#3d3d5c;
-  --txt:#f5f3fa; --muted:#a8a3c0; --muted2:#6e6a8a;
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{
-  background:
-    radial-gradient(900px 500px at 15% -5%, rgba(139,47,247,.16) 0%, transparent 55%),
-    radial-gradient(900px 500px at 85% -5%, rgba(255,45,135,.14) 0%, transparent 55%),
-    radial-gradient(700px 400px at 50% 110%, rgba(255,201,61,.06) 0%, transparent 60%),
-    var(--bg);
-  background-attachment:fixed;
-  color:var(--txt);font-family:'Inter',system-ui,sans-serif;min-height:100vh;font-size:14px;
-}
-h1,h2,.bebas{font-family:'Bebas Neue','Oswald',sans-serif;letter-spacing:.04em}
-h3,.osw{font-family:'Oswald',sans-serif}
-/* ---------- Header ---------- */
-header{position:sticky;top:0;z-index:900;background:rgba(8,8,15,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:14px}
-header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--pink),var(--gold),var(--violet),transparent);opacity:.85;filter:blur(.4px)}
-.logo{width:44px;height:44px;border-radius:13px;background:conic-gradient(from 210deg,var(--pink),var(--violet),var(--gold),var(--pink-hi),var(--violet-d),var(--pink));display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 22px rgba(255,45,135,.5),0 0 22px rgba(255,201,61,.45),inset 0 2px 4px rgba(255,255,255,.4),inset 0 -2px 4px rgba(0,0,0,.3);flex-shrink:0;position:relative;overflow:hidden}.logo::after{content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:shine 3.5s ease-in-out infinite}@keyframes shine{0%,60%{left:-60%}100%{left:130%}}
-header h1{font-size:1.65rem;font-weight:400;line-height:1;background:linear-gradient(100deg,#fff 15%,var(--gold) 35%,var(--pink-hi) 60%,var(--violet) 85%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:.06em;filter:drop-shadow(0 0 12px rgba(255,201,61,.25))}
-header h1 span{-webkit-text-fill-color:var(--cyan);font-weight:400}.tagline{font-family:'Oswald';font-size:.62rem;letter-spacing:.42em;font-weight:700;background:linear-gradient(90deg,var(--gold),var(--pink-hi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-top:2px;filter:drop-shadow(0 0 6px rgba(255,201,61,.3))}.subtitle{font-size:.66rem;color:var(--muted);letter-spacing:.04em;margin-top:4px;font-weight:500}
-.brand{margin-left:auto;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,var(--gold),#ffe9a8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 8px rgba(255,201,61,.35))}
-.brand::before{content:'✦ ';color:var(--gold);-webkit-text-fill-color:var(--gold)}
-/* ---------- Steps nav ---------- */
-.steps{display:flex;gap:8px;padding:14px 20px;position:sticky;top:72px;z-index:800;background:rgba(8,8,15,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line);overflow-x:auto}
-.step{flex:1;min-width:130px;display:flex;align-items:center;gap:11px;padding:11px 15px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--card);cursor:pointer;transition:all .25s;color:var(--muted)}
-.step:hover{border-color:var(--line-hi);transform:translateY(-1px)}
-.step .num{width:30px;height:30px;border-radius:50%;background:#23233a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;font-family:'Oswald';flex-shrink:0;transition:all .25s;border:1px solid var(--line)}
-.step .lbl{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-.step.active{border-color:var(--pink);background:linear-gradient(180deg,rgba(255,45,135,.16),rgba(139,47,247,.06));color:#fff;box-shadow:0 4px 20px rgba(255,45,135,.22),inset 0 1px 0 rgba(255,255,255,.08)}
-.step.active .num{background:linear-gradient(135deg,var(--pink),var(--violet-d));color:#fff;border-color:transparent;box-shadow:0 2px 12px rgba(255,45,135,.6)}
-.step.done{border-color:rgba(255,201,61,.45);box-shadow:0 0 14px rgba(255,201,61,.15)}
-.step.done .num{background:linear-gradient(135deg,var(--gold),#e8a100);color:#3a2a00;border-color:transparent;box-shadow:0 2px 12px rgba(255,201,61,.55)}
-/* ---------- Layout ---------- */
-.layout{display:grid;grid-template-columns:minmax(330px,410px) 1fr;gap:18px;padding:20px;max-width:1440px;margin:0 auto;align-items:start}
-.controls{display:flex;flex-direction:column;gap:14px}
-.step-panel{display:none;flex-direction:column;gap:14px;animation:fadeUp .35s cubic-bezier(.2,.9,.3,1.2)}
-.step-panel.active{display:flex}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 40%),var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 10px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05);transition:border-color .25s}
-.card:hover{border-color:var(--line-hi)}
-.card h3{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--cyan),var(--pink-hi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.card h3::before{content:'';width:4px;height:16px;border-radius:2px;background:linear-gradient(180deg,var(--pink),var(--violet));box-shadow:0 0 10px rgba(255,45,135,.6);-webkit-text-fill-color:initial}
-.hint{font-size:.72rem;color:var(--muted);line-height:1.6;margin-top:12px}
-.hint b{color:#fff}
-/* ---------- Buttons ---------- */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 20px;border-radius:13px;border:none;font-weight:600;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Oswald';transition:all .2s;width:100%;position:relative;overflow:hidden}
-.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.22),transparent 55%);pointer-events:none}
-.btn:active{transform:scale(.96)}
-.btn-primary{background:linear-gradient(135deg,var(--pink-hi),var(--pink) 45%,var(--violet-d));color:#fff;box-shadow:0 8px 26px rgba(255,45,135,.42),inset 0 1px 0 rgba(255,255,255,.3)}
-.btn-primary:hover{box-shadow:0 10px 32px rgba(255,45,135,.58);transform:translateY(-1px)}
-.btn-cyan{background:linear-gradient(135deg,#2ee6ff,#00a8c8);color:#03252c;box-shadow:0 8px 24px rgba(0,229,255,.28),inset 0 1px 0 rgba(255,255,255,.35)}
-.btn-cyan:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(0,229,255,.4)}
-.btn-green{background:linear-gradient(135deg,var(--gold),#ffb700 50%,var(--pink-hi));color:#3a2400;box-shadow:0 8px 26px rgba(255,201,61,.45),inset 0 1px 0 rgba(255,255,255,.45);font-size:.88rem;padding:16px 20px}
-.btn-green:hover{transform:translateY(-1px);box-shadow:0 12px 36px rgba(255,201,61,.6)}
-.btn-ghost{background:rgba(255,255,255,.045);color:var(--txt);border:1px solid var(--line-hi)}
-.btn-ghost:hover{border-color:var(--pink);background:rgba(255,45,135,.08)}
-.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-/* ---------- Inputs ---------- */
-.field-row{display:flex;gap:9px;align-items:center}
-.num-input{flex:1;background:#0a0a13;border:1px solid var(--line-hi);border-radius:12px;color:#fff;padding:12px;font-size:1.25rem;font-weight:700;text-align:center;font-family:'Oswald';width:100%;transition:all .2s}
-.num-input:focus{outline:none;border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,45,135,.22),0 0 18px rgba(255,45,135,.25)}
-.unit{color:var(--muted);font-size:.82rem;font-weight:700}
-.stepper{width:48px;height:48px;border-radius:12px;border:1px solid var(--pink);background:linear-gradient(180deg,rgba(255,45,135,.14),rgba(255,45,135,.04));color:#fff;font-size:1.45rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .15s}
-.stepper:active{background:var(--pink);transform:scale(.92);box-shadow:0 0 16px rgba(255,45,135,.6)}
-input[type=range]{width:100%;accent-color:var(--pink);height:32px;cursor:pointer}
-.chip-row{display:grid;gap:9px;margin-top:12px}
-.chip-row.c4{grid-template-columns:repeat(4,1fr)}
-.chip-row.c3{grid-template-columns:repeat(3,1fr)}
-.chip{padding:12px 4px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),#0c0c15;color:var(--txt);font-size:.74rem;font-weight:600;cursor:pointer;text-align:center;transition:all .18s;font-family:'Oswald';letter-spacing:.03em}
-.chip:hover{border-color:var(--pink);transform:translateY(-2px);box-shadow:0 6px 16px rgba(255,45,135,.18)}
-.chip.active{background:linear-gradient(135deg,var(--pink),var(--violet-d));border:1px solid rgba(255,201,61,.65);color:#fff;box-shadow:0 6px 20px rgba(255,45,135,.45),0 0 14px rgba(255,201,61,.35),inset 0 1px 0 rgba(255,255,255,.28);transform:translateY(-1px)}
-.chip small{display:block;font-size:.6rem;opacity:.72;font-weight:400;margin-top:3px;letter-spacing:.04em}
-.adj-head{display:flex;justify-content:space-between;align-items:center;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:4px;font-weight:600}
-.adj-head b{color:#fff;font-family:'Oswald';font-size:.92rem;background:linear-gradient(90deg,var(--pink-hi),var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.adj-ctl{display:flex;align-items:center;gap:9px}
-/* move pad */
-.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:220px;margin:0 auto}
-.pad button{background:linear-gradient(180deg,rgba(255,45,135,.12),rgba(255,45,135,.03));border:1px solid var(--pink);color:#fff;border-radius:12px;min-height:50px;font-size:1.25rem;cursor:pointer;transition:all .15s}
-.pad button:active{background:var(--pink);transform:scale(.9);box-shadow:0 0 18px rgba(255,45,135,.7)}
-.pad .center-btn{font-size:.6rem;font-family:'Oswald';letter-spacing:.08em;font-weight:700}
-.rot-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;max-width:220px;margin:12px auto 0}
-.rot-row button{background:linear-gradient(180deg,rgba(255,45,135,.12),rgba(255,45,135,.03));border:1px solid var(--pink);color:#fff;border-radius:12px;min-height:44px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'Oswald';letter-spacing:.05em;transition:all .15s}
-.rot-row button:active{background:var(--pink);transform:scale(.94)}
-.rot-val{text-align:center;color:var(--muted);font-size:.74rem;margin-top:8px;font-family:'Oswald';letter-spacing:.06em}
-/* toggle */
-.toggle-row{display:flex;align-items:center;gap:12px;padding:12px 2px;cursor:pointer}
-.toggle{width:52px;height:29px;border-radius:15px;background:#2b2b42;position:relative;transition:all .25s;flex-shrink:0;border:1px solid var(--line-hi)}
-.toggle::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:linear-gradient(180deg,#fff,#d9d9e8);top:2.5px;left:3px;transition:all .25s;box-shadow:0 2px 6px rgba(0,0,0,.4)}
-.toggle.on{background:linear-gradient(90deg,var(--pink),var(--violet));border-color:transparent;box-shadow:0 0 14px rgba(255,45,135,.5)}
-.toggle.on::after{left:25px}
-.toggle-lbl{font-size:.8rem;font-weight:600}
-/* dropzone */
-.drop{border:2px dashed #44446a;border-radius:18px;padding:38px 18px;text-align:center;cursor:pointer;transition:all .25s;background:radial-gradient(400px 200px at 50% 0%,rgba(255,45,135,.07),transparent),rgba(255,255,255,.015)}
-.drop:hover,.drop.over{border-color:var(--pink);background:radial-gradient(400px 200px at 50% 0%,rgba(255,45,135,.14),transparent);box-shadow:inset 0 0 30px rgba(255,45,135,.08)}
-.drop .big{font-size:2.4rem;margin-bottom:10px;filter:drop-shadow(0 4px 12px rgba(255,45,135,.4))}
-.drop p{color:var(--muted);font-size:.8rem;line-height:1.6}
-.thumb{max-width:100%;border-radius:12px;margin-top:12px;border:1px solid var(--line-hi);box-shadow:0 8px 24px rgba(0,0,0,.5)}
-/* ---------- Preview ---------- */
-.preview{position:sticky;top:150px}
-.preview-card{background:linear-gradient(180deg,rgba(255,255,255,.03),transparent 30%),var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 10px 34px rgba(0,0,0,.45)}
-.preview-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
-.preview-head h3{font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:.1em;background:linear-gradient(90deg,var(--gold),var(--pink-hi),var(--violet));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.status-pill{font-size:.68rem;color:var(--muted);background:#0a0a13;border:1px solid var(--line);padding:7px 13px;border-radius:20px;max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pages{display:grid;gap:14px;justify-items:center;max-height:62vh;overflow:auto;padding:14px;background:#07070d;border-radius:14px;border:1px solid var(--line);box-shadow:inset 0 2px 18px rgba(0,0,0,.6)}
-.page{background:#fff;border-radius:5px;box-shadow:0 6px 24px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.06);position:relative;overflow:hidden;transition:transform .2s}
-.page:hover{transform:scale(1.015)}
-.page canvas{width:100%;height:100%;display:block}
-.empty-msg{color:var(--muted2);text-align:center;padding:70px 20px;font-size:.88rem;line-height:1.7}
-/* summary */
-.summary{background:#0a0a13;border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-.sum-item .k{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
-.sum-item .v{font-size:1.1rem;font-weight:700;font-family:'Oswald';margin-top:3px;background:linear-gradient(90deg,var(--gold),#fff 60%,var(--pink-hi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-/* export overlay */
-.overlay{position:fixed;inset:0;background:rgba(4,4,9,.97);backdrop-filter:blur(8px);z-index:2000;overflow:auto;padding:20px;display:none}
-.overlay.open{display:block;animation:fadeUp .3s ease}
-.overlay-head{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#17171f,#12121a);padding:14px 18px;border-radius:14px;margin-bottom:16px;border:1px solid var(--line-hi);box-shadow:0 8px 28px rgba(0,0,0,.5)}
-.overlay-head strong{font-family:'Bebas Neue';letter-spacing:.12em;font-size:1.2rem;background:linear-gradient(90deg,var(--cyan),var(--pink-hi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.exp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;max-width:1150px;margin:0 auto}
-.exp-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;transition:all .2s}
-.exp-card:hover{border-color:var(--pink);transform:translateY(-3px);box-shadow:0 12px 30px rgba(255,45,135,.2)}
-.exp-card img{width:100%;height:auto;display:block;background:#fff;border-radius:8px;-webkit-touch-callout:default}
-.exp-card p{text-align:center;font-size:.68rem;color:var(--muted);padding:10px 4px 2px}
-.note{max-width:1150px;margin:0 auto 16px;text-align:center;color:var(--muted);font-size:.76rem;line-height:1.6}
-/* footer */
-footer{text-align:center;padding:24px;color:var(--muted2);font-size:.68rem;letter-spacing:.1em}
-footer::before{content:'✦ ';color:var(--gold)}
-/* responsive */
-@media(max-width:900px){
-  .layout{grid-template-columns:1fr;padding:14px}
-  .preview{position:static}
-  .pages{max-height:52vh}
-  .step .lbl{display:none}
-  .step{min-width:60px;justify-content:center;padding:11px 8px}
-  .steps{top:70px;padding:12px 14px}
-  header h1{font-size:1.3rem}
-}
-.hidden{display:none!important}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0a0a0f;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(255,45,149,0.15) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 80%, rgba(139,92,246,0.15) 0%, transparent 50%);
+  }
+  .card {
+    max-width: 520px;
+    text-align: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 48px 36px;
+  }
+  .logo { font-size: 56px; margin-bottom: 8px; }
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffd700, #ff2d95, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #a0a0b0; font-size: 15px; margin-bottom: 28px; }
+  .message {
+    background: rgba(255,45,149,0.08);
+    border: 1px solid rgba(255,45,149,0.25);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 28px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #e0e0ea;
+  }
+  .btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff2d95, #8b5cf6);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 16px 48px;
+    border-radius: 50px;
+    text-decoration: none;
+    box-shadow: 0 8px 32px rgba(255,45,149,0.35);
+  }
+  .price { font-size: 14px; color: #a0a0b0; margin-top: 16px; }
+  .price strong { color: #ffd700; font-size: 20px; }
+  .footer { margin-top: 32px; font-size: 12px; color: #60606a; }
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">✦</div>
-  <div><h1>SOKAL <span>STENCIL</span></h1>
-  <div class="tagline">◆ PRO EXACT ◆</div>
-  <div class="subtitle">Transforme tes dessins en stencils tattoo — ajustement facile, mesure exacte, du mini au grand format!</div></div>
-  <div class="brand">Maman Sokal 🖤</div>
-</header>
-
-<nav class="steps" id="stepsNav">
-  <div class="step active" data-step="1"><div class="num">1</div><div class="lbl">Importer</div></div>
-  <div class="step" data-step="2"><div class="num">2</div><div class="lbl">Créer le stencil</div></div>
-  <div class="step" data-step="3"><div class="num">3</div><div class="lbl">Grandeur & papier</div></div>
-  <div class="step" data-step="4"><div class="num">4</div><div class="lbl">Exporter</div></div>
-</nav>
-
-<div class="layout">
-  <div class="controls">
-
-    <!-- ÉTAPE 1 -->
-    <div class="step-panel active" id="panel1">
-      <div class="card">
-        <h3>Image source</h3>
-        <div class="drop" id="dropZone" style="position:relative;overflow:hidden">
-          <div class="big">📸</div>
-          <p><b style="color:#fff">Touche pour choisir une image</b><br>ou glisse-la ici</p>
-          <input type="file" id="fIn" accept="image/*" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer">
-        </div>
-        <img id="thumbPrev" class="thumb hidden" alt="aperçu">
-        <div class="hint">Utilise la version la plus nette de ton dessin. Le mode <b>Stencil</b> la convertira en pochoir.</div>
-      </div>
-      <div class="card">
-        <h3>Options</h3>
-        <div class="btn-row">
-          <button class="btn btn-ghost" id="btnReset">↺ Reset</button>
-          <button class="btn btn-cyan" id="btnNext1">Suivant →</button>
-        </div>
-      </div>
+  <div class="card">
+    <div class="logo">💎</div>
+    <h1>SOKAL STENCIL<br>PRO EXACT</h1>
+    <p class="subtitle">par Maman Sokal 🖤</p>
+    <div class="message">
+      La version gratuite de démonstration n'est plus disponible.<br><br>
+      <strong>Procure-toi l'application complète</strong> pour créer tes stencils tattoo avec des grandeurs exactes en cm!
     </div>
-
-    <!-- ÉTAPE 2 -->
-    <div class="step-panel" id="panel2">
-      <div class="card">
-        <h3>Mode de rendu</h3>
-        <div class="chip-row c3">
-          <button class="chip mode-chip active" data-mode="stencil">✦<br>Stencil</button>
-          <button class="chip mode-chip" data-mode="original">🖼<br>Originale</button>
-          <button class="chip" id="geminiBtn">🤖<br>Gemini IA</button>
-        </div>
-        <div class="btn-row" style="margin-top:10px"><button class="btn btn-ghost" id="chatgptBtn">💬 ChatGPT IA</button><button class="btn btn-ghost" id="tattBtn">📱 TattStenciL</button></div>
-        <div class="hint"><b>Stencil</b> : conversion auto en pochoir. <b>Originale</b> : ton image telle quelle.</div>
-      </div>
-      <div class="card">
-        <h3>Affiner le stencil</h3>
-        <div class="adj-head"><span>Netteté</span><b id="vSharp">0</b></div>
-        <div class="adj-ctl"><button class="stepper" data-adj="sharp" data-delta="-5">−</button><input id="sharp" type="range" min="0" max="100" value="0" step="1"><button class="stepper" data-adj="sharp" data-delta="5">+</button></div>
-        <div class="adj-head" style="margin-top:10px"><span>Intensité</span><b id="vIntensity">18</b></div>
-        <div class="adj-ctl"><button class="stepper" data-adj="intensity" data-delta="-1">−</button><input id="intensity" type="range" min="0" max="100" value="18" step="1"><button class="stepper" data-adj="intensity" data-delta="1">+</button></div>
-        <div class="adj-head" style="margin-top:10px"><span>Contraste</span><b id="vContrast">0.98</b></div>
-        <div class="adj-ctl"><button class="stepper" data-adj="contrast" data-delta="-.02">−</button><input id="contrast" type="range" min=".50" max="1.50" value=".98" step=".01"><button class="stepper" data-adj="contrast" data-delta=".02">+</button></div>
-      </div>
-      <div class="card">
-        <h3>Position</h3>
-        <div class="pad">
-          <span></span><button data-move="up">▲</button><span></span>
-          <button data-move="left">◀</button><button class="center-btn" id="moveReset">CENTRE</button><button data-move="right">▶</button>
-          <span></span><button data-move="down">▼</button><span></span>
-        </div>
-        <div class="rot-row"><button id="rotLeft">↺ TOURNER</button><button id="rotRight">↻ TOURNER</button></div>
-        <div class="rot-val" id="rotationValue">0°</div>
-        <div class="btn-row" style="margin-top:10px">
-          <button class="chip" id="mirrorBtn">⇄ Miroir</button>
-          <button class="btn btn-cyan" id="btnNext2">Suivant →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ÉTAPE 3 -->
-    <div class="step-panel" id="panel3">
-      <div class="card">
-        <h3>Taille physique du dessin</h3>
-        <div class="field-row">
-          <button class="stepper" data-size="-1">−</button>
-          <input id="sizeCm" class="num-input" type="number" min="2" max="300" step=".1" value="20" inputmode="decimal">
-          <span class="unit">cm</span>
-          <button class="stepper" data-size="1">+</button>
-        </div>
-        <input id="sizeRange" type="range" min="2" max="300" step=".1" value="20" aria-label="Taille">
-        <h3 style="margin-top:14px">Tailles rapides</h3>
-        <div class="chip-row c4">
-          <button class="chip size-preset" data-cm="4">4<small>mini flash</small></button>
-          <button class="chip size-preset" data-cm="6">6<small>flash</small></button>
-          <button class="chip size-preset" data-cm="8">8<small>petit</small></button>
-          <button class="chip size-preset" data-cm="10">10<small>moyen</small></button>
-          <button class="chip size-preset" data-cm="12">12</button>
-          <button class="chip size-preset" data-cm="15">15</button>
-          <button class="chip size-preset" data-cm="20">20</button>
-          <button class="chip size-preset" data-cm="30">30<small>grand</small></button>
-        </div>
-        <div class="hint">Largeur réelle du dessin. Les proportions sont conservées.</div>
-      </div>
-      <div class="card">
-        <h3>Papier</h3>
-        <div class="chip-row c3">
-          <button class="chip paper-chip active" data-paper="letter">Letter<small>Spirit 8.5×11</small></button>
-          <button class="chip paper-chip" data-paper="ozer">Ozer<small>213×305mm</small></button>
-          <button class="chip paper-chip" data-paper="a4">A4<small>210×297</small></button>
-        </div>
-        <div class="hint">Choisis ton papier : les pages auront exactement ce format.</div>
-      </div>
-      <div class="card">
-        <h3>Pages & orientation</h3>
-        <div class="chip-row c3">
-          <button class="chip grid-chip active" data-grid="1">1<small>page</small></button>
-          <button class="chip grid-chip" data-grid="2">2<small>2×1</small></button>
-          <button class="chip grid-chip" data-grid="4">4<small>2×2</small></button>
-          <button class="chip grid-chip" data-grid="6">6<small>2×3</small></button>
-          <button class="chip grid-chip" data-grid="9">9<small>3×3</small></button>
-          <button class="chip grid-chip" data-grid="12">12<small>3×4</small></button>
-        </div>
-        <div class="hint">⚡ <b>Auto</b> : le nombre de pages s'ajuste tout seul selon la grandeur. Tu peux forcer manuellement ici.</div>
-        <div class="chip-row c3" style="margin-top:10px">
-          <button class="chip ori-chip active" data-ori="portrait">↕<br>Portrait</button>
-          <button class="chip ori-chip" data-ori="paysage">↔<br>Paysage</button>
-          <button class="chip" id="mirrorBtn2">⇄<br>Miroir</button>
-        </div>
-        <div class="toggle-row" id="rulerRow">
-          <div class="toggle on" id="rulerToggle"></div>
-          <div class="toggle-lbl">Règle de 5cm <span style="color:var(--muted);font-weight:400">— vérifie l'échelle d'un coup d'œil</span></div>
-        </div>
-        <button class="btn btn-cyan" id="btnNext3" style="margin-top:6px">Suivant →</button>
-      </div>
-    </div>
-
-    <!-- ÉTAPE 4 -->
-    <div class="step-panel" id="panel4">
-      <div class="card">
-        <h3>Résumé</h3>
-        <div class="summary">
-          <div class="sum-item"><div class="k">Grandeur</div><div class="v" id="sumSize">—</div></div>
-          <div class="sum-item"><div class="k">Pages</div><div class="v" id="sumPages">—</div></div>
-          <div class="sum-item"><div class="k">Papier</div><div class="v" id="sumPaper">—</div></div>
-          <div class="sum-item"><div class="k">Mode</div><div class="v" id="sumMode">—</div></div>
-        </div>
-        <button class="btn btn-green" id="btnExp">⬇ Exporter les pages</button>
-        <div class="hint">Sur iPhone/iPad : <b>appuie longuement</b> sur chaque image, puis « Enregistrer dans Photos ». Imprime à <b>100%</b>, sans « ajuster à la page ».</div>
-      </div>
-      <div class="card">
-        <h3>Conseil pro 💡</h3>
-        <div class="hint" style="margin-top:0">Imprime <b>une page test</b> d'abord et mesure la <b>règle de 5cm</b> en bas. Si elle fait 5cm, tout est à la bonne échelle!</div>
-      </div>
-    </div>
-
+    <a class="btn" href="https://cynthiaglow651.gumroad.com/l/meaqzj">🛒 Acheter maintenant</a>
+    <p class="price">Achat unique — <strong>40 $ CAD</strong></p>
+    <p class="footer">SOKAL STENCIL • Maman Sokal 🖤 • Qualité Sokalite 💎</p>
   </div>
-
-  <div class="preview">
-    <div class="preview-card">
-      <div class="preview-head">
-        <h3>Aperçu</h3>
-        <div class="status-pill" id="status">Importe une image pour commencer</div>
-      </div>
-      <div class="pages" id="pagesWrapper"><div class="empty-msg">Aucun aperçu<br><span style="font-size:.72rem">Importe une image à l'étape 1</span></div></div>
-    </div>
-  </div>
-</div>
-
-<footer>SOKAL STENCIL • Maman Sokal 🖤 • Qualité Sokalite 💎</footer>
-
-<div class="overlay" id="exportOverlay">
-  <div class="overlay-head"><strong>ENREGISTRER LES PAGES</strong><button class="btn btn-primary" id="exportClose" style="width:auto;padding:10px 18px">Fermer</button></div>
-  <div class="note">Sur iPhone/iPad : appuie longuement sur chaque image → « Enregistrer dans Photos ».</div>
-  <div class="exp-grid" id="exportGrid"></div>
-</div>
-
-<script>
-const $=id=>document.getElementById(id);
-let img=null;
-let st={grid:1,sizeCm:20,sharp:0,intensity:18,contrast:.98,offX:0,offY:0,orientation:'portrait',mirror:false,rotation:0,mode:'stencil',paper:'letter',ruler:true,step:1};
-/* ---------- Steps ---------- */
-function goStep(n){st.step=n;document.querySelectorAll('.step').forEach(s=>{const sn=parseInt(s.dataset.step);s.classList.toggle('active',sn===n);if(sn<n)s.classList.add('done')});document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));$('panel'+n).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
-document.querySelectorAll('.step').forEach(s=>s.addEventListener('click',()=>goStep(parseInt(s.dataset.step))));
-$('btnNext1').onclick=()=>{if(!img){alert('Importe une image d\u2019abord 🙂')}else goStep(2)};
-$('btnNext2').onclick=()=>goStep(3);
-$('btnNext3').onclick=()=>{updateSummary();goStep(4)};
-function updateSummary(){$('sumSize').textContent=img?`${st.sizeCm.toFixed(1)} × ${(st.sizeCm*img.height/img.width).toFixed(1)} cm`:'—';$('sumPages').textContent=st.grid;$('sumPaper').textContent=paperName();$('sumMode').textContent=st.mode==='stencil'?'Pochoir':'Originale'}
-/* ---------- Helpers ---------- */
-function modeLabel(){return st.mode==='stencil'?'POCHOIR contours':'IMAGE ORIGINALE'}
-function colsFor(n){return n===2||n===4||n===6?2:n>=9?3:1}
-function paperDims(){const P={letter:[21.59,27.94],ozer:[21.3,30.5],a4:[21.0,29.7]}[st.paper]||[21.59,27.94];return st.orientation==='portrait'?{w:P[0],h:P[1]}:{w:P[1],h:P[0]}}
-function paperName(){return{letter:'Letter',ozer:'Ozer 213×305',a4:'A4'}[st.paper]||'Letter'}
-function autoGrid(){if(!img)return false;const pd=paperDims(),dw=st.sizeCm,dh=st.sizeCm*(img.height/img.width);for(const n of[1,2,4,6,9,12]){const c=colsFor(n),r=Math.ceil(n/c);if(c*pd.w>=dw&&r*pd.h>=dh){if(st.grid!==n){st.grid=n;document.querySelectorAll('.grid-chip').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.grid)===n));updateGrid();return true}return false}}if(st.grid!==12){st.grid=12;document.querySelectorAll('.grid-chip').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.grid)===12));updateGrid();return true}return false}
-const _crcT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c}return t})();
-function _crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=_crcT[(c^b[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
-function pngWithDpi(dataUrl,pxPerM){try{const bin=atob(dataUrl.split(',')[1]),n=bin.length,bytes=new Uint8Array(n);for(let i=0;i<n;i++)bytes[i]=bin.charCodeAt(i);const phys=new Uint8Array(21),dv=new DataView(phys.buffer);dv.setUint32(0,9);phys.set([0x70,0x48,0x59,0x73],4);dv.setUint32(8,pxPerM);dv.setUint32(12,pxPerM);phys[16]=1;dv.setUint32(17,_crc32(phys.subarray(4,17)));const out=new Uint8Array(n+21);out.set(bytes.subarray(0,33),0);out.set(phys,33);out.set(bytes.subarray(33),54);let s='';const CH=8192;for(let i=0;i<out.length;i+=CH)s+=String.fromCharCode.apply(null,out.subarray(i,i+CH));return 'data:image/png;base64,'+btoa(s)}catch(e){return dataUrl}}
-/* ---------- Render ---------- */
-function sourcePixels(maxW=1600){const scale=Math.min(1,maxW/img.width),sw=Math.max(1,Math.round(img.width*scale)),sh=Math.max(1,Math.round(img.height*scale));const c=document.createElement('canvas');c.width=sw;c.height=sh;const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(img,0,0,sw,sh);return{c,w:sw,h:sh}}
-function stencilProcess(ctx,W,H){const id=ctx.getImageData(0,0,W,H),d=id.data,N=W*H,g=new Float32Array(N),blur=new Float32Array(N);const c=st.contrast;for(let y=0;y<H;y++){for(let x=0;x<W;x++){const i=(y*W+x)*4,p=y*W+x;let v=.299*d[i]+.587*d[i+1]+.114*d[i+2];v=(v-128)*c+128;g[p]=Math.max(0,Math.min(255,v))}}for(let y=0;y<H;y++){const ym=y?y-1:y,yp=y<H-1?y+1:y;for(let x=0;x<W;x++){const xm=x?x-1:x,xp=x<W-1?x+1:x,p=y*W+x;blur[p]=(g[ym*W+xm]+2*g[ym*W+x]+g[ym*W+xp]+2*g[y*W+xm]+4*g[p]+2*g[y*W+xp]+g[yp*W+xm]+2*g[yp*W+x]+g[yp*W+xp])/16}}const gain=.82+(st.intensity/100)*1.00,threshold=15+(st.sharp*.12),toneStrength=.10+(st.intensity/100)*.16;for(let y=1;y<H-1;y++){for(let x=1;x<W-1;x++){const p=y*W+x;const gx=-blur[(y-1)*W+x-1]+blur[(y-1)*W+x+1]-2*blur[y*W+x-1]+2*blur[y*W+x+1]-blur[(y+1)*W+x-1]+blur[(y+1)*W+x+1];const gy=-blur[(y-1)*W+x-1]-2*blur[(y-1)*W+x]-blur[(y-1)*W+x+1]+blur[(y+1)*W+x-1]+2*blur[(y+1)*W+x]+blur[(y+1)*W+x+1];let edge=Math.sqrt(gx*gx+gy*gy);edge=Math.max(0,edge-threshold);let ink=Math.min(255,Math.pow(edge/255,.78)*118*gain);if(st.sharp>0)ink=Math.min(255,ink*(1+st.sharp/150));const dark=Math.max(0,150-blur[p]),tone=Math.min(38,dark*toneStrength),out=Math.max(0,255-ink-tone),i=p*4;d[i]=d[i+1]=d[i+2]=out;d[i+3]=255}}for(let x=0;x<W;x++){let i=x*4;d[i]=d[i+1]=d[i+2]=255;i=(H-1)*W*4+x*4;d[i]=d[i+1]=d[i+2]=255}for(let y=0;y<H;y++){let i=y*W*4;d[i]=d[i+1]=d[i+2]=255;i=y*W*4+(W-1)*4;d[i]=d[i+1]=d[i+2]=255}ctx.putImageData(id,0,0)}
-function updateGrid(){const w=$('pagesWrapper');w.innerHTML='';if(!img){w.innerHTML='<div class="empty-msg">Aucun aperçu<br><span style="font-size:.72rem">Importe une image à l\u2019étape 1</span></div>';return}const cols=colsFor(st.grid);w.style.gridTemplateColumns=`repeat(${cols},1fr)`;const pd=paperDims(),pw=Math.min(200,Math.round(200)),ph=Math.round(pw*pd.h/pd.w);for(let i=0;i<st.grid;i++){const page=document.createElement('div');page.className='page';page.style.width=pw+'px';page.style.height=ph+'px';page.innerHTML=`<canvas id="cv-${i}"></canvas>`;w.appendChild(page)}render()}
-function render(){if(!img)return;const canvases=document.querySelectorAll('.page canvas');if(!canvases.length)return;const pd=paperDims(),pxPerCm=1200/21.59,W=Math.round(pd.w*pxPerCm),H=Math.round(pd.h*pxPerCm),cols=colsFor(st.grid),rows=Math.ceil(st.grid/cols),dw=st.sizeCm*pxPerCm,dh=dw*(img.height/img.width),totalW=cols*W,totalH=rows*H,source=sourcePixels(1600);canvases.forEach((cv,i)=>{cv.width=W;cv.height=H;const ctx=cv.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(-(i%cols)*W,-Math.floor(i/cols)*H);ctx.translate(totalW/2+st.offX,totalH/2+st.offY);if(st.mirror){ctx.scale(-1,1)}ctx.rotate(st.rotation*Math.PI/180);ctx.drawImage(source.c,-dw/2,-dh/2,dw,dh);ctx.restore();if(st.mode==='stencil')stencilProcess(ctx,W,H);if(st.ruler){const bl=5*pxPerCm,bx=Math.round(W*0.06),by=H-Math.round(0.55*pxPerCm);ctx.fillStyle='white';ctx.fillRect(bx-14,by-30,bl+110,64);ctx.fillStyle='black';ctx.fillRect(bx,by,bl,10);ctx.fillRect(bx-3,by-16,6,42);ctx.fillRect(bx+bl-3,by-16,6,42);ctx.font=`${Math.round(pxPerCm*0.42)}px sans-serif`;ctx.textBaseline='middle';ctx.fillText('5 cm',bx+bl+14,by+5)}});$('status').textContent=`${modeLabel()} • ${st.sizeCm.toFixed(1)} × ${(st.sizeCm*img.height/img.width).toFixed(1)} cm • ${st.grid}p • ${paperName()}`}
-/* ---------- Events ---------- */
-function syncSize(v){v=Math.max(2,Math.min(300,parseFloat(v)||2));st.sizeCm=v;$('sizeCm').value=v.toFixed(1);$('sizeRange').value=v;if(!autoGrid())render()}
-$('fIn').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{img=new Image();img.onload=()=>{st.offX=0;st.offY=0;st.rotation=0;$('rotationValue').textContent='0°';const th=$('thumbPrev');th.src=ev.target.result;th.classList.remove('hidden');document.querySelectorAll('.step')[0].classList.add('done');updateGrid();goStep(2)};img.src=ev.target.result};reader.readAsDataURL(file)});
-$('sizeCm').addEventListener('change',e=>syncSize(e.target.value));
-$('sizeRange').addEventListener('input',e=>syncSize(e.target.value));
-document.querySelectorAll('[data-size]').forEach(b=>b.addEventListener('click',()=>syncSize(st.sizeCm+parseFloat(b.dataset.size))));
-document.querySelectorAll('.size-preset').forEach(b=>b.addEventListener('click',()=>syncSize(parseFloat(b.dataset.cm))));
-function setAdj(id,v){const el=$(id),min=parseFloat(el.min),max=parseFloat(el.max);v=Math.max(min,Math.min(max,v));el.value=v;st[id]=v;$('vSharp').textContent=Math.round(st.sharp);$('vIntensity').textContent=Math.round(st.intensity);$('vContrast').textContent=st.contrast.toFixed(2);render()}
-['sharp','intensity','contrast'].forEach(id=>$(id).addEventListener('input',e=>setAdj(id,parseFloat(e.target.value))));
-document.querySelectorAll('[data-adj]').forEach(b=>b.addEventListener('click',()=>setAdj(b.dataset.adj,parseFloat($(b.dataset.adj).value)+parseFloat(b.dataset.delta))));
-document.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',()=>{const s=25,m=b.dataset.move;if(m==='up')st.offY-=s;if(m==='down')st.offY+=s;if(m==='left')st.offX-=s;if(m==='right')st.offX+=s;render()}));
-$('moveReset').onclick=()=>{st.offX=0;st.offY=0;render()};
-$('rotLeft').onclick=()=>{st.rotation-=5;if(st.rotation<-180)st.rotation+=360;$('rotationValue').textContent=`${st.rotation}°`;render()};
-$('rotRight').onclick=()=>{st.rotation+=5;if(st.rotation>180)st.rotation+=360;$('rotationValue').textContent=`${st.rotation}°`;render()};
-function toggleMirror(){$('mirrorBtn').classList.toggle('active',st.mirror);$('mirrorBtn2').classList.toggle('active',st.mirror)}
-$('mirrorBtn').onclick=()=>{st.mirror=!st.mirror;toggleMirror();render()};
-$('mirrorBtn2').onclick=()=>{st.mirror=!st.mirror;toggleMirror();render()};
-function setMode(m){st.mode=m;document.querySelectorAll('.mode-chip').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));render()}
-document.querySelectorAll('.mode-chip').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
-$('geminiBtn').onclick=async()=>{const prompt="Transforme cette image en contour de pochoir style livre à colorier : lignes noires nettes et précises sur fond blanc pur. Garde tous les petits détails (poils, cheveux, textures) en lignes fines et délicates. AUCUNE zone noire remplie, AUCUN ombrage, AUCUN gris, AUCUN dégradé, juste du dessin au trait noir et blanc, facile à tracer pour un tatouage.";try{await navigator.clipboard.writeText(prompt)}catch(e){}alert('Prompt copié ! Dans Gemini : ajoute ton image, colle le prompt, génère, sauvegarde puis importe ici.');window.open('https://gemini.google.com/app','_blank')};
-$('chatgptBtn').onclick=async()=>{const prompt="Transforme cette image en contour de pochoir style livre à colorier : lignes noires nettes et précises sur fond blanc pur. Garde tous les petits détails (poils, cheveux, textures) en lignes fines et délicates. AUCUNE zone noire remplie, AUCUN ombrage, AUCUN gris, AUCUN dégradé, juste du dessin au trait noir et blanc, facile à tracer pour un tatouage.";try{await navigator.clipboard.writeText(prompt)}catch(e){}alert('Prompt copié ! Dans ChatGPT : ajoute ton image, colle le prompt, génère, sauvegarde puis importe ici.');window.open('https://chatgpt.com/','_blank')};$('tattBtn').onclick=()=>{window.open('https://apps.apple.com/app/tattstencil/id6593687274','_blank')};
-document.querySelectorAll('.grid-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.grid-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.grid=parseInt(b.dataset.grid);updateGrid()}));
-document.querySelectorAll('.paper-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.paper-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.paper=b.dataset.paper;try{localStorage.setItem('spp-paper',st.paper)}catch(e){}autoGrid();updateGrid()}));
-try{const sp=localStorage.getItem('spp-paper');if(sp&&['letter','ozer','a4'].includes(sp)){st.paper=sp;document.querySelectorAll('.paper-chip').forEach(b=>b.classList.toggle('active',b.dataset.paper===sp))}}catch(e){}
-document.querySelectorAll('.ori-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.ori-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.orientation=b.dataset.ori;autoGrid();updateGrid()}));
-$('rulerRow').addEventListener('click',()=>{st.ruler=!st.ruler;$('rulerToggle').classList.toggle('on',st.ruler);render()});
-function openExport(){if(!img){alert('Importe une image avant d\u2019exporter.');return}updateSummary();const grid=$('exportGrid');grid.innerHTML='';document.querySelectorAll('.page canvas').forEach((cv,i)=>{const card=document.createElement('div');card.className='exp-card';const im=document.createElement('img');im.src=pngWithDpi(cv.toDataURL('image/png'),Math.round(1200/21.59*100));im.alt=`Page ${i+1}`;const cap=document.createElement('p');cap.textContent=`PAGE ${i+1} • appuie longuement pour enregistrer`;card.appendChild(im);card.appendChild(cap);grid.appendChild(card)});$('exportOverlay').classList.add('open')}
-$('btnExp').onclick=openExport;
-$('exportClose').onclick=()=>$('exportOverlay').classList.remove('open');
-$('btnReset').onclick=()=>location.reload();
-</script>
 </body>
 </html>
