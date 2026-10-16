@@ -410,7 +410,7 @@
         transition: background 0.15s ease, transform 0.1s ease;
       }
       #signBtn:hover { background: var(--green-dark); }
-      #signBtn:disabled { opacity: 0.65; cursor: wait; }
+      #signBtn:disabled { opacity: 0.65; cursor: wait; background: #4a4a52; box-shadow: none; }
       @keyframes shake {
         0%, 100% { transform: translateX(0); }
         15% { transform: translateX(-11px); }
@@ -881,6 +881,7 @@
       var errorsList = document.getElementById("errorsList");
       var progressFill = document.getElementById("progressFill");
       var progressLabel = document.getElementById("progressLabel");
+      var envoiEnCours = false; // verrou anti double-envoi
 
       // ——— Nom pré-rempli via ?nom= (toujours modifiable) ———
       try {
@@ -998,6 +999,9 @@
 
       // ——— Signature ———
       signBtn.addEventListener("click", function () {
+        // Verrou anti double-envoi : si un envoi est déjà parti,
+        // tout autre clic est ignoré.
+        if (envoiEnCours) return;
         // Blocage grossesse / allaitement
         if (state.grossesse === "Oui") {
           showErrors(["On ne peut pas signer pour l'instant : on ne tatoue pas pendant la grossesse ni l'allaitement. Écris à Cynthia pour reporter ton rendez-vous."]);
@@ -1035,6 +1039,9 @@
           }
         };
 
+        // Désactivation IMMÉDIATE du bouton, AVANT l'envoi au webhook :
+        // un deuxième clic devient impossible (disabled + visuel grisé).
+        envoiEnCours = true;
         signBtn.disabled = true;
         signBtn.textContent = "Envoi en cours…";
 
@@ -1053,6 +1060,18 @@
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
+        // En cas d'échec d'envoi : le bouton ne se réactive que si
+        // l'écran de confirmation n'est pas affiché.
+        function gererEchecEnvoi() {
+          var confAffichee = document.getElementById("confirmation").classList.contains("show");
+          if (!confAffichee) {
+            envoiEnCours = false;
+            signBtn.disabled = false;
+            signBtn.textContent = "Signer et envoyer à Cynthia et Dave";
+          }
+          showConfirmation();
+        }
+
         // Envoi au webhook (POST JSON) seulement si une vraie adresse
         // est configurée — jamais vers l'adresse fictive par défaut.
         // Même si le réseau échoue, le client voit sa confirmation.
@@ -1063,9 +1082,9 @@
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(payload)
-            }).then(showConfirmation, showConfirmation);
+            }).then(showConfirmation, gererEchecEnvoi);
           } catch (e) {
-            showConfirmation();
+            gererEchecEnvoi();
           }
         } else {
           showConfirmation();
