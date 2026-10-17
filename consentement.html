@@ -915,10 +915,13 @@
       var envoiEnCours = false; // verrou anti double-envoi
 
       // ——— Nom pré-rempli via ?nom= (toujours modifiable) ———
+      // ——— Artiste via ?artiste= (ex: ?artiste=Dave) ———
+      var artisteParam = "";
       try {
         var params = new URLSearchParams(window.location.search);
         var nomParam = params.get("nom");
         if (nomParam) nomInput.value = nomParam;
+        artisteParam = params.get("artiste") || "";
       } catch (e) { /* pas de paramètre : le client écrit son nom */ }
 
       // ——— Détails dépliables ———
@@ -1060,6 +1063,7 @@
         var nom = nomInput.value.trim();
         var payload = {
           nom: nom,
+          artiste: artisteParam || "Cynthia",
           dateHeure: now.toISOString(),
           dateAffichee: fmt.complet,
           reponses: {
