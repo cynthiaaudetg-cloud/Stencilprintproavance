@@ -37,8 +37,8 @@ h3,.osw{font-family:'Barlow',sans-serif}
 header{position:sticky;top:0;z-index:900;background:rgba(8,8,15,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:14px}
 header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#e50914 20%,#fff 50%,#e50914 80%,transparent);opacity:.9}
 .logo{width:44px;height:44px;background:linear-gradient(135deg,#ff3942 0%,#e50914 40%,#8f060d 100%);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;overflow:hidden;transform:rotate(45deg);border-radius:8px;box-shadow:0 4px 22px rgba(229,9,20,.55),inset 0 2px 4px rgba(255,255,255,.35),inset 0 -2px 4px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.25)}.logo span{transform:rotate(-45deg);display:block}.logo::after{content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);animation:shine 3.5s ease-in-out infinite}@keyframes shine{0%,60%{left:-60%}100%{left:130%}}
-header h1{font-size:1.9rem;font-weight:400;line-height:1;color:#fff;letter-spacing:.04em;filter:drop-shadow(0 0 12px rgba(229,9,20,.4));font-family:'Pirata One',serif}
-header h1 span{-webkit-text-fill-color:var(--cyan);font-weight:400}.tagline{font-family:'Oswald';font-size:.62rem;letter-spacing:.42em;font-weight:700;background:linear-gradient(90deg,var(--gold),var(--pink-hi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-top:2px;filter:drop-shadow(0 0 6px rgba(255,201,61,.3))}.subtitle{font-size:.66rem;color:var(--muted);letter-spacing:.04em;margin-top:4px;font-weight:500}
+header h1{font-size:2.4rem;font-weight:400;line-height:.95;color:#fff;letter-spacing:.02em;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8)) drop-shadow(0 0 18px rgba(229,9,20,.5));font-family:'Pirata One',serif;text-shadow:2px 2px 0 #8f060d}
+header h1 span{-webkit-text-fill-color:var(--cyan);font-weight:400}.tagline{font-family:'Barlow';font-size:.68rem;letter-spacing:.5em;font-weight:800;color:#ff3942;margin-top:4px;filter:drop-shadow(0 0 8px rgba(229,9,20,.7));text-transform:uppercase}.subtitle{font-size:.66rem;color:var(--muted);letter-spacing:.04em;margin-top:4px;font-weight:500}
 .brand{margin-left:auto;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,var(--gold),#ffe9a8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 8px rgba(255,201,61,.35))}
 .brand::before{content:'✦ ';color:var(--gold);-webkit-text-fill-color:var(--gold)}
 /* ---------- Steps nav ---------- */
@@ -57,9 +57,9 @@ header h1 span{-webkit-text-fill-color:var(--cyan);font-weight:400}.tagline{font
 .step-panel{display:none;flex-direction:column;gap:14px;animation:fadeUp .35s cubic-bezier(.2,.9,.3,1.2)}
 .step-panel.active{display:flex}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 40%),var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 10px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05);transition:border-color .25s}
+.card{background:linear-gradient(180deg,rgba(229,9,20,.04),transparent 30%),linear-gradient(180deg,rgba(255,255,255,.03),transparent 40%),var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 10px 34px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);transition:all .25s;position:relative}
 .card:hover{border-color:var(--line-hi)}
-.card h3{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--cyan),var(--pink-hi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.card h3{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:10px;color:#fff;text-shadow:0 0 12px rgba(229,9,20,.5)}
 .card h3::before{content:'';width:4px;height:16px;border-radius:2px;background:linear-gradient(180deg,var(--pink),var(--violet));box-shadow:0 0 10px rgba(255,45,135,.6);-webkit-text-fill-color:initial}
 .hint{font-size:.72rem;color:var(--muted);line-height:1.6;margin-top:12px}
 .hint b{color:#fff}
@@ -67,7 +67,7 @@ header h1 span{-webkit-text-fill-color:var(--cyan);font-weight:400}.tagline{font
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 20px;border-radius:13px;border:none;font-weight:600;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Oswald';transition:all .2s;width:100%;position:relative;overflow:hidden}
 .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.22),transparent 55%);pointer-events:none}
 .btn:active{transform:scale(.96)}
-.btn-primary{background:linear-gradient(135deg,var(--pink-hi),var(--pink) 45%,var(--violet-d));color:#fff;box-shadow:0 8px 26px rgba(255,45,135,.42),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-primary{background:linear-gradient(135deg,#ff1a25,#c00812 50%,#7a050b);color:#fff;box-shadow:0 8px 26px rgba(229,9,20,.5),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -2px 6px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15)}
 .btn-primary:hover{box-shadow:0 10px 32px rgba(255,45,135,.58);transform:translateY(-1px)}
 .btn-cyan{background:linear-gradient(135deg,#2ee6ff,#00a8c8);color:#03252c;box-shadow:0 8px 24px rgba(0,229,255,.28),inset 0 1px 0 rgba(255,255,255,.35)}
 .btn-cyan:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(0,229,255,.4)}
@@ -144,6 +144,7 @@ input[type=range]{width:100%;accent-color:var(--pink);height:32px;cursor:pointer
 .note{max-width:1150px;margin:0 auto 16px;text-align:center;color:var(--muted);font-size:.76rem;line-height:1.6}
 /* footer */
 footer{text-align:center;padding:24px;color:var(--muted);font-size:.72rem;letter-spacing:.1em}
+.ornament{text-align:center;color:var(--pink);font-size:1.1rem;letter-spacing:.6em;margin:6px 0;opacity:.85;filter:drop-shadow(0 0 6px rgba(229,9,20,.6))}
 footer::before{content:'💎 ';}
 /* responsive */
 @media(max-width:900px){
