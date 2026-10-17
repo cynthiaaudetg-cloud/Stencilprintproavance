@@ -1120,15 +1120,36 @@
           localStorage.setItem('sokal_signatures_backup', JSON.stringify(sauvegardes));
         } catch (e) { /* localStorage indisponible, on continue */ }
 
-        // Webhook de secours fiable (webhook.site) - en plus de Google
-        var BACKUP_WEBHOOK = "https://webhook.site/bf888a34-e9cc-47fd-ba46-b061046669e8";
+        // SOLUTION PERMANENTE : envoi vers Google Forms (remplace webhook.site temporaire)
+        // POST natif vers iframe cachée = aucun problème CORS, fiabilité Google
+        var GFORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeZ8mvIF1sY3ZwS-Lxs_B3fyl51vm11BmLDyM9PAqlPnPASJg/formResponse";
         try {
-          fetch(BACKUP_WEBHOOK, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify(payload)
-          }).catch(function(){});
+          var gform = document.createElement("form");
+          gform.method = "POST";
+          gform.action = GFORM_URL;
+          gform.target = "gform_iframe";
+          gform.style.display = "none";
+          var champs = {
+            "entry.1774806312": nom,
+            "entry.1069142401": "Confirmé (18 ans et plus)",
+            "entry.1802929655": state.grossesse,
+            "entry.194188028": state.creme,
+            "entry.1373113145": state.photos,
+            "entry.91340642": artisteParam
+          };
+          for (var k in champs) {
+            var inp = document.createElement("input");
+            inp.type = "hidden";
+            inp.name = k;
+            inp.value = champs[k];
+            gform.appendChild(inp);
+          }
+          var iframe = document.createElement("iframe");
+          iframe.name = "gform_iframe";
+          iframe.style.display = "none";
+          document.body.appendChild(iframe);
+          document.body.appendChild(gform);
+          gform.submit();
         } catch(e){}
 
         var webhookReady = WEBHOOK_URL && WEBHOOK_URL.indexOf("example.com") === -1;
