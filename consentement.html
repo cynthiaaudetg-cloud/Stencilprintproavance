@@ -364,6 +364,27 @@
         line-height: 1.1;
         color: var(--ink);
       }
+      .signatures-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: start;
+      }
+      @media (max-width: 430px) { .signatures-row { grid-template-columns: 1fr; } }
+      .signature-cell { text-align: center; }
+      .signature-visual {
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .signature-img {
+        display: block;
+        max-width: 100%;
+        max-height: 96px;
+        width: auto;
+        height: auto;
+      }
       .signature-box .sig-role { color: var(--ink-dim); font-size: 14.5px; margin-top: 2px; }
       .signature-box .sig-check {
         display: inline-block;
@@ -781,19 +802,28 @@
 
         <!-- 14 — Signature Cynthia -->
         <section class="card" id="s14">
-          <div class="sec-head"><span class="sec-num">14</span><h2 class="sec-title">Signé par Cynthia</h2></div>
+          <div class="sec-head"><span class="sec-num">14</span><h2 class="sec-title">Signé par Cynthia et Dave</h2></div>
           <p class="sec-body">
-            Ce formulaire et ses conditions sont approuvés par Cynthia, propriétaire de Sokal Tattoo.
-            Sa signature est déjà apposée ci-dessous — il ne manque que la tienne.
+            Ce formulaire et ses conditions sont approuvés par Cynthia et Dave, de Sokal Tattoo.
+            Leurs signatures sont déjà apposées ci-dessous — il ne manque que la tienne.
           </p>
           <div class="signature-box">
-            <div class="signature-script">Cynthia Audet Grondin</div>
-            <div class="sig-role">Cynthia Audet Grondin — Sokal Tattoo</div>
-            <span class="sig-check">✓ Signature pré-apposée</span>
+            <div class="signatures-row">
+              <div class="signature-cell">
+                <div class="signature-visual"><div class="signature-script">Cynthia Audet Grondin</div></div>
+                <div class="sig-role">Cynthia Audet Grondin — Sokal Tattoo</div>
+                <span class="sig-check">✓ Signature pré-apposée</span>
+              </div>
+              <div class="signature-cell">
+                <div class="signature-visual"><img class="signature-img" src="assets/signature-dave.png" alt="Signature de Dave Gagnon" /></div>
+                <div class="sig-role">Dave Gagnon — Sokal Tattoo</div>
+                <span class="sig-check">✓ Signature pré-apposée</span>
+              </div>
+            </div>
           </div>
           <button class="detail-toggle" aria-expanded="false">Lire le détail complet <span class="chev">▼</span></button>
           <div class="detail">
-            <p>La signature de Cynthia, apposée à l'avance avec son autorisation, confirme que ce document
+            <p>Les signatures de Cynthia et de Dave, apposées à l'avance avec leur autorisation, confirment que ce document
             représente les conditions officielles de Sokal Tattoo au moment de ta signature.</p>
             <p>Ta signature électronique, avec la date et l'heure enregistrées, a la même valeur qu'une
             signature papier. Ton consentement est conservé de façon permanente par le salon.</p>
