@@ -11,34 +11,33 @@
 <meta property="og:description" content="Tes stencils tattoo, du mini au grand format — facile! Grandeurs exactes, impression multi-pages.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cynthiaaudetg-cloud.github.io/Stencilprintproavance/">
-<meta name="theme-color" content="#08080f">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0a0a0a">
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --pink:#ff2d87; --pink-hi:#ff5da2; --pink-d:#c2185b;
-  --violet:#8b2ff7; --violet-d:#5b1bb8;
-  --cyan:#00e5ff; --gold:#ffc93d; --green:#00e676;
-  --bg:#08080f; --card:#12121c; --card2:#181826;
-  --line:#2a2a40; --line-hi:#3d3d5c;
-  --txt:#f5f3fa; --muted:#a8a3c0; --muted2:#6e6a8a;
+  --pink:#e50914; --pink-hi:#ff3942; --pink-d:#8f060d;
+  --violet:#8f060d; --violet-d:#5c0409;
+  --cyan:#ffffff; --gold:#ffffff; --green:#e50914;
+  --bg:#0a0a0a; --card:#141414; --card2:#1c1c1c;
+  --line:#2e2e2e; --line-hi:#4a4a4a;
+  --txt:#ffffff; --muted:#c8c8c8; --muted2:#8a8a8a;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{
   background:
-    radial-gradient(900px 500px at 15% -5%, rgba(139,47,247,.16) 0%, transparent 55%),
-    radial-gradient(900px 500px at 85% -5%, rgba(255,45,135,.14) 0%, transparent 55%),
-    radial-gradient(700px 400px at 50% 110%, rgba(255,201,61,.06) 0%, transparent 60%),
+    radial-gradient(900px 500px at 15% -5%, rgba(229,9,20,.10) 0%, transparent 55%),
+    radial-gradient(900px 500px at 85% -5%, rgba(229,9,20,.08) 0%, transparent 55%),
     var(--bg);
   background-attachment:fixed;
-  color:var(--txt);font-family:'Inter',system-ui,sans-serif;min-height:100vh;font-size:14px;
+  color:var(--txt);font-family:'Barlow',system-ui,sans-serif;min-height:100vh;font-size:14px;
 }
-h1,h2,.bebas{font-family:'Bebas Neue','Oswald',sans-serif;letter-spacing:.04em}
-h3,.osw{font-family:'Oswald',sans-serif}
+h1,h2,.bebas{font-family:'Pirata One','Barlow',serif;letter-spacing:.04em}
+h3,.osw{font-family:'Barlow',sans-serif}
 /* ---------- Header ---------- */
 header{position:sticky;top:0;z-index:900;background:rgba(8,8,15,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:14px}
-header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--pink),var(--gold),var(--violet),transparent);opacity:.85;filter:blur(.4px)}
-.logo{width:44px;height:44px;border-radius:13px;background:conic-gradient(from 210deg,var(--pink),var(--violet),var(--gold),var(--pink-hi),var(--violet-d),var(--pink));display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 22px rgba(255,45,135,.5),0 0 22px rgba(255,201,61,.45),inset 0 2px 4px rgba(255,255,255,.4),inset 0 -2px 4px rgba(0,0,0,.3);flex-shrink:0;position:relative;overflow:hidden}.logo::after{content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:shine 3.5s ease-in-out infinite}@keyframes shine{0%,60%{left:-60%}100%{left:130%}}
-header h1{font-size:1.65rem;font-weight:400;line-height:1;background:linear-gradient(100deg,#fff 15%,var(--gold) 35%,var(--pink-hi) 60%,var(--violet) 85%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:.06em;filter:drop-shadow(0 0 12px rgba(255,201,61,.25))}
+header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#e50914 20%,#fff 50%,#e50914 80%,transparent);opacity:.9}
+.logo{width:44px;height:44px;background:linear-gradient(135deg,#ff3942 0%,#e50914 40%,#8f060d 100%);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;overflow:hidden;transform:rotate(45deg);border-radius:8px;box-shadow:0 4px 22px rgba(229,9,20,.55),inset 0 2px 4px rgba(255,255,255,.35),inset 0 -2px 4px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.25)}.logo span{transform:rotate(-45deg);display:block}.logo::after{content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);animation:shine 3.5s ease-in-out infinite}@keyframes shine{0%,60%{left:-60%}100%{left:130%}}
+header h1{font-size:1.9rem;font-weight:400;line-height:1;color:#fff;letter-spacing:.04em;filter:drop-shadow(0 0 12px rgba(229,9,20,.4));font-family:'Pirata One',serif}
 header h1 span{-webkit-text-fill-color:var(--cyan);font-weight:400}.tagline{font-family:'Oswald';font-size:.62rem;letter-spacing:.42em;font-weight:700;background:linear-gradient(90deg,var(--gold),var(--pink-hi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-top:2px;filter:drop-shadow(0 0 6px rgba(255,201,61,.3))}.subtitle{font-size:.66rem;color:var(--muted);letter-spacing:.04em;margin-top:4px;font-weight:500}
 .brand{margin-left:auto;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,var(--gold),#ffe9a8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 8px rgba(255,201,61,.35))}
 .brand::before{content:'✦ ';color:var(--gold);-webkit-text-fill-color:var(--gold)}
@@ -144,8 +143,8 @@ input[type=range]{width:100%;accent-color:var(--pink);height:32px;cursor:pointer
 .exp-card p{text-align:center;font-size:.68rem;color:var(--muted);padding:10px 4px 2px}
 .note{max-width:1150px;margin:0 auto 16px;text-align:center;color:var(--muted);font-size:.76rem;line-height:1.6}
 /* footer */
-footer{text-align:center;padding:24px;color:var(--muted2);font-size:.68rem;letter-spacing:.1em}
-footer::before{content:'✦ ';color:var(--gold)}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:.72rem;letter-spacing:.1em}
+footer::before{content:'💎 ';}
 /* responsive */
 @media(max-width:900px){
   .layout{grid-template-columns:1fr;padding:14px}
@@ -161,9 +160,9 @@ footer::before{content:'✦ ';color:var(--gold)}
 </head>
 <body>
 <header>
-  <div class="logo">✦</div>
+  <div class="logo"><span>💎</span></div>
   <div><h1>SOKAL <span>STENCIL</span></h1>
-  <div class="tagline">◆ PRO EXACT ◆</div>
+  <div class="tagline">💎 PRO EXACT 💎</div>
   <div class="subtitle">Transforme tes dessins en stencils tattoo — ajustement facile, mesure exacte, du mini au grand format!</div></div>
   <div class="brand">Maman Sokal 🖤</div>
 </header>
@@ -263,11 +262,12 @@ footer::before{content:'✦ ';color:var(--gold)}
       <div class="card">
         <h3>Papier</h3>
         <div class="chip-row c3">
-          <button class="chip paper-chip active" data-paper="letter">Letter<small>Spirit 8.5×11</small></button>
-          <button class="chip paper-chip" data-paper="ozer">Ozer<small>213×305mm</small></button>
+          <button class="chip paper-chip active" data-paper="letter">Spirit<small>210×249 mm</small></button>
+          <button class="chip paper-chip" data-paper="ozer">Ozer<small>207×275 mm</small></button>
           <button class="chip paper-chip" data-paper="a4">A4<small>210×297</small></button>
         </div>
-        <div class="hint">Choisis ton papier : les pages auront exactement ce format.</div>
+        <div class="hint">Format d'édition optimisé pour imprimante thermique : l'image sortira à l'échelle exacte, sans coupe en haut.</div>
+        <div class="hint" id="printerHint" style="border-left:3px solid var(--pink);padding-left:10px;margin-top:8px"></div>
       </div>
       <div class="card">
         <h3>Pages & orientation</h3>
@@ -289,6 +289,17 @@ footer::before{content:'✦ ';color:var(--gold)}
           <div class="toggle on" id="rulerToggle"></div>
           <div class="toggle-lbl">Règle de 5cm <span style="color:var(--muted);font-weight:400">— vérifie l'échelle d'un coup d'œil</span></div>
         </div>
+        <div class="toggle-row" id="marginRow">
+          <div class="toggle" id="marginToggle"></div>
+          <div class="toggle-lbl">Marge de sécurité <span style="color:var(--muted);font-weight:400">— 10mm de blanc autour, au cas où l'imprimante coupe les bords</span></div>
+        </div>
+        <h3 style="margin-top:14px">Ajuster la position</h3>
+        <div class="pad">
+          <span></span><button data-move="up">▲</button><span></span>
+          <button data-move="left">◀</button><button class="center-btn" id="moveReset3">CENTRE</button><button data-move="right">▶</button>
+          <span></span><button data-move="down">▼</button><span></span>
+        </div>
+        <div class="hint">Déplace ton dessin pour bien l'enligner sur tes pages.</div>
         <button class="btn btn-cyan" id="btnNext3" style="margin-top:6px">Suivant →</button>
       </div>
     </div>
@@ -304,7 +315,16 @@ footer::before{content:'✦ ';color:var(--gold)}
           <div class="sum-item"><div class="k">Mode</div><div class="v" id="sumMode">—</div></div>
         </div>
         <button class="btn btn-green" id="btnExp">⬇ Exporter les pages</button>
-        <div class="hint">Sur iPhone/iPad : <b>appuie longuement</b> sur chaque image, puis « Enregistrer dans Photos ». Imprime à <b>100%</b>, sans « ajuster à la page ».</div>
+        <div class="hint">Sur iPhone/iPad : <b>appuie longuement</b> sur chaque image, puis « Enregistrer dans Photos ».</div>
+      </div>
+      <div class="card">
+        <h3>✅ Checklist d'impression</h3>
+        <div class="hint" style="margin-top:0;line-height:2">
+          1️⃣ Enregistre chaque page dans Photos<br>
+          2️⃣ Dans ton app d'impression, sélectionne le bon format (voir étape 3)<br>
+          3️⃣ Imprime à <b>100%</b> — jamais « ajuster à la page »<br>
+          4️⃣ Mesure la <b>règle de 5 cm</b> : si elle fait 5 cm, c'est parfait! 💎
+        </div>
       </div>
       <div class="card">
         <h3>Conseil pro 💡</h3>
@@ -336,7 +356,9 @@ footer::before{content:'✦ ';color:var(--gold)}
 <script>
 const $=id=>document.getElementById(id);
 let img=null;
-let st={grid:1,sizeCm:20,sharp:0,intensity:18,contrast:.98,offX:0,offY:0,orientation:'portrait',mirror:false,rotation:0,mode:'stencil',paper:'letter',ruler:true,step:1};
+let st={grid:1,sizeCm:20,sharp:0,intensity:18,contrast:.98,offX:0,offY:0,orientation:'portrait',mirror:false,rotation:0,mode:'stencil',paper:'letter',ruler:true,safetyMargin:false,step:1};
+const TOP_MARGIN_CM=2.5; /* marge haut imprimante thermique */
+const SAFETY_MARGIN_CM=1.0; /* marge de sécurité optionnelle : 10mm chaque côté */
 /* ---------- Steps ---------- */
 function goStep(n){st.step=n;document.querySelectorAll('.step').forEach(s=>{const sn=parseInt(s.dataset.step);s.classList.toggle('active',sn===n);if(sn<n)s.classList.add('done')});document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));$('panel'+n).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('.step').forEach(s=>s.addEventListener('click',()=>goStep(parseInt(s.dataset.step))));
@@ -347,9 +369,13 @@ function updateSummary(){$('sumSize').textContent=img?`${st.sizeCm.toFixed(1)} �
 /* ---------- Helpers ---------- */
 function modeLabel(){return st.mode==='stencil'?'POCHOIR contours':'IMAGE ORIGINALE'}
 function colsFor(n){return n===2||n===4||n===6?2:n>=9?3:1}
-function paperDims(){const P={letter:[21.59,27.94],ozer:[21.3,30.5],a4:[21.0,29.7]}[st.paper]||[21.59,27.94];return st.orientation==='portrait'?{w:P[0],h:P[1]}:{w:P[1],h:P[0]}}
-function paperName(){return{letter:'Letter',ozer:'Ozer 213×305',a4:'A4'}[st.paper]||'Letter'}
-function autoGrid(){if(!img)return false;const pd=paperDims(),dw=st.sizeCm,dh=st.sizeCm*(img.height/img.width);for(const n of[1,2,4,6,9,12]){const c=colsFor(n),r=Math.ceil(n/c);if(c*pd.w>=dw&&r*pd.h>=dh){if(st.grid!==n){st.grid=n;document.querySelectorAll('.grid-chip').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.grid)===n));updateGrid();return true}return false}}if(st.grid!==12){st.grid=12;document.querySelectorAll('.grid-chip').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.grid)===12));updateGrid();return true}return false}
+function effW(pd){return st.safetyMargin?pd.w-2*SAFETY_MARGIN_CM:pd.w}
+function effH(pd){return st.safetyMargin?pd.h-2*SAFETY_MARGIN_CM:pd.h}
+function paperDims(){const P={letter:[21.0,24.9],ozer:[20.7,27.5],a4:[21.0,29.7]}[st.paper]||[21.0,24.9];return st.orientation==='portrait'?{w:P[0],h:P[1]}:{w:P[1],h:P[0]}}
+function paperName(){return{letter:'Spirit 210×249',ozer:'Ozer 207×275',a4:'A4'}[st.paper]||'Spirit 210×249'}
+function printerHint(){const H={letter:'<b>Dans ton app d\u2019impression :</b> format d\u2019édition <b>210 × 249 mm</b> → papier 216 × 279 mm.',ozer:'<b>Dans ton app d\u2019impression :</b> format d\u2019édition <b>207 × 275 mm</b> → papier 213 × 305 mm.',a4:'<b>Imprimante régulière :</b> papier A4 standard, impression à 100%.'};return H[st.paper]||H.letter}
+function updatePrinterHint(){const el=$('printerHint');if(el)el.innerHTML='🖨️ '+printerHint()}
+function autoGrid(){if(!img)return false;const pd=paperDims(),dw=st.sizeCm,dh=st.sizeCm*(img.height/img.width);for(const n of[1,2,4,6,9,12]){const c=colsFor(n),r=Math.ceil(n/c);if(c*effW(pd)>=dw&&r*effH(pd)>=dh+TOP_MARGIN_CM){if(st.grid!==n){st.grid=n;document.querySelectorAll('.grid-chip').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.grid)===n));updateGrid();return true}return false}}if(st.grid!==12){st.grid=12;document.querySelectorAll('.grid-chip').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.grid)===12));updateGrid();return true}return false}
 const _crcT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c}return t})();
 function _crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=_crcT[(c^b[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
 function pngWithDpi(dataUrl,pxPerM){try{const bin=atob(dataUrl.split(',')[1]),n=bin.length,bytes=new Uint8Array(n);for(let i=0;i<n;i++)bytes[i]=bin.charCodeAt(i);const phys=new Uint8Array(21),dv=new DataView(phys.buffer);dv.setUint32(0,9);phys.set([0x70,0x48,0x59,0x73],4);dv.setUint32(8,pxPerM);dv.setUint32(12,pxPerM);phys[16]=1;dv.setUint32(17,_crc32(phys.subarray(4,17)));const out=new Uint8Array(n+21);out.set(bytes.subarray(0,33),0);out.set(phys,33);out.set(bytes.subarray(33),54);let s='';const CH=8192;for(let i=0;i<out.length;i+=CH)s+=String.fromCharCode.apply(null,out.subarray(i,i+CH));return 'data:image/png;base64,'+btoa(s)}catch(e){return dataUrl}}
@@ -357,9 +383,10 @@ function pngWithDpi(dataUrl,pxPerM){try{const bin=atob(dataUrl.split(',')[1]),n=
 function sourcePixels(maxW=1600){const scale=Math.min(1,maxW/img.width),sw=Math.max(1,Math.round(img.width*scale)),sh=Math.max(1,Math.round(img.height*scale));const c=document.createElement('canvas');c.width=sw;c.height=sh;const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(img,0,0,sw,sh);return{c,w:sw,h:sh}}
 function stencilProcess(ctx,W,H){const id=ctx.getImageData(0,0,W,H),d=id.data,N=W*H,g=new Float32Array(N),blur=new Float32Array(N);const c=st.contrast;for(let y=0;y<H;y++){for(let x=0;x<W;x++){const i=(y*W+x)*4,p=y*W+x;let v=.299*d[i]+.587*d[i+1]+.114*d[i+2];v=(v-128)*c+128;g[p]=Math.max(0,Math.min(255,v))}}for(let y=0;y<H;y++){const ym=y?y-1:y,yp=y<H-1?y+1:y;for(let x=0;x<W;x++){const xm=x?x-1:x,xp=x<W-1?x+1:x,p=y*W+x;blur[p]=(g[ym*W+xm]+2*g[ym*W+x]+g[ym*W+xp]+2*g[y*W+xm]+4*g[p]+2*g[y*W+xp]+g[yp*W+xm]+2*g[yp*W+x]+g[yp*W+xp])/16}}const gain=.82+(st.intensity/100)*1.00,threshold=15+(st.sharp*.12),toneStrength=.10+(st.intensity/100)*.16;for(let y=1;y<H-1;y++){for(let x=1;x<W-1;x++){const p=y*W+x;const gx=-blur[(y-1)*W+x-1]+blur[(y-1)*W+x+1]-2*blur[y*W+x-1]+2*blur[y*W+x+1]-blur[(y+1)*W+x-1]+blur[(y+1)*W+x+1];const gy=-blur[(y-1)*W+x-1]-2*blur[(y-1)*W+x]-blur[(y-1)*W+x+1]+blur[(y+1)*W+x-1]+2*blur[(y+1)*W+x]+blur[(y+1)*W+x+1];let edge=Math.sqrt(gx*gx+gy*gy);edge=Math.max(0,edge-threshold);let ink=Math.min(255,Math.pow(edge/255,.78)*118*gain);if(st.sharp>0)ink=Math.min(255,ink*(1+st.sharp/150));const dark=Math.max(0,150-blur[p]),tone=Math.min(38,dark*toneStrength),out=Math.max(0,255-ink-tone),i=p*4;d[i]=d[i+1]=d[i+2]=out;d[i+3]=255}}for(let x=0;x<W;x++){let i=x*4;d[i]=d[i+1]=d[i+2]=255;i=(H-1)*W*4+x*4;d[i]=d[i+1]=d[i+2]=255}for(let y=0;y<H;y++){let i=y*W*4;d[i]=d[i+1]=d[i+2]=255;i=y*W*4+(W-1)*4;d[i]=d[i+1]=d[i+2]=255}ctx.putImageData(id,0,0)}
 function updateGrid(){const w=$('pagesWrapper');w.innerHTML='';if(!img){w.innerHTML='<div class="empty-msg">Aucun aperçu<br><span style="font-size:.72rem">Importe une image à l\u2019étape 1</span></div>';return}const cols=colsFor(st.grid);w.style.gridTemplateColumns=`repeat(${cols},1fr)`;const pd=paperDims(),pw=Math.min(200,Math.round(200)),ph=Math.round(pw*pd.h/pd.w);for(let i=0;i<st.grid;i++){const page=document.createElement('div');page.className='page';page.style.width=pw+'px';page.style.height=ph+'px';page.innerHTML=`<canvas id="cv-${i}"></canvas>`;w.appendChild(page)}render()}
-function render(){if(!img)return;const canvases=document.querySelectorAll('.page canvas');if(!canvases.length)return;const pd=paperDims(),pxPerCm=1200/21.59,W=Math.round(pd.w*pxPerCm),H=Math.round(pd.h*pxPerCm),cols=colsFor(st.grid),rows=Math.ceil(st.grid/cols),dw=st.sizeCm*pxPerCm,dh=dw*(img.height/img.width),totalW=cols*W,totalH=rows*H,source=sourcePixels(1600);canvases.forEach((cv,i)=>{cv.width=W;cv.height=H;const ctx=cv.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(-(i%cols)*W,-Math.floor(i/cols)*H);ctx.translate(totalW/2+st.offX,totalH/2+st.offY);if(st.mirror){ctx.scale(-1,1)}ctx.rotate(st.rotation*Math.PI/180);ctx.drawImage(source.c,-dw/2,-dh/2,dw,dh);ctx.restore();if(st.mode==='stencil')stencilProcess(ctx,W,H);if(st.ruler){const bl=5*pxPerCm,bx=Math.round(W*0.06),by=H-Math.round(0.55*pxPerCm);ctx.fillStyle='white';ctx.fillRect(bx-14,by-30,bl+110,64);ctx.fillStyle='black';ctx.fillRect(bx,by,bl,10);ctx.fillRect(bx-3,by-16,6,42);ctx.fillRect(bx+bl-3,by-16,6,42);ctx.font=`${Math.round(pxPerCm*0.42)}px sans-serif`;ctx.textBaseline='middle';ctx.fillText('5 cm',bx+bl+14,by+5)}});$('status').textContent=`${modeLabel()} • ${st.sizeCm.toFixed(1)} × ${(st.sizeCm*img.height/img.width).toFixed(1)} cm • ${st.grid}p • ${paperName()}`}
+function render(){if(!img)return;const canvases=document.querySelectorAll('.page canvas');if(!canvases.length)return;const pd=paperDims(),pxPerCm=150/2.54,W=Math.round(pd.w*pxPerCm),H=Math.round(pd.h*pxPerCm),cols=colsFor(st.grid),rows=Math.ceil(st.grid/cols),dw=st.sizeCm*pxPerCm,dh=dw*(img.height/img.width),totalW=cols*W,totalH=rows*H,source=sourcePixels(1600);canvases.forEach((cv,i)=>{cv.width=W;cv.height=H;const ctx=cv.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(-(i%cols)*W,-Math.floor(i/cols)*H);ctx.translate(totalW/2+st.offX,totalH/2+st.offY+TOP_MARGIN_CM*pxPerCm);if(st.mirror){ctx.scale(-1,1)}ctx.rotate(st.rotation*Math.PI/180);ctx.drawImage(source.c,-dw/2,-dh/2,dw,dh);ctx.restore();if(st.mode==='stencil')stencilProcess(ctx,W,H);if(st.ruler){const bl=5*pxPerCm,bx=Math.round(W*0.06),by=H-Math.round(0.55*pxPerCm);ctx.fillStyle='white';ctx.fillRect(bx-14,by-30,bl+110,64);ctx.fillStyle='black';ctx.fillRect(bx,by,bl,10);ctx.fillRect(bx-3,by-16,6,42);ctx.fillRect(bx+bl-3,by-16,6,42);ctx.font=`${Math.round(pxPerCm*0.42)}px sans-serif`;ctx.textBaseline='middle';ctx.fillText('5 cm',bx+bl+14,by+5)}
+});$('status').textContent=`${modeLabel()} • ${st.sizeCm.toFixed(1)} × ${(st.sizeCm*img.height/img.width).toFixed(1)} cm • ${st.grid}p • ${paperName()}`}
 /* ---------- Events ---------- */
-function syncSize(v){v=Math.max(2,Math.min(300,parseFloat(v)||2));st.sizeCm=v;$('sizeCm').value=v.toFixed(1);$('sizeRange').value=v;if(!autoGrid())render()}
+function syncSize(v){v=Math.max(2,Math.min(300,parseFloat(v)||2));st.sizeCm=v;$('sizeCm').value=v.toFixed(1);$('sizeRange').value=v;saveSettings();if(!autoGrid())render()}
 $('fIn').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{img=new Image();img.onload=()=>{st.offX=0;st.offY=0;st.rotation=0;$('rotationValue').textContent='0°';const th=$('thumbPrev');th.src=ev.target.result;th.classList.remove('hidden');document.querySelectorAll('.step')[0].classList.add('done');updateGrid();goStep(2)};img.src=ev.target.result};reader.readAsDataURL(file)});
 $('sizeCm').addEventListener('change',e=>syncSize(e.target.value));
 $('sizeRange').addEventListener('input',e=>syncSize(e.target.value));
@@ -370,21 +397,34 @@ function setAdj(id,v){const el=$(id),min=parseFloat(el.min),max=parseFloat(el.ma
 document.querySelectorAll('[data-adj]').forEach(b=>b.addEventListener('click',()=>setAdj(b.dataset.adj,parseFloat($(b.dataset.adj).value)+parseFloat(b.dataset.delta))));
 document.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',()=>{const s=25,m=b.dataset.move;if(m==='up')st.offY-=s;if(m==='down')st.offY+=s;if(m==='left')st.offX-=s;if(m==='right')st.offX+=s;render()}));
 $('moveReset').onclick=()=>{st.offX=0;st.offY=0;render()};
+$('moveReset3').onclick=()=>{st.offX=0;st.offY=0;render()};
 $('rotLeft').onclick=()=>{st.rotation-=5;if(st.rotation<-180)st.rotation+=360;$('rotationValue').textContent=`${st.rotation}°`;render()};
 $('rotRight').onclick=()=>{st.rotation+=5;if(st.rotation>180)st.rotation+=360;$('rotationValue').textContent=`${st.rotation}°`;render()};
 function toggleMirror(){$('mirrorBtn').classList.toggle('active',st.mirror);$('mirrorBtn2').classList.toggle('active',st.mirror)}
 $('mirrorBtn').onclick=()=>{st.mirror=!st.mirror;toggleMirror();render()};
 $('mirrorBtn2').onclick=()=>{st.mirror=!st.mirror;toggleMirror();render()};
-function setMode(m){st.mode=m;document.querySelectorAll('.mode-chip').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));render()}
+function setMode(m){st.mode=m;document.querySelectorAll('.mode-chip').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));saveSettings();render()}
 document.querySelectorAll('.mode-chip').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
 $('geminiBtn').onclick=async()=>{const prompt="Transforme cette image en contour de pochoir style livre à colorier : lignes noires nettes et précises sur fond blanc pur. Garde tous les petits détails (poils, cheveux, textures) en lignes fines et délicates. AUCUNE zone noire remplie, AUCUN ombrage, AUCUN gris, AUCUN dégradé, juste du dessin au trait noir et blanc, facile à tracer pour un tatouage.";try{await navigator.clipboard.writeText(prompt)}catch(e){}alert('Prompt copié ! Dans Gemini : ajoute ton image, colle le prompt, génère, sauvegarde puis importe ici.');window.open('https://gemini.google.com/app','_blank')};
 $('chatgptBtn').onclick=async()=>{const prompt="Transforme cette image en contour de pochoir style livre à colorier : lignes noires nettes et précises sur fond blanc pur. Garde tous les petits détails (poils, cheveux, textures) en lignes fines et délicates. AUCUNE zone noire remplie, AUCUN ombrage, AUCUN gris, AUCUN dégradé, juste du dessin au trait noir et blanc, facile à tracer pour un tatouage.";try{await navigator.clipboard.writeText(prompt)}catch(e){}alert('Prompt copié ! Dans ChatGPT : ajoute ton image, colle le prompt, génère, sauvegarde puis importe ici.');window.open('https://chatgpt.com/','_blank')};$('tattBtn').onclick=()=>{window.open('https://apps.apple.com/app/tattstencil/id6593687274','_blank')};
-document.querySelectorAll('.grid-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.grid-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.grid=parseInt(b.dataset.grid);updateGrid()}));
-document.querySelectorAll('.paper-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.paper-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.paper=b.dataset.paper;try{localStorage.setItem('spp-paper',st.paper)}catch(e){}autoGrid();updateGrid()}));
-try{const sp=localStorage.getItem('spp-paper');if(sp&&['letter','ozer','a4'].includes(sp)){st.paper=sp;document.querySelectorAll('.paper-chip').forEach(b=>b.classList.toggle('active',b.dataset.paper===sp))}}catch(e){}
-document.querySelectorAll('.ori-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.ori-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.orientation=b.dataset.ori;autoGrid();updateGrid()}));
+document.querySelectorAll('.grid-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.grid-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.grid=parseInt(b.dataset.grid);saveSettings();updateGrid()}));
+document.querySelectorAll('.paper-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.paper-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.paper=b.dataset.paper;try{localStorage.setItem('spp-paper',st.paper)}catch(e){}updatePrinterHint();autoGrid();updateGrid()}));
+try{
+const sp=localStorage.getItem('spp-paper');if(sp&&['letter','ozer','a4'].includes(sp)){st.paper=sp;document.querySelectorAll('.paper-chip').forEach(b=>b.classList.toggle('active',b.dataset.paper===sp))}
+const ss=JSON.parse(localStorage.getItem('spp-settings')||'{}');
+if(ss.sizeCm){st.sizeCm=Math.max(2,Math.min(300,parseFloat(ss.sizeCm)||20));$('sizeCm').value=st.sizeCm.toFixed(1);$('sizeRange').value=st.sizeCm}
+if(ss.grid&&[1,2,4,6,9,12].includes(ss.grid)){st.grid=ss.grid;document.querySelectorAll('.grid-chip').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.grid)===ss.grid))}
+if(ss.orientation&&['portrait','paysage'].includes(ss.orientation)){st.orientation=ss.orientation;document.querySelectorAll('.ori-chip').forEach(b=>b.classList.toggle('active',b.dataset.ori===ss.orientation))}
+if(ss.mode&&['stencil','original'].includes(ss.mode)){st.mode=ss.mode;document.querySelectorAll('.mode-chip').forEach(b=>b.classList.toggle('active',b.dataset.mode===ss.mode))}
+if(ss.safetyMargin){st.safetyMargin=true;$('marginToggle').classList.add('on')}
+}catch(e){}
+updatePrinterHint();
+function saveSettings(){try{localStorage.setItem('spp-settings',JSON.stringify({sizeCm:st.sizeCm,grid:st.grid,orientation:st.orientation,mode:st.mode,safetyMargin:st.safetyMargin}))}catch(e){}}
+document.querySelectorAll('.ori-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.ori-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.orientation=b.dataset.ori;saveSettings();autoGrid();updateGrid()}));
 $('rulerRow').addEventListener('click',()=>{st.ruler=!st.ruler;$('rulerToggle').classList.toggle('on',st.ruler);render()});
-function openExport(){if(!img){alert('Importe une image avant d\u2019exporter.');return}updateSummary();const grid=$('exportGrid');grid.innerHTML='';document.querySelectorAll('.page canvas').forEach((cv,i)=>{const card=document.createElement('div');card.className='exp-card';const im=document.createElement('img');im.src=pngWithDpi(cv.toDataURL('image/png'),Math.round(1200/21.59*100));im.alt=`Page ${i+1}`;const cap=document.createElement('p');cap.textContent=`PAGE ${i+1} • appuie longuement pour enregistrer`;card.appendChild(im);card.appendChild(cap);grid.appendChild(card)});$('exportOverlay').classList.add('open')}
+$('marginRow').addEventListener('click',()=>{st.safetyMargin=!st.safetyMargin;$('marginToggle').classList.toggle('on',st.safetyMargin);saveSettings();autoGrid();updateGrid()});
+function pagePos(i){const c=colsFor(st.grid),r=Math.ceil(st.grid/c),col=i%c,row=Math.floor(i/c);if(st.grid===1)return'';const V=row===0?'Haut':row===r-1?'Bas':'Milieu';const H=c===1?'':col===0?' · Gauche':col===c-1?' · Droite':' · Centre';return ` (${V}${H})`}
+function openExport(){if(!img){alert('Importe une image avant d\u2019exporter.');return}updateSummary();const grid=$('exportGrid');grid.innerHTML='';document.querySelectorAll('.page canvas').forEach((cv,i)=>{const card=document.createElement('div');card.className='exp-card';const im=document.createElement('img');im.src=pngWithDpi(cv.toDataURL('image/png'),Math.round(150/2.54*100));im.alt=`Page ${i+1}`;const cap=document.createElement('p');cap.textContent=`PAGE ${i+1}${pagePos(i)} • appuie longuement pour enregistrer`;card.appendChild(im);card.appendChild(cap);grid.appendChild(card)});$('exportOverlay').classList.add('open')}
 $('btnExp').onclick=openExport;
 $('exportClose').onclick=()=>$('exportOverlay').classList.remove('open');
 $('btnReset').onclick=()=>location.reload();
