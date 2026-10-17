@@ -828,6 +828,7 @@
             <ul id="errorsList"></ul>
           </div>
           <button id="signBtn" type="button">Signer et envoyer à Cynthia et Dave</button>
+          <div class="alert red" id="sendError" role="alert">Oups! L'envoi a échoué. Vérifie ta connexion internet et réessaie.</div>
         </div>
 
         <footer>Sokal Tattoo · Sokalite Shop — Formulaire de consentement</footer>
@@ -1060,30 +1061,49 @@
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
-        // En cas d'échec d'envoi : le bouton ne se réactive que si
-        // l'écran de confirmation n'est pas affiché.
+        // En cas d'échec d'envoi (erreur réseau, délai dépassé ou
+        // réponse non OK du webhook) : NE JAMAIS afficher la
+        // confirmation. On réactive le bouton pour permettre un
+        // nouvel essai et on affiche un message d'erreur clair.
+        var sendError = document.getElementById("sendError");
         function gererEchecEnvoi() {
-          var confAffichee = document.getElementById("confirmation").classList.contains("show");
-          if (!confAffichee) {
-            envoiEnCours = false;
-            signBtn.disabled = false;
-            signBtn.textContent = "Signer et envoyer à Cynthia et Dave";
-          }
-          showConfirmation();
+          envoiEnCours = false;
+          signBtn.disabled = false;
+          signBtn.textContent = "Signer et envoyer à Cynthia et Dave";
+          sendError.classList.add("show");
+          sendError.scrollIntoView({ behavior: "smooth", block: "center" });
         }
+        sendError.classList.remove("show");
 
         // Envoi au webhook (POST JSON) seulement si une vraie adresse
         // est configurée — jamais vers l'adresse fictive par défaut.
-        // Même si le réseau échoue, le client voit sa confirmation.
+        // La confirmation « Consentement signé! » ne s'affiche QUE si
+        // le webhook répond OK.
         var webhookReady = WEBHOOK_URL && WEBHOOK_URL.indexOf("example.com") === -1;
         if (webhookReady) {
+          var controller = ("AbortController" in window) ? new AbortController() : null;
+          var timeoutId = controller
+            ? setTimeout(function () { controller.abort(); }, 20000)
+            : null;
           try {
             fetch(WEBHOOK_URL, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload)
-            }).then(showConfirmation, gererEchecEnvoi);
+              body: JSON.stringify(payload),
+              signal: controller ? controller.signal : undefined
+            }).then(function (response) {
+              if (timeoutId) clearTimeout(timeoutId);
+              if (response && response.ok) {
+                showConfirmation();
+              } else {
+                gererEchecEnvoi();
+              }
+            }, function () {
+              if (timeoutId) clearTimeout(timeoutId);
+              gererEchecEnvoi();
+            });
           } catch (e) {
+            if (timeoutId) clearTimeout(timeoutId);
             gererEchecEnvoi();
           }
         } else {
