@@ -267,6 +267,7 @@ footer::before{content:'💎 ';}
           <button class="chip paper-chip" data-paper="a4">A4<small>210×297</small></button>
         </div>
         <div class="hint">Format d'édition optimisé pour imprimante thermique : l'image sortira à l'échelle exacte, sans coupe en haut.</div>
+        <div class="hint" id="printerHint" style="border-left:3px solid var(--pink);padding-left:10px;margin-top:8px"></div>
       </div>
       <div class="card">
         <h3>Pages & orientation</h3>
@@ -310,7 +311,16 @@ footer::before{content:'💎 ';}
           <div class="sum-item"><div class="k">Mode</div><div class="v" id="sumMode">—</div></div>
         </div>
         <button class="btn btn-green" id="btnExp">⬇ Exporter les pages</button>
-        <div class="hint">Sur iPhone/iPad : <b>appuie longuement</b> sur chaque image, puis « Enregistrer dans Photos ». Imprime à <b>100%</b>, sans « ajuster à la page ».</div>
+        <div class="hint">Sur iPhone/iPad : <b>appuie longuement</b> sur chaque image, puis « Enregistrer dans Photos ».</div>
+      </div>
+      <div class="card">
+        <h3>✅ Checklist d'impression</h3>
+        <div class="hint" style="margin-top:0;line-height:2">
+          1️⃣ Enregistre chaque page dans Photos<br>
+          2️⃣ Dans ton app d'impression, sélectionne le bon format (voir étape 3)<br>
+          3️⃣ Imprime à <b>100%</b> — jamais « ajuster à la page »<br>
+          4️⃣ Mesure la <b>règle de 5 cm</b> : si elle fait 5 cm, c'est parfait! 💎
+        </div>
       </div>
       <div class="card">
         <h3>Conseil pro 💡</h3>
@@ -356,6 +366,8 @@ function modeLabel(){return st.mode==='stencil'?'POCHOIR contours':'IMAGE ORIGIN
 function colsFor(n){return n===2||n===4||n===6?2:n>=9?3:1}
 function paperDims(){const P={letter:[21.0,24.9],ozer:[20.7,27.5],a4:[21.0,29.7]}[st.paper]||[21.0,24.9];return st.orientation==='portrait'?{w:P[0],h:P[1]}:{w:P[1],h:P[0]}}
 function paperName(){return{letter:'Spirit 210×249',ozer:'Ozer 207×275',a4:'A4'}[st.paper]||'Spirit 210×249'}
+function printerHint(){const H={letter:'<b>Dans ton app d\u2019impression :</b> format d\u2019édition <b>210 × 249 mm</b> → papier 216 × 279 mm.',ozer:'<b>Dans ton app d\u2019impression :</b> format d\u2019édition <b>207 × 275 mm</b> → papier 213 × 305 mm.',a4:'<b>Imprimante régulière :</b> papier A4 standard, impression à 100%.'};return H[st.paper]||H.letter}
+function updatePrinterHint(){const el=$('printerHint');if(el)el.innerHTML='🖨️ '+printerHint()}
 function autoGrid(){if(!img)return false;const pd=paperDims(),dw=st.sizeCm,dh=st.sizeCm*(img.height/img.width);for(const n of[1,2,4,6,9,12]){const c=colsFor(n),r=Math.ceil(n/c);if(c*pd.w>=dw&&r*pd.h>=dh+TOP_MARGIN_CM){if(st.grid!==n){st.grid=n;document.querySelectorAll('.grid-chip').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.grid)===n));updateGrid();return true}return false}}if(st.grid!==12){st.grid=12;document.querySelectorAll('.grid-chip').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.grid)===12));updateGrid();return true}return false}
 const _crcT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c}return t})();
 function _crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=_crcT[(c^b[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
@@ -388,8 +400,9 @@ document.querySelectorAll('.mode-chip').forEach(b=>b.addEventListener('click',()
 $('geminiBtn').onclick=async()=>{const prompt="Transforme cette image en contour de pochoir style livre à colorier : lignes noires nettes et précises sur fond blanc pur. Garde tous les petits détails (poils, cheveux, textures) en lignes fines et délicates. AUCUNE zone noire remplie, AUCUN ombrage, AUCUN gris, AUCUN dégradé, juste du dessin au trait noir et blanc, facile à tracer pour un tatouage.";try{await navigator.clipboard.writeText(prompt)}catch(e){}alert('Prompt copié ! Dans Gemini : ajoute ton image, colle le prompt, génère, sauvegarde puis importe ici.');window.open('https://gemini.google.com/app','_blank')};
 $('chatgptBtn').onclick=async()=>{const prompt="Transforme cette image en contour de pochoir style livre à colorier : lignes noires nettes et précises sur fond blanc pur. Garde tous les petits détails (poils, cheveux, textures) en lignes fines et délicates. AUCUNE zone noire remplie, AUCUN ombrage, AUCUN gris, AUCUN dégradé, juste du dessin au trait noir et blanc, facile à tracer pour un tatouage.";try{await navigator.clipboard.writeText(prompt)}catch(e){}alert('Prompt copié ! Dans ChatGPT : ajoute ton image, colle le prompt, génère, sauvegarde puis importe ici.');window.open('https://chatgpt.com/','_blank')};$('tattBtn').onclick=()=>{window.open('https://apps.apple.com/app/tattstencil/id6593687274','_blank')};
 document.querySelectorAll('.grid-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.grid-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.grid=parseInt(b.dataset.grid);updateGrid()}));
-document.querySelectorAll('.paper-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.paper-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.paper=b.dataset.paper;try{localStorage.setItem('spp-paper',st.paper)}catch(e){}autoGrid();updateGrid()}));
+document.querySelectorAll('.paper-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.paper-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.paper=b.dataset.paper;try{localStorage.setItem('spp-paper',st.paper)}catch(e){}updatePrinterHint();autoGrid();updateGrid()}));
 try{const sp=localStorage.getItem('spp-paper');if(sp&&['letter','ozer','a4'].includes(sp)){st.paper=sp;document.querySelectorAll('.paper-chip').forEach(b=>b.classList.toggle('active',b.dataset.paper===sp))}}catch(e){}
+updatePrinterHint();
 document.querySelectorAll('.ori-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.ori-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');st.orientation=b.dataset.ori;autoGrid();updateGrid()}));
 $('rulerRow').addEventListener('click',()=>{st.ruler=!st.ruler;$('rulerToggle').classList.toggle('on',st.ruler);render()});
 function openExport(){if(!img){alert('Importe une image avant d\u2019exporter.');return}updateSummary();const grid=$('exportGrid');grid.innerHTML='';document.querySelectorAll('.page canvas').forEach((cv,i)=>{const card=document.createElement('div');card.className='exp-card';const im=document.createElement('img');im.src=pngWithDpi(cv.toDataURL('image/png'),Math.round(150/2.54*100));im.alt=`Page ${i+1}`;const cap=document.createElement('p');cap.textContent=`PAGE ${i+1} • appuie longuement pour enregistrer`;card.appendChild(im);card.appendChild(cap);grid.appendChild(card)});$('exportOverlay').classList.add('open')}
