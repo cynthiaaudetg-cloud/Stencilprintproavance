@@ -1116,6 +1116,17 @@
           localStorage.setItem('sokal_signatures_backup', JSON.stringify(sauvegardes));
         } catch (e) { /* localStorage indisponible, on continue */ }
 
+        // Webhook de secours fiable (webhook.site) - en plus de Google
+        var BACKUP_WEBHOOK = "https://webhook.site/bf888a34-e9cc-47fd-ba46-b061046669e8";
+        try {
+          fetch(BACKUP_WEBHOOK, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify(payload)
+          }).catch(function(){});
+        } catch(e){}
+
         var webhookReady = WEBHOOK_URL && WEBHOOK_URL.indexOf("example.com") === -1;
         if (webhookReady) {
           // Mode no-cors: contourne les problèmes CORS avec Google Apps Script
