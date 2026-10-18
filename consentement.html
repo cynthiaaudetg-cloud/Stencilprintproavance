@@ -970,6 +970,11 @@
             document.getElementById("confirmLine").textContent = "— " + sigTrouvee.nom + ", signé le " + sigTrouvee.dateAffichee;
             var note = document.getElementById("doneNote");
             if (note) note.textContent = "Ta signature a bien été envoyée. Voici ton consentement, en lecture seule. 🖤";
+            // Barre de progression : 5/5 en lecture seule
+            var pf = document.getElementById("progressFill");
+            var pl2 = document.getElementById("progressLabel");
+            if (pf) pf.style.width = "100%";
+            if (pl2) pl2.textContent = "5 réponses sur 5";
             derniereConfirmation = sigTrouvee;
             document.getElementById("confirmation").classList.add("show");
             window.scrollTo(0, 0);
