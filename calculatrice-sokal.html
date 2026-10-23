@@ -120,6 +120,11 @@
         font-variant-numeric: tabular-nums;
       }
       input:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+      select {
+        font: inherit; font-size: 16px; font-weight: 600; color: var(--ink);
+        background: var(--surface-2); border: 1.5px solid var(--line);
+        border-radius: 10px; padding: 11px 12px; flex: 1; min-width: 0;
+      }
       .radio-list { display: grid; gap: 8px; }
       .radio-opt {
         display: flex; gap: 12px; align-items: flex-start; text-align: left; width: 100%;
@@ -202,6 +207,17 @@
           <button type="button" id="art-cynthia" aria-pressed="true">Cynthia<small>125 $ / heure</small></button>
           <button type="button" id="art-dave" aria-pressed="false">Dave<small>150 $ / heure</small></button>
         </div>
+      </section>
+
+
+      <!-- Client -->
+      <section class="card" aria-labelledby="h-client">
+        <h2 id="h-client">Client</h2>
+        <div class="field-row">
+          <label for="client-nom">Nom</label>
+          <input type="text" id="client-nom" autocomplete="off" placeholder="Nom du client" style="flex:1;" />
+        </div>
+        <p class="hint">Le nom s'ajoute au résumé copié : c'est ce qui permettra de déduire les crédits du bon client automatiquement.</p>
       </section>
 
       <!-- Mode de tarif -->
@@ -287,6 +303,38 @@
         </div>
       </section>
 
+
+      <!-- Crédits de l'abonné -->
+      <section class="card" aria-labelledby="h-credits">
+        <h2 id="h-credits">Crédits de l'abonné</h2>
+        <div class="field-row">
+          <label for="credit-client">Abonné</label>
+          <select id="credit-client">
+            <option value="">— Choisir un abonné —</option>
+          </select>
+        </div>
+        <p class="hint" id="credit-solde"></p>
+        <div class="field-row" style="margin-top:12px;">
+          <label for="credit-montant">Crédits à déduire</label>
+          <input type="number" id="credit-montant" inputmode="decimal" min="0" step="0.01" />
+          <span aria-hidden="true" style="font-weight:700;">$</span>
+        </div>
+        <p class="hint">Pré-rempli avec les crédits calculés. Modifiable au besoin (forfaits : Pat et Audrey 150 $ en argent, Ary 350 $ en argent ; inscris alors la valeur de la séance moins le forfait). <strong>La déduction se fait automatiquement quand tu copies le résumé pour l'envoyer au client</strong>, ou tout de suite avec le bouton :</p>
+        <div class="actions" style="margin-top:12px;">
+          <button type="button" class="btn btn-primary" id="btn-deduire">Déduire les crédits maintenant</button>
+        </div>
+        <p class="hint" id="credit-bilan" style="font-size:15px;"></p>
+        <div class="field-row" style="margin-top:14px;">
+          <label for="credit-ajust">Ajuster le solde</label>
+          <input type="number" id="credit-ajust" inputmode="decimal" min="0" step="0.01" placeholder="Nouveau" />
+          <button type="button" class="btn btn-ghost" id="btn-ajust">Appliquer</button>
+        </div>
+        <div class="actions" style="margin-top:10px;">
+          <button type="button" class="btn btn-ghost" id="btn-soldes-officiels">Remettre les soldes officiels du 23 oct. 2026</button>
+        </div>
+        <div id="credit-historique"></div>
+      </section>
+
       <!-- Résultat -->
       <div class="result" aria-live="polite">
         <h2>Résultat de la séance</h2>
@@ -315,6 +363,38 @@
 
         var DEPOTS = { Cynthia: 50, Dave: 100 };
 
+        // Abonnés Sokal et leurs soldes de crédits (soldes officiels au 23 octobre 2026).
+        var ABONNES = [
+          { id: "arianne", nom: "Arianne Bourcier", pseudo: "Aryjuana", solde: 1950 },
+          { id: "lydia", nom: "Lydia Martin", pseudo: "La petite diablesse", solde: 475 },
+          { id: "kat", nom: "Kat (Mon Pickel)", pseudo: "Mon pickel", solde: 2600 },
+          { id: "diesel", nom: "Diesel", pseudo: "Diesel", solde: 5865 },
+          { id: "pat", nom: "Pat Dem", pseudo: "mastergrow418", solde: 1000 },
+          { id: "audrey", nom: "Audrey Asselin", pseudo: "Audrey dem", solde: 3500 },
+          { id: "caro", nom: "Caro (La Tite minoune)", pseudo: "La Tite minoune", solde: 9670 },
+          { id: "dede", nom: "Dédé Mel", pseudo: "Les étoiles de Clara", solde: 8625 },
+          { id: "daniel", nom: "Daniel Laberge", pseudo: "Karalor", solde: null },
+          { id: "cathy", nom: "Cathy Milord", pseudo: "Cathy milord", solde: 4300 },
+          { id: "johanne", nom: "Johanne Asselin", pseudo: "Johanne", solde: 700 }
+        ];
+        var LS_CREDITS = "sokal-credits-v1";
+        function chargerCredits() {
+          try { var d = JSON.parse(localStorage.getItem(LS_CREDITS)); if (d && d.soldes) return d; } catch (e) {}
+          return { soldes: {}, historique: [] };
+        }
+        var creditsData = chargerCredits();
+        for (var ci = 0; ci < ABONNES.length; ci++) {
+          if (!(ABONNES[ci].id in creditsData.soldes)) creditsData.soldes[ABONNES[ci].id] = ABONNES[ci].solde;
+        }
+        if (!creditsData.historique) creditsData.historique = [];
+        function sauverCredits() { try { localStorage.setItem(LS_CREDITS, JSON.stringify(creditsData)); } catch (e) {} }
+        function abonneParId(id) {
+          for (var i = 0; i < ABONNES.length; i++) if (ABONNES[i].id === id) return ABONNES[i];
+          return null;
+        }
+        var creditManuel = false;
+        var signatureAppliquee = "";
+
         // Règle des crédits : 75 % max jusqu'au 31 déc. 2026, 50 % max dès janvier 2027.
         var now = new Date();
         var regle2027 = now.getFullYear() >= 2027;
@@ -323,13 +403,15 @@
         var state = {
           rate: 125,
           artiste: "Cynthia",
+          clientNom: "",
           mode: "heure",          // "heure" | "fixe"
           dureeMin: 120,
           gratuitMin: 0,
           prixFixe: 300,
           creditPct: pctDefaut,
           depot: DEPOTS.Cynthia,
-          depotDeduit: false
+          depotDeduit: false,
+          creditClientId: ""
         };
 
         var $ = function (id) { return document.getElementById(id); };
@@ -372,6 +454,10 @@
           $("bloc-fixe").classList.remove("hidden");
           $("bloc-heure").classList.add("hidden");
           $("bloc-gratuit").classList.add("hidden");
+          render();
+        });
+        $("client-nom").addEventListener("input", function () {
+          state.clientNom = this.value.trim();
           render();
         });
         $("prix-fixe").addEventListener("input", function () {
@@ -431,8 +517,72 @@
         $("depot-oui").addEventListener("click", function () { setDepot(true); render(); });
         $("depot-non").addEventListener("click", function () { setDepot(false); render(); });
 
+        // Options du menu des abonnés
+        (function () {
+          var sel = $("credit-client");
+          for (var i = 0; i < ABONNES.length; i++) {
+            var o = document.createElement("option");
+            o.value = ABONNES[i].id;
+            o.textContent = ABONNES[i].nom + (ABONNES[i].pseudo !== ABONNES[i].nom ? " (" + ABONNES[i].pseudo + ")" : "");
+            sel.appendChild(o);
+          }
+        })();
+        $("credit-client").addEventListener("change", function () {
+          state.creditClientId = this.value;
+          var a = abonneParId(this.value);
+          if (a) { state.clientNom = a.nom; $("client-nom").value = a.nom; }
+          creditManuel = false; signatureAppliquee = "";
+          render();
+        });
+        $("credit-montant").addEventListener("input", function () { creditManuel = true; renderCredits(calculer()); });
+
+        function signatureCredits() {
+          var m = parseFloat(($("credit-montant").value || "").replace(",", "."));
+          return state.creditClientId + "|" + (isNaN(m) ? "0" : m.toFixed(2));
+        }
+        function appliquerDeduction() {
+          var a = abonneParId(state.creditClientId);
+          if (!a) { showToast("Choisis d'abord l'abonné dans la section Crédits"); return null; }
+          var solde = creditsData.soldes[a.id];
+          if (solde === null || solde === undefined) { showToast("Solde de " + a.nom + " pas encore inscrit : utilise « Ajuster le solde »"); return null; }
+          var m = parseFloat(($("credit-montant").value || "").replace(",", "."));
+          if (isNaN(m) || m <= 0) { showToast("Aucun crédit à déduire pour cette séance"); return null; }
+          m = Math.round(m * 100) / 100;
+          if (m > solde) { showToast("Le montant dépasse le solde de " + a.nom + " (" + fmt(solde) + ")"); return null; }
+          var nouveau = Math.round((solde - m) * 100) / 100;
+          creditsData.soldes[a.id] = nouveau;
+          creditsData.historique.unshift({ date: new Date().toISOString(), client: a.nom, montant: m, solde: nouveau, artiste: state.artiste });
+          sauverCredits();
+          creditManuel = false;
+          render();
+          return nouveau;
+        }
+        $("btn-deduire").addEventListener("click", function () {
+          var n = appliquerDeduction();
+          if (n !== null) { signatureAppliquee = signatureCredits(); showToast("Crédits déduits — nouveau solde : " + fmt(n)); }
+        });
+        $("btn-ajust").addEventListener("click", function () {
+          var a = abonneParId(state.creditClientId);
+          if (!a) { showToast("Choisis d'abord l'abonné"); return; }
+          var v = parseFloat(($("credit-ajust").value || "").replace(",", "."));
+          if (isNaN(v) || v < 0) { showToast("Entre un solde valide"); return; }
+          creditsData.soldes[a.id] = Math.round(v * 100) / 100;
+          creditsData.historique.unshift({ date: new Date().toISOString(), client: a.nom + " (solde ajusté)", montant: 0, solde: creditsData.soldes[a.id], artiste: state.artiste });
+          sauverCredits(); $("credit-ajust").value = "";
+          showToast("Solde de " + a.nom + " ajusté à " + fmt(creditsData.soldes[a.id]));
+          render();
+        });
+        $("btn-soldes-officiels").addEventListener("click", function () {
+          for (var i = 0; i < ABONNES.length; i++) creditsData.soldes[ABONNES[i].id] = ABONNES[i].solde;
+          sauverCredits();
+          showToast("Soldes officiels du 23 oct. 2026 remis");
+          render();
+        });
+
         $("btn-reset").addEventListener("click", function () {
           state.dureeMin = 120; state.gratuitMin = 0; state.prixFixe = 300;
+          state.clientNom = ""; $("client-nom").value = "";
+          state.creditClientId = ""; $("credit-client").value = ""; creditManuel = false; signatureAppliquee = "";
           $("prix-fixe").value = 300; $("credit-custom").value = "";
           selectCredit(pctDefaut); setDepot(false);
           $("mode-heure").click();
@@ -520,6 +670,7 @@
 
           // Résumé copiable
           var s = [];
+          if (state.clientNom) s.push("Client : " + state.clientNom);
           s.push("Séance avec " + state.artiste + " — Sokal Tattoo");
           if (state.mode === "heure") {
             s.push("Durée : " + fmtH(state.dureeMin) + " à " + fmt(state.rate) + " / h");
@@ -538,6 +689,40 @@
             s.push("À recevoir en argent : " + fmt(r.resteArgent));
           }
           $("summary").textContent = s.join("\n");
+
+          renderCredits(r);
+        }
+
+        function renderCredits(r) {
+          var a = abonneParId(state.creditClientId);
+          if (!a) {
+            $("credit-solde").textContent = "Choisis l'abonné pour voir son solde. La déduction se fait automatiquement quand tu copies le résumé pour l'envoyer au client.";
+          } else {
+            var solde = creditsData.soldes[a.id];
+            $("credit-solde").innerHTML = (solde === null || solde === undefined)
+              ? "Solde de <strong>" + a.nom + "</strong> : pas encore inscrit. Entre-le avec « Ajuster le solde » plus bas."
+              : "Solde de <strong>" + a.nom + "</strong> : <strong>" + fmt(solde) + "</strong>";
+          }
+          if (!creditManuel) {
+            $("credit-montant").value = r.credits > 0 ? (Math.round(r.credits * 100) / 100).toString().replace(".", ",") : "";
+          }
+          if (a) {
+            var m = parseFloat(($("credit-montant").value || "").replace(",", "."));
+            if (isNaN(m)) m = 0;
+            var sActuel = creditsData.soldes[a.id];
+            $("credit-bilan").innerHTML = "À demander en argent ou virement : <strong>" + fmt(r.resteArgent) + "</strong> • Crédits à déduire : <strong>" + fmt(m) + "</strong>" +
+              ((sActuel === null || sActuel === undefined) ? "" : " • Nouveau solde après déduction : <strong>" + fmt(Math.max(0, Math.round((sActuel - m) * 100) / 100)) + "</strong>");
+          } else {
+            $("credit-bilan").textContent = "";
+          }
+          var h = "";
+          var hist = creditsData.historique.slice(0, 5);
+          for (var i = 0; i < hist.length; i++) {
+            var e = hist[i];
+            h += '<div class="rrow"><span class="lbl">' + e.date.slice(0, 10) + " — " + e.client + '</span><span class="amt">' +
+              (e.montant > 0 ? "− " + fmt(e.montant) + " → " + fmt(e.solde) : "solde fixé à " + fmt(e.solde)) + "</span></div>";
+          }
+          $("credit-historique").innerHTML = h ? '<p class="hint"><strong>Dernières déductions</strong></p>' + h : "";
         }
 
         // ---------- Copie ----------
@@ -550,7 +735,21 @@
           toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2400);
         }
         $("btn-copy").addEventListener("click", function () {
-          var text = $("summary").textContent;
+          // Déduction automatique : si un abonné est choisi et que ce calcul n'a pas encore été déduit, on déduit avant de copier.
+          var deduitTxt = "", avert = "";
+          if (state.creditClientId && signatureCredits() !== signatureAppliquee) {
+            var mnt = parseFloat(($("credit-montant").value || "").replace(",", "."));
+            if (!isNaN(mnt) && mnt > 0) {
+              var n = appliquerDeduction();
+              if (n !== null) { signatureAppliquee = signatureCredits(); deduitTxt = "\nNouveau solde de crédits : " + fmt(n); }
+              else avert = " — crédits NON déduits, vérifie le solde";
+            }
+          }
+          var text = $("summary").textContent + deduitTxt;
+          function msg(ok) {
+            if (!ok) return "Copie impossible ici : sélectionne le texte du résumé";
+            return "Résumé copié" + (deduitTxt ? " — crédits déduits automatiquement" : "") + avert;
+          }
           function fallback() {
             var ta = document.createElement("textarea");
             ta.value = text;
@@ -560,11 +759,11 @@
             var ok = false;
             try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
             document.body.removeChild(ta);
-            showToast(ok ? "Résumé copié" : "Copie impossible ici : sélectionne le texte du résumé");
+            showToast(msg(ok));
           }
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(function () {
-              showToast("Résumé copié");
+              showToast(msg(true));
             }, fallback);
           } else { fallback(); }
         });
