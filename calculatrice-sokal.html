@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Calculatrice Sokal" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#1c1a17" />
+    <link rel="apple-touch-icon" sizes="180x180" href="calculatrice-sokal-icon-180.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="calculatrice-sokal-icon-512.png" />
+    <title>Calculatrice Sokal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Archivo+Black&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #f4f1ec;
+        --surface: #ffffff;
+        --surface-2: #ece7de;
+        --ink: #1c1a17;
+        --ink-soft: #5c564d;
+        --line: #d9d2c6;
+        --accent: #b3231b;
+        --accent-ink: #ffffff;
+        --accent-soft: #fbeae8;
+        --good: #1e6b3a;
+        --good-soft: #e3f0e6;
+        --result-bg: #1c1a17;
+        --result-ink: #f7f3ec;
+        --result-soft: #b8b0a2;
+        --result-accent: #ff6b5e;
+        --shadow: 0 1px 2px rgba(28, 26, 23, .06), 0 8px 24px rgba(28, 26, 23, .07);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14120f;
+          --surface: #211e1a;
+          --surface-2: #2c2823;
+          --ink: #f2eee6;
+          --ink-soft: #a89f91;
+          --line: #3a352e;
+          --accent: #e0483d;
+          --accent-ink: #ffffff;
+          --accent-soft: #3a2320;
+          --good: #6fce8f;
+          --good-soft: #22331f;
+          --result-bg: #0c0b09;
+          --result-ink: #f7f3ec;
+          --result-soft: #9a917f;
+          --result-accent: #ff7a6c;
+          --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .35);
+        }
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+        line-height: 1.45;
+      }
+      .wrap { max-width: 620px; margin: 0 auto; padding: 20px 16px 48px; }
+      h1 {
+        font-family: "Archivo Black", "Archivo", sans-serif;
+        font-size: 26px; letter-spacing: .01em; margin: 4px 0 2px;
+        text-transform: uppercase;
+      }
+      .sub { color: var(--ink-soft); font-size: 14.5px; margin: 0 0 20px; }
+      section.card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      h2 {
+        font-size: 13px; font-weight: 700; letter-spacing: .09em;
+        text-transform: uppercase; color: var(--ink-soft); margin: 0 0 12px;
+      }
+      .seg { display: flex; gap: 8px; flex-wrap: wrap; }
+      .seg button, .chip {
+        appearance: none; border: 1.5px solid var(--line); background: var(--surface-2);
+        color: var(--ink); border-radius: 10px; padding: 11px 14px;
+        font: inherit; font-size: 15.5px; font-weight: 600; cursor: pointer;
+        min-height: 48px; flex: 1 1 auto; text-align: center;
+      }
+      .seg button small { display: block; font-size: 12.5px; font-weight: 500; color: var(--ink-soft); margin-top: 1px; }
+      .seg button[aria-pressed="true"], .chip[aria-pressed="true"] {
+        background: var(--accent); border-color: var(--accent); color: var(--accent-ink);
+      }
+      .seg button[aria-pressed="true"] small { color: rgba(255,255,255,.8); }
+      .chip { flex: 0 1 auto; padding: 10px 13px; min-height: 44px; font-size: 15px; }
+      .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+      .stepper { display: flex; align-items: center; gap: 10px; }
+      .stepper button {
+        appearance: none; border: 1.5px solid var(--line); background: var(--surface-2);
+        color: var(--ink); width: 52px; height: 52px; border-radius: 12px;
+        font-size: 26px; font-weight: 700; cursor: pointer; line-height: 1; flex: 0 0 auto;
+      }
+      .stepper button:active, .seg button:active, .chip:active { transform: scale(.97); }
+      .stepper .val {
+        flex: 1; text-align: center; font-size: 30px; font-weight: 800;
+        font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+      }
+      .stepper .val small { font-size: 15px; font-weight: 600; color: var(--ink-soft); }
+      .presets { margin-top: 12px; }
+      .hint { font-size: 13.5px; color: var(--ink-soft); margin: 10px 0 0; }
+      .hint strong { color: var(--ink); }
+      .field-row { display: flex; align-items: center; gap: 10px; }
+      .field-row label { font-size: 15px; font-weight: 600; }
+      input[type="number"], input[type="text"] {
+        font: inherit; font-size: 17px; font-weight: 700; color: var(--ink);
+        background: var(--surface-2); border: 1.5px solid var(--line);
+        border-radius: 10px; padding: 11px 12px; width: 110px; text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      input:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+      .radio-list { display: grid; gap: 8px; }
+      .radio-opt {
+        display: flex; gap: 12px; align-items: flex-start; text-align: left; width: 100%;
+        appearance: none; border: 1.5px solid var(--line); background: var(--surface-2);
+        color: var(--ink); border-radius: 12px; padding: 13px 14px; cursor: pointer; font: inherit;
+      }
+      .radio-opt .dot {
+        flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid var(--ink-soft); margin-top: 1px; position: relative; background: var(--surface);
+      }
+      .radio-opt[aria-checked="true"] { border-color: var(--accent); background: var(--accent-soft); }
+      .radio-opt[aria-checked="true"] .dot { border-color: var(--accent); }
+      .radio-opt[aria-checked="true"] .dot::after {
+        content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent);
+      }
+      .radio-opt .t { font-size: 16px; font-weight: 700; display: block; }
+      .radio-opt .d { font-size: 13.5px; color: var(--ink-soft); display: block; margin-top: 1px; }
+      /* Résultats */
+      .result {
+        background: var(--result-bg); color: var(--result-ink);
+        border-radius: 16px; padding: 20px 18px 16px; margin-top: 4px;
+        box-shadow: var(--shadow);
+      }
+      .result h2 { color: var(--result-soft); }
+      .rrow {
+        display: flex; justify-content: space-between; align-items: baseline; gap: 14px;
+        padding: 7px 0; font-size: 16px;
+      }
+      .rrow .lbl { color: var(--result-soft); }
+      .rrow .amt { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .rrow.minus .amt { color: var(--result-accent); }
+      .rrow.credits .amt { color: var(--result-accent); }
+      .rrow.total { border-top: 1px solid rgba(255,255,255,.16); margin-top: 6px; padding-top: 12px; }
+      .rrow.total .lbl { color: var(--result-ink); font-weight: 600; }
+      .big {
+        border-top: 1px solid rgba(255,255,255,.16); margin-top: 10px; padding-top: 14px;
+        display: flex; justify-content: space-between; align-items: baseline; gap: 14px; flex-wrap: wrap;
+      }
+      .big .lbl { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+      .big .amt {
+        font-family: "Archivo Black", "Archivo", sans-serif;
+        font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; color: #fff;
+      }
+      @media (prefers-color-scheme: light) { .big .amt { color: #fff; } }
+      .note { font-size: 13.5px; color: var(--result-soft); margin: 10px 0 0; }
+      .note:empty { display: none; }
+      .summary-box {
+        margin-top: 14px; background: rgba(255,255,255,.07);
+        border: 1px solid rgba(255,255,255,.14); border-radius: 10px;
+        padding: 12px 13px; font-size: 14.5px; white-space: pre-wrap; word-break: break-word;
+      }
+      .actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+      .btn {
+        appearance: none; border: none; border-radius: 11px; padding: 13px 18px;
+        font: inherit; font-size: 15.5px; font-weight: 700; cursor: pointer; min-height: 50px;
+      }
+      .btn-primary { background: var(--accent); color: var(--accent-ink); flex: 1 1 180px; }
+      .btn-ghost { background: transparent; color: var(--ink-soft); border: 1.5px solid var(--line); flex: 0 1 auto; }
+      .page-actions { margin-top: 14px; display: flex; justify-content: flex-end; }
+      .hidden { display: none !important; }
+      .toast {
+        position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(80px);
+        background: var(--ink); color: var(--bg); padding: 11px 18px; border-radius: 999px;
+        font-size: 14.5px; font-weight: 600; opacity: 0; transition: all .25s ease; pointer-events: none;
+        z-index: 10; max-width: calc(100vw - 32px); text-align: center;
+      }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      @media (prefers-reduced-motion: reduce) { .toast { transition: none; } .seg button:active { transform: none; } }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Calculatrice Sokal</h1>
+      <p class="sub">Le montant exact d'une séance en quelques secondes : heures, heures gratuites, crédits d'abonnement et dépôt.</p>
+
+      <!-- Artiste -->
+      <section class="card" aria-labelledby="h-artiste">
+        <h2 id="h-artiste">Artiste</h2>
+        <div class="seg" role="group" aria-label="Choisir l'artiste">
+          <button type="button" id="art-cynthia" aria-pressed="true">Cynthia<small>125 $ / heure</small></button>
+          <button type="button" id="art-dave" aria-pressed="false">Dave<small>150 $ / heure</small></button>
+        </div>
+      </section>
+
+      <!-- Mode de tarif -->
+      <section class="card" aria-labelledby="h-mode">
+        <h2 id="h-mode">Tarif de la séance</h2>
+        <div class="seg" role="group" aria-label="Choisir le mode de tarif">
+          <button type="button" id="mode-heure" aria-pressed="true">À l'heure</button>
+          <button type="button" id="mode-fixe" aria-pressed="false">Prix fixe (flash)</button>
+        </div>
+
+        <div id="bloc-heure" style="margin-top:16px;">
+          <div class="stepper" aria-label="Durée de la séance">
+            <button type="button" id="duree-moins" aria-label="Réduire la durée de 15 minutes">−</button>
+            <div class="val" id="duree-val">2 h 00</div>
+            <button type="button" id="duree-plus" aria-label="Augmenter la durée de 15 minutes">+</button>
+          </div>
+          <div class="chips presets" role="group" aria-label="Durées rapides">
+            <button type="button" class="chip duree-preset" data-min="60">1 h</button>
+            <button type="button" class="chip duree-preset" data-min="90">1 h 30</button>
+            <button type="button" class="chip duree-preset" data-min="120">2 h</button>
+            <button type="button" class="chip duree-preset" data-min="150">2 h 30</button>
+            <button type="button" class="chip duree-preset" data-min="180">3 h</button>
+            <button type="button" class="chip duree-preset" data-min="240">4 h</button>
+            <button type="button" class="chip duree-preset" data-min="300">5 h</button>
+            <button type="button" class="chip duree-preset" data-min="360">6 h</button>
+          </div>
+        </div>
+
+        <div id="bloc-fixe" class="hidden" style="margin-top:16px;">
+          <div class="field-row">
+            <label for="prix-fixe">Prix du flash</label>
+            <input type="number" id="prix-fixe" inputmode="decimal" min="0" step="5" value="300" />
+            <span aria-hidden="true" style="font-weight:700;">$</span>
+          </div>
+          <p class="hint">Le prix fixe remplace le calcul à l'heure. Les crédits d'abonnement s'appliquent quand même sur ce montant.</p>
+        </div>
+      </section>
+
+      <!-- Heures gratuites -->
+      <section class="card" id="bloc-gratuit" aria-labelledby="h-gratuit">
+        <h2 id="h-gratuit">Heures gratuites offertes</h2>
+        <div class="stepper" aria-label="Heures gratuites">
+          <button type="button" id="gratuit-moins" aria-label="Réduire les heures gratuites">−</button>
+          <div class="val" id="gratuit-val">0 <small>h</small></div>
+          <button type="button" id="gratuit-plus" aria-label="Augmenter les heures gratuites">+</button>
+        </div>
+        <p class="hint">Ex. : « heure de cadeau » d'une cliente abonnée. Les heures gratuites sont retirées <strong>avant</strong> le calcul des crédits.</p>
+      </section>
+
+      <!-- Crédits -->
+      <section class="card" aria-labelledby="h-credits">
+        <h2 id="h-credits">Part payée en crédits (abonnement)</h2>
+        <div class="chips" role="group" aria-label="Pourcentage en crédits" id="credit-chips">
+          <button type="button" class="chip credit-chip" data-pct="0">Aucun abo · 0 %</button>
+          <button type="button" class="chip credit-chip" data-pct="25">25 %</button>
+          <button type="button" class="chip credit-chip" data-pct="30">30 %</button>
+          <button type="button" class="chip credit-chip" data-pct="35">35 %</button>
+          <button type="button" class="chip credit-chip" data-pct="50">50 %</button>
+          <button type="button" class="chip credit-chip" data-pct="75">75 %</button>
+        </div>
+        <div class="field-row" style="margin-top:12px;">
+          <label for="credit-custom">Autre pourcentage</label>
+          <input type="number" id="credit-custom" inputmode="numeric" min="0" max="100" step="1" placeholder="—" />
+          <span aria-hidden="true" style="font-weight:700;">%</span>
+        </div>
+        <p class="hint" id="credit-hint"></p>
+      </section>
+
+      <!-- Dépôt -->
+      <section class="card" aria-labelledby="h-depot">
+        <h2 id="h-depot">Dépôt de 50 $</h2>
+        <div class="radio-list" role="radiogroup" aria-label="Traitement du dépôt de 50 dollars">
+          <button type="button" class="radio-opt" id="depot-non" role="radio" aria-checked="true">
+            <span class="dot" aria-hidden="true"></span>
+            <span><span class="t">Non déduit (frais de matériel)</span>
+            <span class="d">Le dépôt déjà versé reste à part : la cliente paie le plein montant en argent calculé.</span></span>
+          </button>
+          <button type="button" class="radio-opt" id="depot-oui" role="radio" aria-checked="false">
+            <span class="dot" aria-hidden="true"></span>
+            <span><span class="t">Déduit du montant en argent</span>
+            <span class="d">Les 50 $ déjà versés sont soustraits de la part en argent à recevoir.</span></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Résultat -->
+      <div class="result" aria-live="polite">
+        <h2>Résultat de la séance</h2>
+        <div id="lignes"></div>
+        <div class="big">
+          <span class="lbl" id="big-label">À recevoir en argent</span>
+          <span class="amt" id="big-amt">0,00 $</span>
+        </div>
+        <p class="note" id="result-note"></p>
+        <div class="summary-box" id="summary"></div>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-copy">Copier le résumé</button>
+        </div>
+      </div>
+
+      <div class="page-actions">
+        <button type="button" class="btn btn-ghost" id="btn-reset">Recommencer</button>
+      </div>
+    </main>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var DEPOT = 50;
+
+        // Règle des crédits : 75 % max jusqu'au 31 déc. 2026, 50 % max dès janvier 2027.
+        var now = new Date();
+        var regle2027 = now.getFullYear() >= 2027;
+        var pctDefaut = regle2027 ? 50 : 75;
+
+        var state = {
+          rate: 125,
+          artiste: "Cynthia",
+          mode: "heure",          // "heure" | "fixe"
+          dureeMin: 120,
+          gratuitMin: 0,
+          prixFixe: 300,
+          creditPct: pctDefaut,
+          depotDeduit: false
+        };
+
+        var $ = function (id) { return document.getElementById(id); };
+
+        function fmt(n) {
+          var s = Math.abs(n).toFixed(2).replace(".", ",");
+          s = s.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+          return (n < 0 ? "−" : "") + s + " $";
+        }
+        function fmtH(min) {
+          var h = Math.floor(min / 60), m = min % 60;
+          if (m === 0) return h + " h";
+          return h + " h " + (m < 10 ? "0" : "") + m;
+        }
+        function fmtHdec(min) { return (min / 60).toString().replace(".", ",") + " h"; }
+
+        // ---------- Contrôles ----------
+        function setPressed(btn, on) { btn.setAttribute("aria-pressed", on ? "true" : "false"); }
+
+        $("art-cynthia").addEventListener("click", function () {
+          state.artiste = "Cynthia"; state.rate = 125;
+          setPressed($("art-cynthia"), true); setPressed($("art-dave"), false); render();
+        });
+        $("art-dave").addEventListener("click", function () {
+          state.artiste = "Dave"; state.rate = 150;
+          setPressed($("art-dave"), true); setPressed($("art-cynthia"), false); render();
+        });
+
+        $("mode-heure").addEventListener("click", function () {
+          state.mode = "heure";
+          setPressed($("mode-heure"), true); setPressed($("mode-fixe"), false);
+          $("bloc-heure").classList.remove("hidden");
+          $("bloc-fixe").classList.add("hidden");
+          $("bloc-gratuit").classList.remove("hidden");
+          render();
+        });
+        $("mode-fixe").addEventListener("click", function () {
+          state.mode = "fixe";
+          setPressed($("mode-fixe"), true); setPressed($("mode-heure"), false);
+          $("bloc-fixe").classList.remove("hidden");
+          $("bloc-heure").classList.add("hidden");
+          $("bloc-gratuit").classList.add("hidden");
+          render();
+        });
+        $("prix-fixe").addEventListener("input", function () {
+          var v = parseFloat(this.value.replace(",", "."));
+          state.prixFixe = isNaN(v) || v < 0 ? 0 : v;
+          render();
+        });
+
+        $("duree-moins").addEventListener("click", function () {
+          state.dureeMin = Math.max(15, state.dureeMin - 15); render();
+        });
+        $("duree-plus").addEventListener("click", function () {
+          state.dureeMin = Math.min(720, state.dureeMin + 15); render();
+        });
+        var presets = document.querySelectorAll(".duree-preset");
+        for (var i = 0; i < presets.length; i++) {
+          presets[i].addEventListener("click", function () {
+            state.dureeMin = parseInt(this.getAttribute("data-min"), 10); render();
+          });
+        }
+
+        $("gratuit-moins").addEventListener("click", function () {
+          state.gratuitMin = Math.max(0, state.gratuitMin - 30); render();
+        });
+        $("gratuit-plus").addEventListener("click", function () {
+          state.gratuitMin = Math.min(state.dureeMin, state.gratuitMin + 30); render();
+        });
+
+        var creditChips = document.querySelectorAll(".credit-chip");
+        function selectCredit(pct) {
+          state.creditPct = pct;
+          for (var j = 0; j < creditChips.length; j++) {
+            setPressed(creditChips[j], parseInt(creditChips[j].getAttribute("data-pct"), 10) === pct);
+          }
+        }
+        for (var k = 0; k < creditChips.length; k++) {
+          creditChips[k].addEventListener("click", function () {
+            $("credit-custom").value = "";
+            selectCredit(parseInt(this.getAttribute("data-pct"), 10));
+            render();
+          });
+        }
+        $("credit-custom").addEventListener("input", function () {
+          var v = parseFloat(this.value.replace(",", "."));
+          if (isNaN(v)) { selectCredit(state.creditPct); return; }
+          v = Math.max(0, Math.min(100, v));
+          state.creditPct = v;
+          for (var j = 0; j < creditChips.length; j++) setPressed(creditChips[j], false);
+          render();
+        });
+
+        function setDepot(deduit) {
+          state.depotDeduit = deduit;
+          $("depot-oui").setAttribute("aria-checked", deduit ? "true" : "false");
+          $("depot-non").setAttribute("aria-checked", deduit ? "false" : "true");
+        }
+        $("depot-oui").addEventListener("click", function () { setDepot(true); render(); });
+        $("depot-non").addEventListener("click", function () { setDepot(false); render(); });
+
+        $("btn-reset").addEventListener("click", function () {
+          state.dureeMin = 120; state.gratuitMin = 0; state.prixFixe = 300;
+          $("prix-fixe").value = 300; $("credit-custom").value = "";
+          selectCredit(pctDefaut); setDepot(false);
+          $("mode-heure").click();
+          showToast("Calculatrice réinitialisée");
+          render();
+        });
+
+        // ---------- Calcul ----------
+        function calculer() {
+          var r = {};
+          if (state.mode === "fixe") {
+            r.base = state.prixFixe;
+            r.gratuitValeur = 0;
+            r.minimumApplique = false;
+          } else {
+            var facturableMin = Math.max(0, state.dureeMin - state.gratuitMin);
+            r.gratuitValeur = (state.gratuitMin / 60) * state.rate;
+            r.minimumApplique = false;
+            var heures = facturableMin / 60;
+            if (facturableMin > 0 && heures < 1) { heures = 1; r.minimumApplique = true; }
+            r.base = heures * state.rate;
+            r.facturableMin = facturableMin;
+          }
+          r.credits = r.base * state.creditPct / 100;
+          r.argent = r.base - r.credits;
+          r.depotApplique = 0;
+          r.resteArgent = r.argent;
+          if (state.depotDeduit) {
+            r.depotApplique = Math.min(DEPOT, r.argent);
+            r.resteArgent = r.argent - r.depotApplique;
+          }
+          return r;
+        }
+
+        // ---------- Affichage ----------
+        function ligne(lbl, amt, cls) {
+          return '<div class="rrow ' + (cls || "") + '"><span class="lbl">' + lbl +
+                 '</span><span class="amt">' + amt + '</span></div>';
+        }
+
+        function render() {
+          $("duree-val").textContent = fmtH(state.dureeMin);
+          $("gratuit-val").innerHTML = fmtH(state.gratuitMin).replace(" h", " <small>h</small>");
+
+          $("credit-hint").innerHTML = regle2027
+            ? "Règle en vigueur : <strong>50 % max en crédits</strong> pour les abonnés (depuis janvier 2027). Les 25 %, 30 % et 35 % servent aux rabais exceptionnels, ex. sur un flash."
+            : "Règle en vigueur : les abonnés peuvent payer <strong>jusqu'à 75 % en crédits jusqu'au 31 décembre 2026</strong>, puis <strong>50 % max à partir de janvier 2027</strong>. Les 25 %, 30 % et 35 % servent aux rabais exceptionnels, ex. sur un flash.";
+
+          var r = calculer();
+          var html = "";
+
+          if (state.mode === "heure") {
+            html += ligne("Séance : " + fmtH(state.dureeMin) + " à " + fmt(state.rate).replace(",00", "") + " / h",
+                          fmt((state.dureeMin / 60) * state.rate));
+            if (state.gratuitMin > 0) {
+              html += ligne("Heures gratuites (" + fmtHdec(state.gratuitMin) + ")", "− " + fmt(r.gratuitValeur), "minus");
+            }
+          } else {
+            html += ligne("Prix fixe du flash", fmt(r.base));
+          }
+          html += ligne("Total de la séance", fmt(r.base), "total");
+          if (state.creditPct > 0) {
+            html += ligne("Payé en crédits (" + state.creditPct + " %)", fmt(r.credits), "credits");
+          } else {
+            html += ligne("Payé en crédits (aucun abonnement)", fmt(0), "credits");
+          }
+          html += ligne("Part en argent", fmt(r.argent));
+          if (state.depotDeduit) {
+            html += ligne("Dépôt déjà versé, déduit", "− " + fmt(r.depotApplique), "minus");
+          }
+          $("lignes").innerHTML = html;
+
+          $("big-label").textContent = state.depotDeduit ? "Reste à recevoir en argent" : "À recevoir en argent";
+          $("big-amt").textContent = fmt(r.resteArgent);
+
+          var notes = [];
+          if (r.minimumApplique) notes.push("Minimum d'une heure appliqué (" + fmt(state.rate) + ").");
+          if (!state.depotDeduit) notes.push("Dépôt de 50 $ conservé comme frais de matériel : il n'est pas déduit du montant ci-dessus.");
+          if (state.depotDeduit && r.argent < DEPOT && r.argent > 0) notes.push("La part en argent est plus petite que le dépôt : seuls " + fmt(r.argent) + " sont déduits.");
+          if (state.depotDeduit && r.argent === 0) notes.push("Aucune part en argent : rien à déduire du dépôt sur cette séance.");
+          $("result-note").textContent = notes.join(" ");
+
+          // Résumé copiable
+          var s = [];
+          s.push("Séance avec " + state.artiste + " — Sokal Tattoo");
+          if (state.mode === "heure") {
+            s.push("Durée : " + fmtH(state.dureeMin) + " à " + fmt(state.rate) + " / h");
+            if (state.gratuitMin > 0) s.push("Heures gratuites offertes : " + fmtHdec(state.gratuitMin) + " (− " + fmt(r.gratuitValeur) + ")");
+          } else {
+            s.push("Flash à prix fixe : " + fmt(r.base));
+          }
+          s.push("Total de la séance : " + fmt(r.base));
+          s.push("En crédits (" + state.creditPct + " %) : " + fmt(r.credits));
+          s.push("En argent : " + fmt(r.argent));
+          if (state.depotDeduit) {
+            s.push("Dépôt de 50 $ déjà versé et déduit : − " + fmt(r.depotApplique));
+            s.push("Reste à recevoir en argent : " + fmt(r.resteArgent));
+          } else {
+            s.push("Dépôt de 50 $ : conservé comme frais de matériel (non déduit)");
+            s.push("À recevoir en argent : " + fmt(r.resteArgent));
+          }
+          $("summary").textContent = s.join("\n");
+        }
+
+        // ---------- Copie ----------
+        var toastTimer = null;
+        function showToast(msg) {
+          var t = $("toast");
+          t.textContent = msg;
+          t.classList.add("show");
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2400);
+        }
+        $("btn-copy").addEventListener("click", function () {
+          var text = $("summary").textContent;
+          function fallback() {
+            var ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed"; ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            var ok = false;
+            try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+            document.body.removeChild(ta);
+            showToast(ok ? "Résumé copié" : "Copie impossible ici : sélectionne le texte du résumé");
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function () {
+              showToast("Résumé copié");
+            }, fallback);
+          } else { fallback(); }
+        });
+
+        // Init
+        selectCredit(pctDefaut);
+        setDepot(false);
+        render();
+      })();
+    </script>
+  </body>
+</html>
