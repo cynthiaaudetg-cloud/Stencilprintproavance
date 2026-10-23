@@ -300,6 +300,11 @@
             <span><span class="t">Déduit du montant en argent</span>
             <span class="d" id="depot-deduit-desc">Les 50 $ déjà versés sont soustraits de la part en argent à recevoir.</span></span>
           </button>
+          <button type="button" class="radio-opt" id="depot-aucun" role="radio" aria-checked="false">
+            <span class="dot" aria-hidden="true"></span>
+            <span><span class="t">Aucun dépôt</span>
+            <span class="d">Le client n'a versé aucun dépôt pour cette séance (entente spéciale, fréquent chez certains clients de Dave).</span></span>
+          </button>
         </div>
       </section>
 
@@ -347,6 +352,7 @@
         <div class="summary-box" id="summary"></div>
         <div class="actions">
           <button type="button" class="btn btn-primary" id="btn-copy">Copier le résumé</button>
+          <button type="button" class="btn btn-ghost" id="btn-partager">Partager le résumé</button>
         </div>
       </div>
 
@@ -411,6 +417,7 @@
           creditPct: pctDefaut,
           depot: DEPOTS.Cynthia,
           depotDeduit: false,
+          depotAucun: false,
           creditClientId: ""
         };
 
@@ -509,13 +516,16 @@
           render();
         });
 
-        function setDepot(deduit) {
-          state.depotDeduit = deduit;
-          $("depot-oui").setAttribute("aria-checked", deduit ? "true" : "false");
-          $("depot-non").setAttribute("aria-checked", deduit ? "false" : "true");
+        function setDepot(deduit, aucun) {
+          state.depotAucun = !!aucun;
+          state.depotDeduit = !!deduit && !state.depotAucun;
+          $("depot-oui").setAttribute("aria-checked", state.depotDeduit ? "true" : "false");
+          $("depot-non").setAttribute("aria-checked", (!state.depotDeduit && !state.depotAucun) ? "true" : "false");
+          $("depot-aucun").setAttribute("aria-checked", state.depotAucun ? "true" : "false");
         }
         $("depot-oui").addEventListener("click", function () { setDepot(true); render(); });
         $("depot-non").addEventListener("click", function () { setDepot(false); render(); });
+        $("depot-aucun").addEventListener("click", function () { setDepot(false, true); render(); });
 
         // Options du menu des abonnés
         (function () {
@@ -663,7 +673,8 @@
 
           var notes = [];
           if (r.minimumApplique) notes.push("Minimum d'une heure appliqué (" + fmt(state.rate) + ").");
-          if (!state.depotDeduit) notes.push("Dépôt de " + fmt(state.depot) + " conservé comme frais de matériel : il n'est pas déduit du montant ci-dessus.");
+          if (state.depotAucun) notes.push("Aucun dépôt reçu pour cette séance.");
+          else if (!state.depotDeduit) notes.push("Dépôt de " + fmt(state.depot) + " conservé comme frais de matériel : il n'est pas déduit du montant ci-dessus.");
           if (state.depotDeduit && r.argent < state.depot && r.argent > 0) notes.push("La part en argent est plus petite que le dépôt : seuls " + fmt(r.argent) + " sont déduits.");
           if (state.depotDeduit && r.argent === 0) notes.push("Aucune part en argent : rien à déduire du dépôt sur cette séance.");
           $("result-note").textContent = notes.join(" ");
@@ -681,7 +692,10 @@
           s.push("Total de la séance : " + fmt(r.base));
           s.push("En crédits (" + state.creditPct + " %) : " + fmt(r.credits));
           s.push("En argent : " + fmt(r.argent));
-          if (state.depotDeduit) {
+          if (state.depotAucun) {
+            s.push("Dépôt : aucun (entente spéciale)");
+            s.push("À recevoir en argent : " + fmt(r.resteArgent));
+          } else if (state.depotDeduit) {
             s.push("Dépôt de " + fmt(state.depot) + " déjà versé et déduit : − " + fmt(r.depotApplique));
             s.push("Reste à recevoir en argent : " + fmt(r.resteArgent));
           } else {
@@ -734,21 +748,25 @@
           clearTimeout(toastTimer);
           toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2400);
         }
-        $("btn-copy").addEventListener("click", function () {
-          // Déduction automatique : si un abonné est choisi et que ce calcul n'a pas encore été déduit, on déduit avant de copier.
-          var deduitTxt = "", avert = "";
+        function deduireSiNecessaire() {
+          // Déduit les crédits de l'abonné choisi si ce calcul précis n'a pas encore été déduit (anti-double-déduction).
+          var res = { txt: "", avert: "" };
           if (state.creditClientId && signatureCredits() !== signatureAppliquee) {
             var mnt = parseFloat(($("credit-montant").value || "").replace(",", "."));
             if (!isNaN(mnt) && mnt > 0) {
               var n = appliquerDeduction();
-              if (n !== null) { signatureAppliquee = signatureCredits(); deduitTxt = "\nNouveau solde de crédits : " + fmt(n); }
-              else avert = " — crédits NON déduits, vérifie le solde";
+              if (n !== null) { signatureAppliquee = signatureCredits(); res.txt = "\nNouveau solde de crédits : " + fmt(n); }
+              else res.avert = " — crédits NON déduits, vérifie le solde";
             }
           }
-          var text = $("summary").textContent + deduitTxt;
+          return res;
+        }
+        $("btn-copy").addEventListener("click", function () {
+          var d = deduireSiNecessaire();
+          var text = $("summary").textContent + d.txt;
           function msg(ok) {
             if (!ok) return "Copie impossible ici : sélectionne le texte du résumé";
-            return "Résumé copié" + (deduitTxt ? " — crédits déduits automatiquement" : "") + avert;
+            return "Résumé copié" + (d.txt ? " — crédits déduits automatiquement" : "") + d.avert;
           }
           function fallback() {
             var ta = document.createElement("textarea");
@@ -766,6 +784,22 @@
               showToast(msg(true));
             }, fallback);
           } else { fallback(); }
+        });
+        $("btn-partager").addEventListener("click", function () {
+          var d = deduireSiNecessaire();
+          var text = $("summary").textContent + d.txt;
+          var suffixe = (d.txt ? " — crédits déduits automatiquement" : "") + d.avert;
+          if (navigator.share) {
+            navigator.share({ text: text }).then(function () {
+              showToast("Résumé partagé" + suffixe);
+            }, function () {});
+          } else if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function () {
+              showToast("Résumé copié (partage non disponible ici)" + suffixe);
+            }, function () { showToast("Ni partage ni copie disponibles ici"); });
+          } else {
+            showToast("Partage non disponible ici : utilise « Copier le résumé »");
+          }
         });
 
         // Init
