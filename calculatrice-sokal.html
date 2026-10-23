@@ -550,6 +550,28 @@
           var m = parseFloat(($("credit-montant").value || "").replace(",", "."));
           return state.creditClientId + "|" + (isNaN(m) ? "0" : m.toFixed(2));
         }
+        // ---------- Journal automatique des séances ----------
+        // Même principe que le formulaire de consentement : chaque déduction
+        // (copie, partage ou bouton « Déduire ») est envoyée en silence au
+        // « Journal des séances Sokal » (Google Forms) pour que Dumbling la
+        // voie, l'applique au registre officiel des crédits et réconcilie.
+        var JOURNAL_URL = "https://docs.google.com/forms/d/e/1FAIpQLScEe2t32Yc0whbcqpBPfzb13spwWfo_HjBKNULVBWxqOH4plA/formResponse";
+        var JOURNAL_CHAMPS = { artiste: "entry.596299569", client: "entry.1843175063", total: "entry.337023424", credits: "entry.1349558389", argent: "entry.2128351131", solde: "entry.969255088", resume: "entry.2047827642" };
+        function journaliserDeduction(a, m, nouveau) {
+          try {
+            var r = calculer();
+            var corps = new URLSearchParams();
+            corps.set(JOURNAL_CHAMPS.artiste, state.artiste);
+            corps.set(JOURNAL_CHAMPS.client, a.nom + (a.pseudo && a.pseudo !== a.nom && a.nom.indexOf(a.pseudo) === -1 ? " (" + a.pseudo + ")" : ""));
+            corps.set(JOURNAL_CHAMPS.total, fmt(r.base));
+            corps.set(JOURNAL_CHAMPS.credits, fmt(m));
+            corps.set(JOURNAL_CHAMPS.argent, fmt(r.resteArgent));
+            corps.set(JOURNAL_CHAMPS.solde, fmt(nouveau));
+            corps.set(JOURNAL_CHAMPS.resume, $("summary").textContent + "\nNouveau solde de crédits : " + fmt(nouveau));
+            fetch(JOURNAL_URL, { method: "POST", mode: "no-cors", body: corps }).catch(function () {});
+          } catch (e) { /* le journal est un filet de sécurité : jamais bloquant */ }
+        }
+
         function appliquerDeduction() {
           var a = abonneParId(state.creditClientId);
           if (!a) { showToast("Choisis d'abord l'abonné dans la section Crédits"); return null; }
@@ -563,6 +585,7 @@
           creditsData.soldes[a.id] = nouveau;
           creditsData.historique.unshift({ date: new Date().toISOString(), client: a.nom, montant: m, solde: nouveau, artiste: state.artiste });
           sauverCredits();
+          journaliserDeduction(a, m, nouveau);
           creditManuel = false;
           render();
           return nouveau;
