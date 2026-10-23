@@ -273,7 +273,7 @@
       <!-- Dépôt -->
       <section class="card" aria-labelledby="h-depot">
         <h2 id="h-depot">Dépôt de 50 $</h2>
-        <div class="radio-list" role="radiogroup" aria-label="Traitement du dépôt de 50 dollars">
+        <div class="radio-list" role="radiogroup" id="depot-group" aria-label="Traitement du dépôt">
           <button type="button" class="radio-opt" id="depot-non" role="radio" aria-checked="true">
             <span class="dot" aria-hidden="true"></span>
             <span><span class="t">Non déduit (frais de matériel)</span>
@@ -282,7 +282,7 @@
           <button type="button" class="radio-opt" id="depot-oui" role="radio" aria-checked="false">
             <span class="dot" aria-hidden="true"></span>
             <span><span class="t">Déduit du montant en argent</span>
-            <span class="d">Les 50 $ déjà versés sont soustraits de la part en argent à recevoir.</span></span>
+            <span class="d" id="depot-deduit-desc">Les 50 $ déjà versés sont soustraits de la part en argent à recevoir.</span></span>
           </button>
         </div>
       </section>
@@ -313,7 +313,7 @@
       (function () {
         "use strict";
 
-        var DEPOT = 50;
+        var DEPOTS = { Cynthia: 50, Dave: 100 };
 
         // Règle des crédits : 75 % max jusqu'au 31 déc. 2026, 50 % max dès janvier 2027.
         var now = new Date();
@@ -328,6 +328,7 @@
           gratuitMin: 0,
           prixFixe: 300,
           creditPct: pctDefaut,
+          depot: DEPOTS.Cynthia,
           depotDeduit: false
         };
 
@@ -349,11 +350,11 @@
         function setPressed(btn, on) { btn.setAttribute("aria-pressed", on ? "true" : "false"); }
 
         $("art-cynthia").addEventListener("click", function () {
-          state.artiste = "Cynthia"; state.rate = 125;
+          state.artiste = "Cynthia"; state.rate = 125; state.depot = DEPOTS.Cynthia;
           setPressed($("art-cynthia"), true); setPressed($("art-dave"), false); render();
         });
         $("art-dave").addEventListener("click", function () {
-          state.artiste = "Dave"; state.rate = 150;
+          state.artiste = "Dave"; state.rate = 150; state.depot = DEPOTS.Dave;
           setPressed($("art-dave"), true); setPressed($("art-cynthia"), false); render();
         });
 
@@ -460,7 +461,7 @@
           r.depotApplique = 0;
           r.resteArgent = r.argent;
           if (state.depotDeduit) {
-            r.depotApplique = Math.min(DEPOT, r.argent);
+            r.depotApplique = Math.min(state.depot, r.argent);
             r.resteArgent = r.argent - r.depotApplique;
           }
           return r;
@@ -473,6 +474,9 @@
         }
 
         function render() {
+          $("h-depot").textContent = "Dépôt de " + state.depot + " $";
+          $("depot-group").setAttribute("aria-label", "Traitement du dépôt de " + state.depot + " dollars");
+          $("depot-deduit-desc").textContent = "Les " + state.depot + " $ déjà versés sont soustraits de la part en argent à recevoir.";
           $("duree-val").textContent = fmtH(state.dureeMin);
           $("gratuit-val").innerHTML = fmtH(state.gratuitMin).replace(" h", " <small>h</small>");
 
@@ -509,8 +513,8 @@
 
           var notes = [];
           if (r.minimumApplique) notes.push("Minimum d'une heure appliqué (" + fmt(state.rate) + ").");
-          if (!state.depotDeduit) notes.push("Dépôt de 50 $ conservé comme frais de matériel : il n'est pas déduit du montant ci-dessus.");
-          if (state.depotDeduit && r.argent < DEPOT && r.argent > 0) notes.push("La part en argent est plus petite que le dépôt : seuls " + fmt(r.argent) + " sont déduits.");
+          if (!state.depotDeduit) notes.push("Dépôt de " + fmt(state.depot) + " conservé comme frais de matériel : il n'est pas déduit du montant ci-dessus.");
+          if (state.depotDeduit && r.argent < state.depot && r.argent > 0) notes.push("La part en argent est plus petite que le dépôt : seuls " + fmt(r.argent) + " sont déduits.");
           if (state.depotDeduit && r.argent === 0) notes.push("Aucune part en argent : rien à déduire du dépôt sur cette séance.");
           $("result-note").textContent = notes.join(" ");
 
@@ -527,10 +531,10 @@
           s.push("En crédits (" + state.creditPct + " %) : " + fmt(r.credits));
           s.push("En argent : " + fmt(r.argent));
           if (state.depotDeduit) {
-            s.push("Dépôt de 50 $ déjà versé et déduit : − " + fmt(r.depotApplique));
+            s.push("Dépôt de " + fmt(state.depot) + " déjà versé et déduit : − " + fmt(r.depotApplique));
             s.push("Reste à recevoir en argent : " + fmt(r.resteArgent));
           } else {
-            s.push("Dépôt de 50 $ : conservé comme frais de matériel (non déduit)");
+            s.push("Dépôt de " + fmt(state.depot) + " : conservé comme frais de matériel (non déduit)");
             s.push("À recevoir en argent : " + fmt(r.resteArgent));
           }
           $("summary").textContent = s.join("\n");
