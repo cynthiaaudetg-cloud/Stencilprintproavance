@@ -229,6 +229,10 @@
             <option value="">— Choisir un abonné —</option>
           </select>
         </div>
+        <div class="actions" style="margin-top:10px;">
+          <button type="button" class="btn btn-ghost" id="btn-ajouter-client">Enregistrer ce client</button>
+        </div>
+        <p class="hint">Les clients enregistrés ici restent dans la liste sur ce téléphone, sans solde. Si un crédit s'ajoute plus tard, dis-le à Dumbling pour l'inscrire officiellement.</p>
         <p class="hint" id="credit-solde"></p>
         <div class="field-row" style="margin-top:12px;">
           <label for="credit-montant">Crédits à déduire</label>
@@ -398,6 +402,24 @@
           { id: "johanne", nom: "Johanne Asselin", pseudo: "Johanne", solde: 700 }
         ];
         var LS_CREDITS = "sokal-credits-v1";
+        var LS_CLIENTS_PERSO = "sokal-clients-perso-v1";
+        function chargerClientsPerso() {
+          try { var l = JSON.parse(localStorage.getItem(LS_CLIENTS_PERSO)); if (Array.isArray(l)) return l.filter(function (c) { return c && c.id && c.nom; }); } catch (e) {}
+          return [];
+        }
+        var clientsPerso = chargerClientsPerso();
+        function sauverClientsPerso() { try { localStorage.setItem(LS_CLIENTS_PERSO, JSON.stringify(clientsPerso)); } catch (e) {} }
+        function normNom(nom) { return (nom || "").toLowerCase().replace(/\s+/g, " ").trim(); }
+        function trouverClientParNom(nomNormalise) {
+          for (var i = 0; i < ABONNES.length; i++) {
+            var a = ABONNES[i];
+            if (normNom(a.nom) === nomNormalise || normNom(a.pseudo) === nomNormalise) return a;
+            var premier = normNom(a.nom).split(" ")[0];
+            if (premier && premier === nomNormalise) return a;
+          }
+          for (var j = 0; j < clientsPerso.length; j++) if (normNom(clientsPerso[j].nom) === nomNormalise) return clientsPerso[j];
+          return null;
+        }
         function chargerCredits() {
           try { var d = JSON.parse(localStorage.getItem(LS_CREDITS)); if (d && d.soldes) return d; } catch (e) {}
           return { soldes: {}, historique: [] };
@@ -410,6 +432,7 @@
         function sauverCredits() { try { localStorage.setItem(LS_CREDITS, JSON.stringify(creditsData)); } catch (e) {} }
         function abonneParId(id) {
           for (var i = 0; i < ABONNES.length; i++) if (ABONNES[i].id === id) return ABONNES[i];
+          for (var j = 0; j < clientsPerso.length; j++) if (clientsPerso[j].id === id) return clientsPerso[j];
           return null;
         }
         var creditManuel = false;
@@ -561,6 +584,17 @@
             o.textContent = ABONNES[i].nom + (ABONNES[i].pseudo !== ABONNES[i].nom ? " (" + ABONNES[i].pseudo + ")" : "");
             sel.appendChild(o);
           }
+          for (var k = 0; k < clientsPerso.length; k++) {
+            var c = clientsPerso[k];
+            var deja = false;
+            for (var m = 0; m < ABONNES.length; m++) if (normNom(ABONNES[m].nom) === normNom(c.nom) || normNom(ABONNES[m].pseudo) === normNom(c.nom)) deja = true;
+            if (!deja) {
+              var oc = document.createElement("option");
+              oc.value = c.id;
+              oc.textContent = c.nom;
+              sel.appendChild(oc);
+            }
+          }
         })();
         $("credit-client").addEventListener("change", function () {
           state.creditClientId = this.value;
@@ -568,6 +602,30 @@
           if (a) { state.clientNom = a.nom; $("client-nom").value = a.nom; }
           creditManuel = false; signatureAppliquee = "";
           render();
+        });
+        $("btn-ajouter-client").addEventListener("click", function () {
+          var nom = ($("client-nom").value || "").trim().replace(/\s+/g, " ");
+          if (!nom) { showToast("Écris d'abord le nom dans le champ Nom"); return; }
+          var ex = trouverClientParNom(normNom(nom));
+          if (ex) {
+            state.creditClientId = ex.id; $("credit-client").value = ex.id;
+            state.clientNom = ex.nom; $("client-nom").value = ex.nom;
+            creditManuel = false; signatureAppliquee = "";
+            render();
+            showToast("Ce client est déjà dans la liste");
+            return;
+          }
+          var nv = { id: "perso-" + Date.now(), nom: nom, pseudo: nom, solde: null };
+          clientsPerso.push(nv);
+          sauverClientsPerso();
+          var o = document.createElement("option");
+          o.value = nv.id; o.textContent = nv.nom;
+          $("credit-client").appendChild(o);
+          state.creditClientId = nv.id; $("credit-client").value = nv.id;
+          state.clientNom = nv.nom;
+          creditManuel = false; signatureAppliquee = "";
+          render();
+          showToast("Client enregistré");
         });
         $("credit-montant").addEventListener("input", function () { creditManuel = true; renderCredits(calculer()); });
 
