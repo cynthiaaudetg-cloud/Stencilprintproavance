@@ -289,6 +289,19 @@
       <!-- Dépôt -->
       <section class="card" aria-labelledby="h-depot">
         <h2 id="h-depot">Dépôt de 50 $</h2>
+        <div id="bloc-depot-dave" class="hidden" style="margin-bottom:12px;">
+          <p class="hint" style="margin:0 0 8px;">Montant du dépôt de Dave (parfois 100 $, parfois 50 $) :</p>
+          <div class="radio-list" role="radiogroup" id="depot-montant-group" aria-label="Montant du dépôt de Dave">
+            <button type="button" class="radio-opt" id="depot-montant-100" role="radio" aria-checked="true">
+              <span class="dot" aria-hidden="true"></span>
+              <span><span class="t">100 $</span></span>
+            </button>
+            <button type="button" class="radio-opt" id="depot-montant-50" role="radio" aria-checked="false">
+              <span class="dot" aria-hidden="true"></span>
+              <span><span class="t">50 $</span></span>
+            </button>
+          </div>
+        </div>
         <div class="radio-list" role="radiogroup" id="depot-group" aria-label="Traitement du dépôt">
           <button type="button" class="radio-opt" id="depot-non" role="radio" aria-checked="true">
             <span class="dot" aria-hidden="true"></span>
@@ -416,6 +429,7 @@
           prixFixe: 300,
           creditPct: pctDefaut,
           depot: DEPOTS.Cynthia,
+          depotDave: DEPOTS.Dave,
           depotDeduit: false,
           depotAucun: false,
           creditClientId: ""
@@ -443,7 +457,7 @@
           setPressed($("art-cynthia"), true); setPressed($("art-dave"), false); render();
         });
         $("art-dave").addEventListener("click", function () {
-          state.artiste = "Dave"; state.rate = 150; state.depot = DEPOTS.Dave;
+          state.artiste = "Dave"; state.rate = 150; state.depot = state.depotDave;
           setPressed($("art-dave"), true); setPressed($("art-cynthia"), false); render();
         });
 
@@ -526,6 +540,16 @@
         $("depot-oui").addEventListener("click", function () { setDepot(true); render(); });
         $("depot-non").addEventListener("click", function () { setDepot(false); render(); });
         $("depot-aucun").addEventListener("click", function () { setDepot(false, true); render(); });
+
+        // Montant du dépôt de Dave : 100 $ ou 50 $ (0 $ = option « Aucun dépôt »)
+        function setDepotDave(montant) {
+          state.depotDave = montant;
+          state.depot = montant;
+          $("depot-montant-100").setAttribute("aria-checked", montant === 100 ? "true" : "false");
+          $("depot-montant-50").setAttribute("aria-checked", montant === 50 ? "true" : "false");
+        }
+        $("depot-montant-100").addEventListener("click", function () { setDepotDave(100); render(); });
+        $("depot-montant-50").addEventListener("click", function () { setDepotDave(50); render(); });
 
         // Options du menu des abonnés
         (function () {
@@ -658,6 +682,9 @@
 
         function render() {
           $("h-depot").textContent = "Dépôt de " + state.depot + " $";
+          $("bloc-depot-dave").classList.toggle("hidden", state.artiste !== "Dave");
+          $("depot-montant-100").setAttribute("aria-checked", state.depotDave === 100 ? "true" : "false");
+          $("depot-montant-50").setAttribute("aria-checked", state.depotDave === 50 ? "true" : "false");
           $("depot-group").setAttribute("aria-label", "Traitement du dépôt de " + state.depot + " dollars");
           $("depot-deduit-desc").textContent = "Les " + state.depot + " $ déjà versés sont soustraits de la part en argent à recevoir.";
           $("duree-val").textContent = fmtH(state.dureeMin);
