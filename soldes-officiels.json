@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-10-24T10:56:28Z",
-  "maj": 1792839676594,
-  "note": "Soldes du registre maitre Sokal au 23 oct. 2026, verifies. Active le 24 oct. au matin a la demande de Cynthia (pas besoin d'attendre apres Caro) : a la prochaine ouverture, les soldes affiches se synchronisent sur ces valeurs. Dernier journal verifie 02:47 : aucune nouvelle entree reelle.",
+  "maj": 1792840402966,
+  "note": "Soldes du registre maitre Sokal, mis a jour le 24 oct. 2026 : Daniel (Karalor) inscrit a 12 500 $ (50 avant-midi x 250 $, soit 450 $ moins 200 $ d'argent), journees pleines exclues, 300 $ exclu. Total connu 51 185 $.",
   "clients": [
     {
       "id": "arianne",
@@ -55,7 +55,7 @@
       "id": "daniel",
       "nom": "Daniel Laberge",
       "pseudo": "Karalor",
-      "solde": null
+      "solde": 12500
     },
     {
       "id": "cathy",
