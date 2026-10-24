@@ -439,6 +439,7 @@
         }
         if (!creditsData.historique) creditsData.historique = [];
         if (!creditsData.derniereModif) creditsData.derniereModif = 0;
+        if (!creditsData.soldesMaj || typeof creditsData.soldesMaj !== "object") creditsData.soldesMaj = {};
         function sauverCredits() { creditsData.derniereModif = Date.now(); try { localStorage.setItem(LS_CREDITS, JSON.stringify(creditsData)); } catch (e) {} }
         function abonneParId(id) {
           for (var i = 0; i < ABONNES.length; i++) if (ABONNES[i].id === id) return ABONNES[i];
@@ -676,6 +677,7 @@
           if (!(e.montant > 0)) { showToast("La dernière action n'est pas une déduction, annulation impossible"); return; }
           var restaure = Math.round((e.solde + e.montant) * 100) / 100;
           creditsData.soldes[a.id] = restaure;
+          creditsData.soldesMaj[a.id] = Date.now();
           hist.splice(idx, 1);
           sauverCredits();
           journaliserAnnulation(a, e.montant, restaure);
@@ -769,6 +771,13 @@
                 sel.appendChild(o);
                 if (reprendre) sel.value = c.id;
                 if (!(c.id in creditsData.soldes)) { creditsData.soldes[c.id] = (c.solde === undefined ? null : c.solde); change = true; }
+              } else if (c.maj !== undefined && c.maj !== null) {
+                var majLocale = (creditsData.soldesMaj && creditsData.soldesMaj[c.id]) || 0;
+                if (c.maj > majLocale) {
+                  creditsData.soldes[c.id] = (c.solde === undefined ? null : c.solde);
+                  creditsData.soldesMaj[c.id] = c.maj;
+                  change = true;
+                }
               } else if (majNouvelle) {
                 creditsData.soldes[c.id] = (c.solde === undefined ? null : c.solde);
                 change = true;
@@ -796,6 +805,7 @@
           if (m > solde) { showToast("Le montant dépasse le solde de " + a.nom + " (" + fmt(solde) + ")"); return null; }
           var nouveau = Math.round((solde - m) * 100) / 100;
           creditsData.soldes[a.id] = nouveau;
+          creditsData.soldesMaj[a.id] = Date.now();
           creditsData.historique.unshift({ date: new Date().toISOString(), client: a.nom, montant: m, solde: nouveau, artiste: state.artiste, sig: signatureCredits() });
           sauverCredits();
           journaliserDeduction(a, m, nouveau);
@@ -813,6 +823,7 @@
           var v = parseFloat(($("credit-ajust").value || "").replace(",", "."));
           if (isNaN(v) || v < 0) { showToast("Entre un solde valide"); return; }
           creditsData.soldes[a.id] = Math.round(v * 100) / 100;
+          creditsData.soldesMaj[a.id] = Date.now();
           creditsData.historique.unshift({ date: new Date().toISOString(), client: a.nom + " (solde ajusté)", montant: 0, solde: creditsData.soldes[a.id], artiste: state.artiste });
           sauverCredits(); $("credit-ajust").value = "";
           showToast("Solde de " + a.nom + " ajusté à " + fmt(creditsData.soldes[a.id]));
