@@ -245,6 +245,10 @@
           <button type="button" class="btn btn-primary" id="btn-deduire">Déduire les crédits maintenant</button>
           <button type="button" class="btn btn-ghost" id="btn-annuler-deduction">Annuler la dernière déduction</button>
         </div>
+        <p class="hint" id="journal-statut"></p>
+        <div class="actions" style="margin-top:12px;">
+          <button type="button" class="btn btn-ghost" id="btn-renvoyer-journal">Renvoyer au journal</button>
+        </div>
         <p class="hint" id="credit-bilan" style="font-size:15px;"></p>
         <div class="field-row" style="margin-top:14px;">
           <label for="credit-ajust">Ajuster le solde</label>
@@ -685,6 +689,28 @@
           render();
           showToast("Dernière déduction annulée, message envoyé, ce calcul ne sera pas redéduit");
         });
+        $("btn-renvoyer-journal").addEventListener("click", function () {
+          var e = envoisJournal.derniereEntree;
+          if (!e) { showToast("Aucune entrée au journal à renvoyer"); return; }
+          if (envoisJournal.statut === "envoyee") { showToast("Cette entrée a déjà été envoyée au journal"); return; }
+          if (envoisJournal.statut === "envoi") { showToast("Envoi déjà en cours"); return; }
+          // Renvoi seul : aucun changement de solde, aucun nouveau calcul.
+          var corps = new URLSearchParams();
+          corps.set(JOURNAL_CHAMPS.artiste, e.artiste);
+          corps.set(JOURNAL_CHAMPS.client, e.client);
+          corps.set(JOURNAL_CHAMPS.total, e.total);
+          corps.set(JOURNAL_CHAMPS.credits, e.credits);
+          corps.set(JOURNAL_CHAMPS.argent, e.argent);
+          corps.set(JOURNAL_CHAMPS.solde, e.solde);
+          corps.set(JOURNAL_CHAMPS.resume, e.resume);
+          envoisJournal.statut = "envoi";
+          sauverEnvoisJournal();
+          afficherStatutJournal();
+          posterJournal(corps).then(function (res) {
+            conclureEnvoiJournal(res);
+            showToast(res === "envoyee" ? "Entrée renvoyée au journal" : "Échec du renvoi au journal");
+          });
+        });
         $("credit-montant").addEventListener("input", function () { creditManuel = true; renderCredits(calculer()); });
 
         function signatureCredits() {
@@ -698,19 +724,78 @@
         // voie, l'applique au registre officiel des crédits et réconcilie.
         var JOURNAL_URL = "https://docs.google.com/forms/d/e/1FAIpQLScEe2t32Yc0whbcqpBPfzb13spwWfo_HjBKNULVBWxqOH4plA/formResponse";
         var JOURNAL_CHAMPS = { artiste: "entry.596299569", client: "entry.1843175063", total: "entry.337023424", credits: "entry.1349558389", argent: "entry.2128351131", solde: "entry.969255088", resume: "entry.2047827642" };
+        // ---------- État d'envoi au journal (par appareil) ----------
+        // « sokal-journal-envois-v1 » ne contient QUE l'état d'envoi de la
+        // dernière entrée au journal. Il est séparé des soldes
+        // (« sokal-credits-v1 ») et n'a aucun effet sur la synchro par client.
+        // Statuts : "rien" (rien envoyé), "envoi" (requête en cours),
+        // "envoyee" (requête partie, le POST no-cors ne confirme pas la
+        // réception), "echec" (la requête n'est pas partie), "incertain"
+        // (envoi interrompu, ex. page rechargée pendant l'envoi).
+        var LS_JOURNAL_ENVOIS = "sokal-journal-envois-v1";
+        function chargerEnvoisJournal() {
+          try { var d = JSON.parse(localStorage.getItem(LS_JOURNAL_ENVOIS)); if (d && typeof d === "object") return d; } catch (e) {}
+          return { derniereEntree: null, statut: "rien", date: 0 };
+        }
+        var envoisJournal = chargerEnvoisJournal();
+        if (envoisJournal.statut === "envoi") { envoisJournal.statut = "incertain"; }
+        if (!envoisJournal.derniereEntree) { envoisJournal.statut = "rien"; }
+        function sauverEnvoisJournal() { try { localStorage.setItem(LS_JOURNAL_ENVOIS, JSON.stringify(envoisJournal)); } catch (e) {} }
+        sauverEnvoisJournal();
+        function afficherStatutJournal() {
+          var el = $("journal-statut");
+          if (!el) return;
+          var textes = {
+            rien: "Journal : rien envoyé pour l'instant.",
+            envoi: "Journal : envoi en cours…",
+            envoyee: "Journal : envoyée ✓ (requête partie, réception non confirmée)",
+            echec: "Journal : ÉCHEC ✗, la requête n'est pas partie. Utilise « Renvoyer au journal ».",
+            incertain: "Journal : incertain, envoi interrompu ou état inconnu. Utilise « Renvoyer au journal »."
+          };
+          el.textContent = textes[envoisJournal.statut] || textes.rien;
+        }
+        function posterJournal(corps) {
+          // Même requête que l'envoi d'origine (POST no-cors). Le résultat
+          // dit seulement si la requête est partie, jamais si elle est reçue.
+          if (typeof fetch !== "function") return Promise.resolve("incertain");
+          try {
+            return fetch(JOURNAL_URL, { method: "POST", mode: "no-cors", body: corps }).then(function () { return "envoyee"; }, function () { return "echec"; });
+          } catch (e) { return Promise.resolve("echec"); }
+        }
+        function enregistrerEnvoiJournal(entree) {
+          envoisJournal.derniereEntree = entree;
+          envoisJournal.statut = "envoi";
+          envoisJournal.date = Date.now();
+          sauverEnvoisJournal();
+          afficherStatutJournal();
+        }
+        function conclureEnvoiJournal(resultat) {
+          envoisJournal.statut = resultat;
+          sauverEnvoisJournal();
+          afficherStatutJournal();
+          return resultat;
+        }
         function journaliserDeduction(a, m, nouveau) {
           try {
             var r = calculer();
+            var vArtiste = state.artiste;
+            var vClient = a.nom + (a.pseudo && a.pseudo !== a.nom && a.nom.indexOf(a.pseudo) === -1 ? " (" + a.pseudo + ")" : "");
+            var vTotal = fmt(r.base);
+            var vCredits = fmt(m);
+            var vArgent = fmt(r.resteArgent);
+            var vSolde = fmt(nouveau);
+            var vResume = $("summary").textContent + "\nNouveau solde de crédits : " + fmt(nouveau);
             var corps = new URLSearchParams();
-            corps.set(JOURNAL_CHAMPS.artiste, state.artiste);
-            corps.set(JOURNAL_CHAMPS.client, a.nom + (a.pseudo && a.pseudo !== a.nom && a.nom.indexOf(a.pseudo) === -1 ? " (" + a.pseudo + ")" : ""));
-            corps.set(JOURNAL_CHAMPS.total, fmt(r.base));
-            corps.set(JOURNAL_CHAMPS.credits, fmt(m));
-            corps.set(JOURNAL_CHAMPS.argent, fmt(r.resteArgent));
-            corps.set(JOURNAL_CHAMPS.solde, fmt(nouveau));
-            corps.set(JOURNAL_CHAMPS.resume, $("summary").textContent + "\nNouveau solde de crédits : " + fmt(nouveau));
-            fetch(JOURNAL_URL, { method: "POST", mode: "no-cors", body: corps }).catch(function () {});
-          } catch (e) { /* le journal est un filet de sécurité : jamais bloquant */ }
+            corps.set(JOURNAL_CHAMPS.artiste, vArtiste);
+            corps.set(JOURNAL_CHAMPS.client, vClient);
+            corps.set(JOURNAL_CHAMPS.total, vTotal);
+            corps.set(JOURNAL_CHAMPS.credits, vCredits);
+            corps.set(JOURNAL_CHAMPS.argent, vArgent);
+            corps.set(JOURNAL_CHAMPS.solde, vSolde);
+            corps.set(JOURNAL_CHAMPS.resume, vResume);
+            enregistrerEnvoiJournal({ artiste: vArtiste, client: vClient, total: vTotal, credits: vCredits, argent: vArgent, solde: vSolde, resume: vResume });
+            return posterJournal(corps).then(conclureEnvoiJournal);
+          } catch (e) { /* le journal est un filet de sécurité : jamais bloquant */ return Promise.resolve("incertain"); }
         }
 
         function journaliserNouveauClient(nom) {
@@ -728,16 +813,24 @@
         }
         function journaliserAnnulation(a, montant, soldeRestaure) {
           try {
+            var vArtiste = state.artiste;
+            var vClient = a.nom;
+            var vTotal = "0";
+            var vCredits = "-" + montant;
+            var vArgent = "0";
+            var vSolde = String(soldeRestaure);
+            var vResume = "ANNULATION de la dernière déduction : " + a.nom + ", " + montant + " $ remis, nouveau solde " + soldeRestaure + " — à corriger au registre";
             var corps = new URLSearchParams();
-            corps.set(JOURNAL_CHAMPS.artiste, state.artiste);
-            corps.set(JOURNAL_CHAMPS.client, a.nom);
-            corps.set(JOURNAL_CHAMPS.total, "0");
-            corps.set(JOURNAL_CHAMPS.credits, "-" + montant);
-            corps.set(JOURNAL_CHAMPS.argent, "0");
-            corps.set(JOURNAL_CHAMPS.solde, String(soldeRestaure));
-            corps.set(JOURNAL_CHAMPS.resume, "ANNULATION de la dernière déduction : " + a.nom + ", " + montant + " $ remis, nouveau solde " + soldeRestaure + " — à corriger au registre");
-            fetch(JOURNAL_URL, { method: "POST", mode: "no-cors", body: corps }).catch(function () {});
-          } catch (e) { /* jamais bloquant */ }
+            corps.set(JOURNAL_CHAMPS.artiste, vArtiste);
+            corps.set(JOURNAL_CHAMPS.client, vClient);
+            corps.set(JOURNAL_CHAMPS.total, vTotal);
+            corps.set(JOURNAL_CHAMPS.credits, vCredits);
+            corps.set(JOURNAL_CHAMPS.argent, vArgent);
+            corps.set(JOURNAL_CHAMPS.solde, vSolde);
+            corps.set(JOURNAL_CHAMPS.resume, vResume);
+            enregistrerEnvoiJournal({ artiste: vArtiste, client: vClient, total: vTotal, credits: vCredits, argent: vArgent, solde: vSolde, resume: vResume });
+            return posterJournal(corps).then(conclureEnvoiJournal);
+          } catch (e) { /* jamais bloquant */ return Promise.resolve("incertain"); }
         }
         function appliquerOfficiels(data) {
           try {
@@ -989,7 +1082,11 @@
               : "Solde de <strong>" + a.nom + "</strong> : <strong>" + fmt(solde) + "</strong>";
           }
           if (!creditManuel) {
-            $("credit-montant").value = r.credits > 0 ? (Math.round(r.credits * 100) / 100).toString().replace(".", ",") : "";
+            // Un champ number n'accepte que le point : écrire « 140,63 »
+            // le vide (le navigateur rejette la valeur), ce qui bloquait
+            // toute déduction par bouton d'un montant fractionnaire. Les
+            // montants affichés gardent la virgule via fmt().
+            $("credit-montant").value = r.credits > 0 ? (Math.round(r.credits * 100) / 100).toString() : "";
           }
           if (a) {
             var m = parseFloat(($("credit-montant").value || "").replace(",", "."));
@@ -1077,6 +1174,7 @@
         selectCredit(pctDefaut);
         setDepot(false);
         render();
+        afficherStatutJournal();
       })();
     </script>
   </body>
