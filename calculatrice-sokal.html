@@ -217,7 +217,38 @@
           <label for="client-nom">Nom</label>
           <input type="text" id="client-nom" autocomplete="off" placeholder="Nom du client" style="flex:1;" />
         </div>
-        <p class="hint">Le nom s'ajoute au résumé copié : c'est ce qui permettra de déduire les crédits du bon client automatiquement.</p>
+        <p class="hint">Choisis l'abonné juste en dessous : son nom complet se remplit ici tout seul, et c'est ce qui permettra de déduire les crédits du bon client automatiquement.</p>
+      </section>
+
+      <!-- Crédits de l'abonné -->
+      <section class="card" aria-labelledby="h-credits">
+        <h2 id="h-credits">Crédits de l'abonné</h2>
+        <div class="field-row">
+          <label for="credit-client">Abonné</label>
+          <select id="credit-client">
+            <option value="">— Choisir un abonné —</option>
+          </select>
+        </div>
+        <p class="hint" id="credit-solde"></p>
+        <div class="field-row" style="margin-top:12px;">
+          <label for="credit-montant">Crédits à déduire</label>
+          <input type="number" id="credit-montant" inputmode="decimal" min="0" step="0.01" />
+          <span aria-hidden="true" style="font-weight:700;">$</span>
+        </div>
+        <p class="hint">Pré-rempli avec les crédits calculés. Modifiable au besoin (forfaits : Pat et Audrey 150 $ en argent, Ary 350 $ en argent ; inscris alors la valeur de la séance moins le forfait). <strong>La déduction se fait automatiquement quand tu copies le résumé pour l'envoyer au client</strong>, ou tout de suite avec le bouton :</p>
+        <div class="actions" style="margin-top:12px;">
+          <button type="button" class="btn btn-primary" id="btn-deduire">Déduire les crédits maintenant</button>
+        </div>
+        <p class="hint" id="credit-bilan" style="font-size:15px;"></p>
+        <div class="field-row" style="margin-top:14px;">
+          <label for="credit-ajust">Ajuster le solde</label>
+          <input type="number" id="credit-ajust" inputmode="decimal" min="0" step="0.01" placeholder="Nouveau" />
+          <button type="button" class="btn btn-ghost" id="btn-ajust">Appliquer</button>
+        </div>
+        <div class="actions" style="margin-top:10px;">
+          <button type="button" class="btn btn-ghost" id="btn-soldes-officiels">Remettre les soldes officiels du 23 oct. 2026</button>
+        </div>
+        <div id="credit-historique"></div>
       </section>
 
       <!-- Mode de tarif -->
@@ -322,36 +353,6 @@
       </section>
 
 
-      <!-- Crédits de l'abonné -->
-      <section class="card" aria-labelledby="h-credits">
-        <h2 id="h-credits">Crédits de l'abonné</h2>
-        <div class="field-row">
-          <label for="credit-client">Abonné</label>
-          <select id="credit-client">
-            <option value="">— Choisir un abonné —</option>
-          </select>
-        </div>
-        <p class="hint" id="credit-solde"></p>
-        <div class="field-row" style="margin-top:12px;">
-          <label for="credit-montant">Crédits à déduire</label>
-          <input type="number" id="credit-montant" inputmode="decimal" min="0" step="0.01" />
-          <span aria-hidden="true" style="font-weight:700;">$</span>
-        </div>
-        <p class="hint">Pré-rempli avec les crédits calculés. Modifiable au besoin (forfaits : Pat et Audrey 150 $ en argent, Ary 350 $ en argent ; inscris alors la valeur de la séance moins le forfait). <strong>La déduction se fait automatiquement quand tu copies le résumé pour l'envoyer au client</strong>, ou tout de suite avec le bouton :</p>
-        <div class="actions" style="margin-top:12px;">
-          <button type="button" class="btn btn-primary" id="btn-deduire">Déduire les crédits maintenant</button>
-        </div>
-        <p class="hint" id="credit-bilan" style="font-size:15px;"></p>
-        <div class="field-row" style="margin-top:14px;">
-          <label for="credit-ajust">Ajuster le solde</label>
-          <input type="number" id="credit-ajust" inputmode="decimal" min="0" step="0.01" placeholder="Nouveau" />
-          <button type="button" class="btn btn-ghost" id="btn-ajust">Appliquer</button>
-        </div>
-        <div class="actions" style="margin-top:10px;">
-          <button type="button" class="btn btn-ghost" id="btn-soldes-officiels">Remettre les soldes officiels du 23 oct. 2026</button>
-        </div>
-        <div id="credit-historique"></div>
-      </section>
 
       <!-- Résultat -->
       <div class="result" aria-live="polite">
