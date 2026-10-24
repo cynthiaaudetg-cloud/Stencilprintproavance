@@ -206,6 +206,7 @@
         <div class="seg" role="group" aria-label="Choisir l'artiste">
           <button type="button" id="art-cynthia" aria-pressed="true">Cynthia<small>125 $ / heure</small></button>
           <button type="button" id="art-dave" aria-pressed="false">Dave<small>150 $ / heure</small></button>
+          <button type="button" id="art-collab" aria-pressed="false">Collaboration<small>125 $ + 150 $ / h</small></button>
         </div>
       </section>
 
@@ -276,6 +277,15 @@
             <button type="button" class="chip duree-preset" data-min="240">4 h</button>
             <button type="button" class="chip duree-preset" data-min="300">5 h</button>
             <button type="button" class="chip duree-preset" data-min="360">6 h</button>
+          </div>
+          <div id="bloc-collab" class="hidden" style="margin-top:16px;">
+            <p class="hint" style="margin:0 0 8px;">Durée de Dave pour cette collaboration (la durée ci-dessus est celle de Cynthia) :</p>
+            <div class="stepper" aria-label="Durée de Dave en collaboration">
+              <button type="button" id="duree-dave-moins" aria-label="Réduire la durée de Dave de 15 minutes">−</button>
+              <div class="val" id="duree-dave-val">1 h 00</div>
+              <button type="button" id="duree-dave-plus" aria-label="Augmenter la durée de Dave de 15 minutes">+</button>
+            </div>
+            <p class="hint">Les heures gratuites sont déduites de Cynthia d'abord, puis de Dave.</p>
           </div>
         </div>
 
@@ -450,6 +460,7 @@
           clientNom: "",
           mode: "heure",          // "heure" | "fixe"
           dureeMin: 120,
+          dureeMinDave: 60,
           gratuitMin: 0,
           prixFixe: 300,
           creditPct: pctDefaut,
@@ -479,11 +490,15 @@
 
         $("art-cynthia").addEventListener("click", function () {
           state.artiste = "Cynthia"; state.rate = 125; state.depot = DEPOTS.Cynthia;
-          setPressed($("art-cynthia"), true); setPressed($("art-dave"), false); render();
+          setPressed($("art-cynthia"), true); setPressed($("art-dave"), false); setPressed($("art-collab"), false); render();
         });
         $("art-dave").addEventListener("click", function () {
           state.artiste = "Dave"; state.rate = 150; state.depot = state.depotDave;
-          setPressed($("art-dave"), true); setPressed($("art-cynthia"), false); render();
+          setPressed($("art-dave"), true); setPressed($("art-cynthia"), false); setPressed($("art-collab"), false); render();
+        });
+        $("art-collab").addEventListener("click", function () {
+          state.artiste = "Collaboration"; state.rate = 125; state.depot = 100;
+          setPressed($("art-cynthia"), false); setPressed($("art-dave"), false); setPressed($("art-collab"), true); render();
         });
 
         $("mode-heure").addEventListener("click", function () {
@@ -524,12 +539,18 @@
             state.dureeMin = parseInt(this.getAttribute("data-min"), 10); render();
           });
         }
+        $("duree-dave-moins").addEventListener("click", function () {
+          state.dureeMinDave = Math.max(0, state.dureeMinDave - 15); render();
+        });
+        $("duree-dave-plus").addEventListener("click", function () {
+          state.dureeMinDave = Math.min(720, state.dureeMinDave + 15); render();
+        });
 
         $("gratuit-moins").addEventListener("click", function () {
           state.gratuitMin = Math.max(0, state.gratuitMin - 30); render();
         });
         $("gratuit-plus").addEventListener("click", function () {
-          state.gratuitMin = Math.min(state.dureeMin, state.gratuitMin + 30); render();
+          state.gratuitMin = Math.min(state.artiste === "Collaboration" ? state.dureeMin + state.dureeMinDave : state.dureeMin, state.gratuitMin + 30); render();
         });
 
         var creditChips = document.querySelectorAll(".credit-chip");
@@ -786,7 +807,7 @@
         });
 
         $("btn-reset").addEventListener("click", function () {
-          state.dureeMin = 120; state.gratuitMin = 0; state.prixFixe = 300;
+          state.dureeMin = 120; state.dureeMinDave = 60; state.gratuitMin = 0; state.prixFixe = 300;
           state.clientNom = ""; $("client-nom").value = "";
           state.creditClientId = ""; $("credit-client").value = ""; creditManuel = false; signatureAppliquee = "";
           $("prix-fixe").value = 300; $("credit-custom").value = "";
@@ -803,6 +824,18 @@
             r.base = state.prixFixe;
             r.gratuitValeur = 0;
             r.minimumApplique = false;
+          } else if (state.artiste === "Collaboration") {
+            var gratuitC = Math.min(state.gratuitMin, state.dureeMin);
+            var gratuitD = Math.min(Math.max(0, state.gratuitMin - state.dureeMin), state.dureeMinDave);
+            r.gratuitValeur = (gratuitC / 60) * 125 + (gratuitD / 60) * 150;
+            var payC = Math.max(0, state.dureeMin - gratuitC);
+            var payD = Math.max(0, state.dureeMinDave - gratuitD);
+            var hC = payC / 60, hD = payD / 60;
+            r.minimumApplique = false;
+            if (payC > 0 && hC < 1) { hC = 1; r.minimumApplique = true; }
+            if (payD > 0 && hD < 1) { hD = 1; r.minimumApplique = true; }
+            r.base = hC * 125 + hD * 150;
+            r.facturableMin = payC + payD;
           } else {
             var facturableMin = Math.max(0, state.dureeMin - state.gratuitMin);
             r.gratuitValeur = (state.gratuitMin / 60) * state.rate;
@@ -830,13 +863,15 @@
         }
 
         function render() {
-          $("h-depot").textContent = "Dépôt de " + state.depot + " $";
+          $("h-depot").textContent = state.artiste === "Collaboration" ? "Dépôt de 100 $ (50 $ chaque artiste)" : "Dépôt de " + state.depot + " $";
           $("bloc-depot-dave").classList.toggle("hidden", state.artiste !== "Dave");
           $("depot-montant-100").setAttribute("aria-checked", state.depotDave === 100 ? "true" : "false");
           $("depot-montant-50").setAttribute("aria-checked", state.depotDave === 50 ? "true" : "false");
           $("depot-group").setAttribute("aria-label", "Traitement du dépôt de " + state.depot + " dollars");
-          $("depot-deduit-desc").textContent = "Les " + state.depot + " $ déjà versés sont soustraits de la part en argent à recevoir.";
+          $("depot-deduit-desc").textContent = state.artiste === "Collaboration" ? "Les 100 $ déjà versés (50 $ chaque artiste) sont soustraits de la part en argent à recevoir." : "Les " + state.depot + " $ déjà versés sont soustraits de la part en argent à recevoir.";
           $("duree-val").textContent = fmtH(state.dureeMin);
+          $("bloc-collab").classList.toggle("hidden", !(state.artiste === "Collaboration" && state.mode === "heure"));
+          $("duree-dave-val").textContent = fmtH(state.dureeMinDave);
           $("gratuit-val").innerHTML = fmtH(state.gratuitMin).replace(" h", " <small>h</small>");
 
           $("credit-hint").innerHTML = regle2027
@@ -847,10 +882,18 @@
           var html = "";
 
           if (state.mode === "heure") {
-            html += ligne("Séance : " + fmtH(state.dureeMin) + " à " + fmt(state.rate).replace(",00", "") + " / h",
-                          fmt((state.dureeMin / 60) * state.rate));
-            if (state.gratuitMin > 0) {
-              html += ligne("Heures gratuites (" + fmtHdec(state.gratuitMin) + ")", "− " + fmt(r.gratuitValeur), "minus");
+            if (state.artiste === "Collaboration") {
+              html += ligne("Séance collab : Cynthia " + fmtH(state.dureeMin) + " à 125 $ / h + Dave " + fmtH(state.dureeMinDave) + " à 150 $ / h",
+                            fmt(r.base));
+              if (state.gratuitMin > 0) {
+                html += ligne("Heures gratuites (" + fmtHdec(state.gratuitMin) + ")", "− " + fmt(r.gratuitValeur), "minus");
+              }
+            } else {
+              html += ligne("Séance : " + fmtH(state.dureeMin) + " à " + fmt(state.rate).replace(",00", "") + " / h",
+                            fmt((state.dureeMin / 60) * state.rate));
+              if (state.gratuitMin > 0) {
+                html += ligne("Heures gratuites (" + fmtHdec(state.gratuitMin) + ")", "− " + fmt(r.gratuitValeur), "minus");
+              }
             }
           } else {
             html += ligne("Prix fixe du flash", fmt(r.base));
@@ -871,9 +914,9 @@
           $("big-amt").textContent = fmt(r.resteArgent);
 
           var notes = [];
-          if (r.minimumApplique) notes.push("Minimum d'une heure appliqué (" + fmt(state.rate) + ").");
+          if (r.minimumApplique) notes.push(state.artiste === "Collaboration" ? "Minimum d'une heure appliqué (125 $ / h Cynthia, 150 $ / h Dave)." : "Minimum d'une heure appliqué (" + fmt(state.rate) + ").");
           if (state.depotAucun) notes.push("Aucun dépôt reçu pour cette séance.");
-          else if (!state.depotDeduit) notes.push("Dépôt de " + fmt(state.depot) + " conservé comme frais de matériel : il n'est pas déduit du montant ci-dessus.");
+          else if (!state.depotDeduit) notes.push(state.artiste === "Collaboration" ? "Dépôt de 100 $ (50 $ chaque artiste) conservé comme frais de matériel : il n'est pas déduit du montant ci-dessus." : "Dépôt de " + fmt(state.depot) + " conservé comme frais de matériel : il n'est pas déduit du montant ci-dessus.");
           if (state.depotDeduit && r.argent < state.depot && r.argent > 0) notes.push("La part en argent est plus petite que le dépôt : seuls " + fmt(r.argent) + " sont déduits.");
           if (state.depotDeduit && r.argent === 0) notes.push("Aucune part en argent : rien à déduire du dépôt sur cette séance.");
           $("result-note").textContent = notes.join(" ");
@@ -883,8 +926,13 @@
           if (state.clientNom) s.push("Client : " + state.clientNom);
           s.push("Séance avec " + state.artiste + " — Sokal Tattoo");
           if (state.mode === "heure") {
-            s.push("Durée : " + fmtH(state.dureeMin) + " à " + fmt(state.rate) + " / h");
-            if (state.gratuitMin > 0) s.push("Heures gratuites offertes : " + fmtHdec(state.gratuitMin) + " (− " + fmt(r.gratuitValeur) + ")");
+            if (state.artiste === "Collaboration") {
+              s.push("Durée : Cynthia " + fmtH(state.dureeMin) + " à 125 $ / h + Dave " + fmtH(state.dureeMinDave) + " à 150 $ / h");
+              if (state.gratuitMin > 0) s.push("Heures gratuites offertes : " + fmtHdec(state.gratuitMin) + " (− " + fmt(r.gratuitValeur) + ")");
+            } else {
+              s.push("Durée : " + fmtH(state.dureeMin) + " à " + fmt(state.rate) + " / h");
+              if (state.gratuitMin > 0) s.push("Heures gratuites offertes : " + fmtHdec(state.gratuitMin) + " (− " + fmt(r.gratuitValeur) + ")");
+            }
           } else {
             s.push("Flash à prix fixe : " + fmt(r.base));
           }
