@@ -583,7 +583,17 @@
           $("depot-non").setAttribute("aria-checked", (!state.depotDeduit && !state.depotAucun) ? "true" : "false");
           $("depot-aucun").setAttribute("aria-checked", state.depotAucun ? "true" : "false");
         }
-        $("depot-oui").addEventListener("click", function () { setDepot(true); render(); });
+        // Abonnés : le dépôt est toujours conservé comme frais de matériel, jamais déduit (ne touche pas à « Aucun dépôt »).
+        function forcerDepotConserve() {
+          state.depotDeduit = false;
+          $("depot-oui").setAttribute("aria-checked", "false");
+          $("depot-non").setAttribute("aria-checked", state.depotAucun ? "false" : "true");
+          $("depot-aucun").setAttribute("aria-checked", state.depotAucun ? "true" : "false");
+        }
+        $("depot-oui").addEventListener("click", function () {
+          if (abonneParId(state.creditClientId)) { showToast("Dépôt conservé comme frais de matériel pour les abonnés"); forcerDepotConserve(); render(); return; }
+          setDepot(true); render();
+        });
         $("depot-non").addEventListener("click", function () { setDepot(false); render(); });
         $("depot-aucun").addEventListener("click", function () { setDepot(false, true); render(); });
 
@@ -621,7 +631,7 @@
         $("credit-client").addEventListener("change", function () {
           state.creditClientId = this.value;
           var a = abonneParId(this.value);
-          if (a) { state.clientNom = a.nom; $("client-nom").value = a.nom; }
+          if (a) { state.clientNom = a.nom; $("client-nom").value = a.nom; forcerDepotConserve(); }
           creditManuel = false; signatureAppliquee = "";
           render();
         });
@@ -743,7 +753,7 @@
                   var balPers = creditsData.soldes[pers.id];
                   clientsPerso.splice(persIdx, 1); sauverClientsPerso();
                   for (var q = sel.options.length - 1; q >= 0; q--) if (sel.options[q].value === pers.id) sel.remove(q);
-                  if (state.creditClientId === pers.id) { state.creditClientId = c.id; reprendre = true; }
+                  if (state.creditClientId === pers.id) { state.creditClientId = c.id; reprendre = true; forcerDepotConserve(); }
                   delete creditsData.soldes[pers.id];
                   if (c.solde === undefined || c.solde === null) { if (balPers !== undefined && balPers !== null) creditsData.soldes[c.id] = balPers; }
                   else creditsData.soldes[c.id] = c.solde;
