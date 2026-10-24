@@ -242,15 +242,13 @@
         <p class="hint">Pré-rempli avec les crédits calculés. Modifiable au besoin (forfaits : Pat et Audrey 150 $ en argent, Ary 350 $ en argent ; inscris alors la valeur de la séance moins le forfait). <strong>La déduction se fait automatiquement quand tu copies le résumé pour l'envoyer au client</strong>, ou tout de suite avec le bouton :</p>
         <div class="actions" style="margin-top:12px;">
           <button type="button" class="btn btn-primary" id="btn-deduire">Déduire les crédits maintenant</button>
+          <button type="button" class="btn btn-ghost" id="btn-annuler-deduction">Annuler la dernière déduction</button>
         </div>
         <p class="hint" id="credit-bilan" style="font-size:15px;"></p>
         <div class="field-row" style="margin-top:14px;">
           <label for="credit-ajust">Ajuster le solde</label>
           <input type="number" id="credit-ajust" inputmode="decimal" min="0" step="0.01" placeholder="Nouveau" />
           <button type="button" class="btn btn-ghost" id="btn-ajust">Appliquer</button>
-        </div>
-        <div class="actions" style="margin-top:10px;">
-          <button type="button" class="btn btn-ghost" id="btn-soldes-officiels">Remettre les soldes officiels du 23 oct. 2026</button>
         </div>
         <div id="credit-historique"></div>
       </section>
@@ -408,6 +406,7 @@
           return [];
         }
         var clientsPerso = chargerClientsPerso();
+        var clientsOfficiels = [];
         function sauverClientsPerso() { try { localStorage.setItem(LS_CLIENTS_PERSO, JSON.stringify(clientsPerso)); } catch (e) {} }
         function normNom(nom) { return (nom || "").toLowerCase().replace(/\s+/g, " ").trim(); }
         function trouverClientParNom(nomNormalise) {
@@ -422,17 +421,19 @@
         }
         function chargerCredits() {
           try { var d = JSON.parse(localStorage.getItem(LS_CREDITS)); if (d && d.soldes) return d; } catch (e) {}
-          return { soldes: {}, historique: [] };
+          return { soldes: {}, historique: [], derniereModif: 0 };
         }
         var creditsData = chargerCredits();
         for (var ci = 0; ci < ABONNES.length; ci++) {
           if (!(ABONNES[ci].id in creditsData.soldes)) creditsData.soldes[ABONNES[ci].id] = ABONNES[ci].solde;
         }
         if (!creditsData.historique) creditsData.historique = [];
-        function sauverCredits() { try { localStorage.setItem(LS_CREDITS, JSON.stringify(creditsData)); } catch (e) {} }
+        if (!creditsData.derniereModif) creditsData.derniereModif = 0;
+        function sauverCredits() { creditsData.derniereModif = Date.now(); try { localStorage.setItem(LS_CREDITS, JSON.stringify(creditsData)); } catch (e) {} }
         function abonneParId(id) {
           for (var i = 0; i < ABONNES.length; i++) if (ABONNES[i].id === id) return ABONNES[i];
           for (var j = 0; j < clientsPerso.length; j++) if (clientsPerso[j].id === id) return clientsPerso[j];
+          for (var k = 0; k < clientsOfficiels.length; k++) if (clientsOfficiels[k].id === id) return clientsOfficiels[k];
           return null;
         }
         var creditManuel = false;
@@ -618,6 +619,7 @@
           var nv = { id: "perso-" + Date.now(), nom: nom, pseudo: nom, solde: null };
           clientsPerso.push(nv);
           sauverClientsPerso();
+          journaliserNouveauClient(nom);
           var o = document.createElement("option");
           o.value = nv.id; o.textContent = nv.nom;
           $("credit-client").appendChild(o);
@@ -626,6 +628,26 @@
           creditManuel = false; signatureAppliquee = "";
           render();
           showToast("Client enregistré");
+        });
+        $("btn-annuler-deduction").addEventListener("click", function () {
+          var a = abonneParId(state.creditClientId);
+          if (!a) { showToast("Choisis d'abord l'abonné"); return; }
+          var hist = creditsData.historique || [];
+          var idx = -1;
+          for (var i = 0; i < hist.length; i++) {
+            if (hist[i].client === a.nom || hist[i].client === a.nom + " (solde ajusté)") { idx = i; break; }
+          }
+          if (idx === -1) { showToast("Aucune déduction à annuler pour " + a.nom); return; }
+          var e = hist[idx];
+          if (!(e.montant > 0)) { showToast("La dernière action n'est pas une déduction, annulation impossible"); return; }
+          var restaure = Math.round((e.solde + e.montant) * 100) / 100;
+          creditsData.soldes[a.id] = restaure;
+          hist.splice(idx, 1);
+          sauverCredits();
+          journaliserAnnulation(a, e.montant, restaure);
+          creditManuel = false; signatureAppliquee = "";
+          render();
+          showToast("Dernière déduction annulée");
         });
         $("credit-montant").addEventListener("input", function () { creditManuel = true; renderCredits(calculer()); });
 
@@ -655,6 +677,65 @@
           } catch (e) { /* le journal est un filet de sécurité : jamais bloquant */ }
         }
 
+        function journaliserNouveauClient(nom) {
+          try {
+            var corps = new URLSearchParams();
+            corps.set(JOURNAL_CHAMPS.artiste, state.artiste);
+            corps.set(JOURNAL_CHAMPS.client, nom);
+            corps.set(JOURNAL_CHAMPS.total, "0");
+            corps.set(JOURNAL_CHAMPS.credits, "0");
+            corps.set(JOURNAL_CHAMPS.argent, "0");
+            corps.set(JOURNAL_CHAMPS.solde, "");
+            corps.set(JOURNAL_CHAMPS.resume, "NOUVEAU CLIENT enregistré par " + state.artiste + " : " + nom + " — à ajouter officiellement pour les deux téléphones");
+            fetch(JOURNAL_URL, { method: "POST", mode: "no-cors", body: corps }).catch(function () {});
+          } catch (e) { /* jamais bloquant */ }
+        }
+        function journaliserAnnulation(a, montant, soldeRestaure) {
+          try {
+            var corps = new URLSearchParams();
+            corps.set(JOURNAL_CHAMPS.artiste, state.artiste);
+            corps.set(JOURNAL_CHAMPS.client, a.nom);
+            corps.set(JOURNAL_CHAMPS.total, "0");
+            corps.set(JOURNAL_CHAMPS.credits, "-" + montant);
+            corps.set(JOURNAL_CHAMPS.argent, "0");
+            corps.set(JOURNAL_CHAMPS.solde, String(soldeRestaure));
+            corps.set(JOURNAL_CHAMPS.resume, "ANNULATION de la dernière déduction : " + a.nom + ", " + montant + " $ remis, nouveau solde " + soldeRestaure + " — à corriger au registre");
+            fetch(JOURNAL_URL, { method: "POST", mode: "no-cors", body: corps }).catch(function () {});
+          } catch (e) { /* jamais bloquant */ }
+        }
+        function appliquerOfficiels(data) {
+          try {
+            if (!data || !Array.isArray(data.clients)) return;
+            var sel = $("credit-client");
+            var majNouvelle = !!(data.maj && data.maj > (creditsData.derniereModif || 0));
+            var change = false;
+            for (var i = 0; i < data.clients.length; i++) {
+              var c = data.clients[i];
+              if (!c || !c.id || !c.nom) continue;
+              var connu = abonneParId(c.id);
+              if (!connu) {
+                if (trouverClientParNom(normNom(c.nom))) continue;
+                clientsOfficiels.push({ id: c.id, nom: c.nom, pseudo: c.pseudo || c.nom, solde: (c.solde === undefined ? null : c.solde) });
+                var o = document.createElement("option");
+                o.value = c.id;
+                o.textContent = c.nom + (c.pseudo && c.pseudo !== c.nom ? " (" + c.pseudo + ")" : "");
+                sel.appendChild(o);
+                if (!(c.id in creditsData.soldes)) { creditsData.soldes[c.id] = (c.solde === undefined ? null : c.solde); change = true; }
+              } else if (majNouvelle) {
+                creditsData.soldes[c.id] = (c.solde === undefined ? null : c.solde);
+                change = true;
+              }
+            }
+            if (majNouvelle) { creditsData.derniereModif = data.maj; change = true; }
+            if (change) { try { localStorage.setItem(LS_CREDITS, JSON.stringify(creditsData)); } catch (e) {} render(); }
+          } catch (e) { /* la synchro n'est jamais bloquante */ }
+        }
+        try {
+          fetch("soldes-officiels.json", { cache: "no-store" }).then(function (r) {
+            if (!r || !r.ok || typeof r.json !== "function") return;
+            return r.json();
+          }).then(function (data) { if (data) appliquerOfficiels(data); }).catch(function () {});
+        } catch (e) { /* jamais bloquant */ }
         function appliquerDeduction() {
           var a = abonneParId(state.creditClientId);
           if (!a) { showToast("Choisis d'abord l'abonné dans la section Crédits"); return null; }
@@ -686,12 +767,6 @@
           creditsData.historique.unshift({ date: new Date().toISOString(), client: a.nom + " (solde ajusté)", montant: 0, solde: creditsData.soldes[a.id], artiste: state.artiste });
           sauverCredits(); $("credit-ajust").value = "";
           showToast("Solde de " + a.nom + " ajusté à " + fmt(creditsData.soldes[a.id]));
-          render();
-        });
-        $("btn-soldes-officiels").addEventListener("click", function () {
-          for (var i = 0; i < ABONNES.length; i++) creditsData.soldes[ABONNES[i].id] = ABONNES[i].solde;
-          sauverCredits();
-          showToast("Soldes officiels du 23 oct. 2026 remis");
           render();
         });
 
