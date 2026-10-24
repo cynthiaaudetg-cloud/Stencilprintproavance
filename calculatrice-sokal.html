@@ -645,9 +645,9 @@
           hist.splice(idx, 1);
           sauverCredits();
           journaliserAnnulation(a, e.montant, restaure);
-          creditManuel = false; signatureAppliquee = "";
+          creditManuel = false; signatureAppliquee = (e.sig ? e.sig : signatureCredits());
           render();
-          showToast("Dernière déduction annulée");
+          showToast("Dernière déduction annulée, message envoyé, ce calcul ne sera pas redéduit");
         });
         $("credit-montant").addEventListener("input", function () { creditManuel = true; renderCredits(calculer()); });
 
@@ -714,12 +714,26 @@
               if (!c || !c.id || !c.nom) continue;
               var connu = abonneParId(c.id);
               if (!connu) {
-                if (trouverClientParNom(normNom(c.nom))) continue;
+                var persIdx = -1;
+                for (var pj = 0; pj < clientsPerso.length; pj++) if (normNom(clientsPerso[pj].nom) === normNom(c.nom)) { persIdx = pj; break; }
+                var reprendre = false;
+                if (persIdx !== -1) {
+                  var pers = clientsPerso[persIdx];
+                  var balPers = creditsData.soldes[pers.id];
+                  clientsPerso.splice(persIdx, 1); sauverClientsPerso();
+                  for (var q = sel.options.length - 1; q >= 0; q--) if (sel.options[q].value === pers.id) sel.remove(q);
+                  if (state.creditClientId === pers.id) { state.creditClientId = c.id; reprendre = true; }
+                  delete creditsData.soldes[pers.id];
+                  if (c.solde === undefined || c.solde === null) { if (balPers !== undefined && balPers !== null) creditsData.soldes[c.id] = balPers; }
+                  else creditsData.soldes[c.id] = c.solde;
+                  change = true;
+                } else if (trouverClientParNom(normNom(c.nom))) continue;
                 clientsOfficiels.push({ id: c.id, nom: c.nom, pseudo: c.pseudo || c.nom, solde: (c.solde === undefined ? null : c.solde) });
                 var o = document.createElement("option");
                 o.value = c.id;
                 o.textContent = c.nom + (c.pseudo && c.pseudo !== c.nom ? " (" + c.pseudo + ")" : "");
                 sel.appendChild(o);
+                if (reprendre) sel.value = c.id;
                 if (!(c.id in creditsData.soldes)) { creditsData.soldes[c.id] = (c.solde === undefined ? null : c.solde); change = true; }
               } else if (majNouvelle) {
                 creditsData.soldes[c.id] = (c.solde === undefined ? null : c.solde);
@@ -739,6 +753,7 @@
         function appliquerDeduction() {
           var a = abonneParId(state.creditClientId);
           if (!a) { showToast("Choisis d'abord l'abonné dans la section Crédits"); return null; }
+          if (signatureAppliquee !== "" && signatureCredits() === signatureAppliquee) { showToast("Déjà déduit pour ce calcul"); return null; }
           var solde = creditsData.soldes[a.id];
           if (solde === null || solde === undefined) { showToast("Solde de " + a.nom + " pas encore inscrit : utilise « Ajuster le solde »"); return null; }
           var m = parseFloat(($("credit-montant").value || "").replace(",", "."));
@@ -747,7 +762,7 @@
           if (m > solde) { showToast("Le montant dépasse le solde de " + a.nom + " (" + fmt(solde) + ")"); return null; }
           var nouveau = Math.round((solde - m) * 100) / 100;
           creditsData.soldes[a.id] = nouveau;
-          creditsData.historique.unshift({ date: new Date().toISOString(), client: a.nom, montant: m, solde: nouveau, artiste: state.artiste });
+          creditsData.historique.unshift({ date: new Date().toISOString(), client: a.nom, montant: m, solde: nouveau, artiste: state.artiste, sig: signatureCredits() });
           sauverCredits();
           journaliserDeduction(a, m, nouveau);
           creditManuel = false;
