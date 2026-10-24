@@ -453,6 +453,7 @@
         var now = new Date();
         var regle2027 = now.getFullYear() >= 2027;
         var pctDefaut = regle2027 ? 50 : 75;
+        var pctMax = pctDefaut; // plafond en vigueur, appliqué aux pourcentages (pas aux montants manuels des forfaits)
 
         var state = {
           rate: 125,
@@ -555,6 +556,7 @@
 
         var creditChips = document.querySelectorAll(".credit-chip");
         function selectCredit(pct) {
+          if (pct > pctMax) { pct = pctMax; showToast("Maximum " + pctMax + " % en crédits" + (regle2027 ? " dès 2027" : " jusqu'au 31 décembre 2026")); }
           state.creditPct = pct;
           for (var j = 0; j < creditChips.length; j++) {
             setPressed(creditChips[j], parseInt(creditChips[j].getAttribute("data-pct"), 10) === pct);
@@ -570,7 +572,8 @@
         $("credit-custom").addEventListener("input", function () {
           var v = parseFloat(this.value.replace(",", "."));
           if (isNaN(v)) { selectCredit(state.creditPct); return; }
-          v = Math.max(0, Math.min(100, v));
+          if (v > pctMax) { showToast("Maximum " + pctMax + " % en crédits" + (regle2027 ? " dès 2027" : " jusqu'au 31 décembre 2026")); v = pctMax; this.value = v; }
+          v = Math.max(0, Math.min(pctMax, v));
           state.creditPct = v;
           for (var j = 0; j < creditChips.length; j++) setPressed(creditChips[j], false);
           render();
