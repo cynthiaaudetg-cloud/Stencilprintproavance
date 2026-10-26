@@ -342,6 +342,24 @@
       body.lecture-seule #ageCheck { pointer-events: none; }
       body.lecture-seule .choice { pointer-events: none; }
       body.lecture-seule #signedBanner { display: block; }
+      #resignBtn {
+        display: none;
+        width: 100%;
+        background: var(--green);
+        color: #ffffff;
+        border: 3px solid #ffffff;
+        border-radius: 16px;
+        padding: 22px 16px;
+        font: inherit;
+        font-size: clamp(20px, 5.6vw, 25px);
+        font-weight: 800;
+        line-height: 1.25;
+        cursor: pointer;
+        box-shadow: 0 10px 30px rgba(29, 185, 84, 0.25);
+        margin-bottom: 18px;
+      }
+      #resignBtn:hover { background: var(--green-dark); }
+      body.lecture-seule #resignBtn { display: block; }
 
       /* Tarifs */
       .tarifs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
@@ -537,6 +555,7 @@
 
       <div id="formView">
         <div id="signedBanner" class="alert green" role="status"></div>
+        <button id="resignBtn" type="button">Signer de nouveau pour ce tattoo</button>
         <div class="progress" aria-hidden="true">
           <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
           <div class="progress-label" id="progressLabel">0 réponse sur 5</div>
@@ -973,7 +992,7 @@
               }
             });
             var banniere = document.getElementById("signedBanner");
-            if (banniere) banniere.textContent = "✅ Tu as déjà signé ce formulaire le " + sigTrouvee.dateAffichee + " — lecture seule, impossible à modifier.";
+            if (banniere) banniere.textContent = "✅ Tu as déjà signé ce formulaire le " + sigTrouvee.dateAffichee + ". Pour ton nouveau tattoo, il faut signer de nouveau : appuie sur « Signer de nouveau pour ce tattoo » ci-dessous.";
             document.body.classList.add("lecture-seule");
             document.getElementById("recapNom").textContent = sigTrouvee.nom;
             document.getElementById("recapAge").textContent = "Confirmé (18 ans et plus)";
@@ -983,7 +1002,7 @@
             document.getElementById("recapDate").textContent = sigTrouvee.dateAffichee;
             document.getElementById("confirmLine").textContent = "— " + sigTrouvee.nom + ", signé le " + sigTrouvee.dateAffichee;
             var note = document.getElementById("doneNote");
-            if (note) note.textContent = "Ta signature a bien été envoyée. Voici ton consentement, en lecture seule. 🖤";
+            if (note) note.textContent = "Voici ton ancienne signature, en lecture seule. Pour ton nouveau tattoo, signe de nouveau avec le bouton ci-dessus. 🖤";
             // Barre de progression : 5/5 en lecture seule
             var pf = document.getElementById("progressFill");
             var pl2 = document.getElementById("progressLabel");
@@ -995,6 +1014,44 @@
           }
         }
       } catch (e) { /* lecture seule indisponible : formulaire normal */ }
+
+      // ——— Signer de nouveau (correctif 2026-10-26) : un client qui revient
+      // doit pouvoir signer un NOUVEAU consentement pour son nouveau tattoo,
+      // même si son appareil garde une ancienne signature. ———
+      var resignBtn = document.getElementById("resignBtn");
+      if (resignBtn) {
+        resignBtn.addEventListener("click", function () {
+          // On sort du mode lecture seule : le CSS réactive le formulaire
+          // (bouton Signer visible, champs et choix cliquables).
+          document.body.classList.remove("lecture-seule");
+          // On cache l'ancien récapitulatif.
+          document.getElementById("confirmation").classList.remove("show");
+          // On repart d'un formulaire vierge, nom pré-rempli mais modifiable.
+          nomInput.readOnly = false;
+          ageCheck.checked = false;
+          ageCheck.disabled = false;
+          var choix2 = document.querySelectorAll(".choice[data-value]");
+          Array.prototype.forEach.call(choix2, function (b) {
+            b.classList.remove("selected");
+            b.removeAttribute("aria-pressed");
+          });
+          state.grossesse = null;
+          state.creme = null;
+          state.photos = null;
+          ["s2", "s3", "s4", "s5"].forEach(function (id) {
+            var c = document.getElementById(id);
+            if (c) { c.classList.remove("answered"); c.classList.remove("blocked"); }
+          });
+          var al1 = document.getElementById("grossesseAlert");
+          if (al1) al1.classList.remove("show");
+          var al2 = document.getElementById("cremeAlert");
+          if (al2) al2.classList.remove("show");
+          envoiEnCours = false;
+          derniereConfirmation = null;
+          updateProgress();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      }
 
       // ——— Détails dépliables ———
       var toggles = document.querySelectorAll(".detail-toggle");
