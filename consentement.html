@@ -1207,7 +1207,7 @@
         // un deuxième clic devient impossible (disabled + visuel grisé).
         envoiEnCours = true;
         signBtn.disabled = true;
-        signBtn.textContent = "Envoi en cours…";
+        signBtn.textContent = "Envoi en cours… merci de patienter, ça peut prendre une minute";
 
         function showConfirmation() {
           document.getElementById("recapNom").textContent = nom;
@@ -1218,6 +1218,9 @@
           document.getElementById("recapDate").textContent = fmt.complet;
           document.getElementById("confirmLine").textContent =
             "— " + nom + ", le " + fmt.date + " à " + fmt.heure;
+          // Toujours remettre le texte de confirmation « frais » : après une
+          // re-signature, il ne doit pas rester le texte de l'ancienne signature.
+          document.getElementById("doneNote").textContent = "C'est tout! Ta signature a été envoyée automatiquement — on se voit à ton rendez-vous. 🖤";
           document.getElementById("formView").style.display = "none";
           var conf = document.getElementById("confirmation");
           conf.classList.add("show");
