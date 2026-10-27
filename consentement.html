@@ -1137,9 +1137,9 @@
       // ——— Format date/heure (français, heure de Toronto par le navigateur) ———
       function formatDateTime(d) {
         var date = d.toLocaleDateString("fr-CA", {
-          weekday: "long", day: "numeric", month: "long", year: "numeric"
+          weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "America/Toronto"
         });
-        var heure = d.toLocaleTimeString("fr-CA", { hour: "numeric", minute: "2-digit" });
+        var heure = d.toLocaleTimeString("fr-CA", { hour: "numeric", minute: "2-digit", timeZone: "America/Toronto" });
         return { date: date, heure: heure, complet: date + " à " + heure };
       }
 
