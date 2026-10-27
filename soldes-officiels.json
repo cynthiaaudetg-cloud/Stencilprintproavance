@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-10-24T12:11:56Z",
-  "maj": 1792863222109,
-  "note": "Soldes du registre maitre Sokal, 24 oct. 2026 : Daniel (Karalor) inscrit a 20 625 $ (50 avant-midi x 412,50 $, moyenne des taux Cynthia 125 $/h et Dave 150 $/h, 3 h, valeur totale sans diminution). Total connu 59 169,37 $.",
+  "updatedAt": "2026-10-27T15:20:21Z",
+  "maj": 1793114421928,
+  "note": "Soldes du registre maitre Sokal, 24 oct. 2026 : Daniel (Karalor) inscrit a 20 625 $ (50 avant-midi x 412,50 $, moyenne des taux Cynthia 125 $/h et Dave 150 $/h, 3 h, valeur totale sans diminution). Total connu 59 169,37 $. 27 oct. 2026 : Joanie Houle et Marie-pier Christenson ajoutees sans solde (null), pour les futurs rendez-vous.",
   "clients": [
     {
       "id": "arianne",
@@ -79,6 +79,20 @@
       "pseudo": "Johanne",
       "solde": 700,
       "maj": 1792843916884
+    },
+    {
+      "id": "joanie",
+      "nom": "Joanie Houle",
+      "pseudo": "Joanie Houle",
+      "solde": null,
+      "maj": 1793114421928
+    },
+    {
+      "id": "marie-pier",
+      "nom": "Marie-pier Christenson",
+      "pseudo": "Marie-pier Christenson",
+      "solde": null,
+      "maj": 1793114421928
     }
   ]
 }
