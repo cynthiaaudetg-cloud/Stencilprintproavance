@@ -328,6 +328,7 @@
           <button type="button" class="chip credit-chip" data-pct="30">30 %</button>
           <button type="button" class="chip credit-chip" data-pct="35">35 %</button>
           <button type="button" class="chip credit-chip" data-pct="50">50 %</button>
+          <button type="button" class="chip credit-chip" data-pct="55">55 %</button>
           <button type="button" class="chip credit-chip" data-pct="75">75 %</button>
         </div>
         <div class="field-row" style="margin-top:12px;">
@@ -479,7 +480,8 @@
           depotDave: DEPOTS.Dave,
           depotDeduit: false,
           depotAucun: false,
-          creditClientId: ""
+          creditClientId: "",
+          forfait: null
         };
 
         var $ = function (id) { return document.getElementById(id); };
@@ -566,7 +568,8 @@
 
         var creditChips = document.querySelectorAll(".credit-chip");
         function selectCredit(pct) {
-          if (pct > pctMax) { pct = pctMax; showToast("Maximum " + pctMax + " % en crédits" + (regle2027 ? " dès 2027" : " jusqu'au 31 décembre 2026")); }
+          state.forfait = null; // un pourcentage manuel quitte le forfait
+          if (pct > pctMax && pct !== 55) { pct = pctMax; showToast("Maximum " + pctMax + " % en crédits" + (regle2027 ? " dès 2027" : " jusqu'au 31 décembre 2026")); }
           state.creditPct = pct;
           for (var j = 0; j < creditChips.length; j++) {
             setPressed(creditChips[j], parseInt(creditChips[j].getAttribute("data-pct"), 10) === pct);
@@ -580,6 +583,7 @@
           });
         }
         $("credit-custom").addEventListener("input", function () {
+          state.forfait = null; // un pourcentage manuel quitte le forfait
           var v = parseFloat(this.value.replace(",", "."));
           if (isNaN(v)) { selectCredit(state.creditPct); return; }
           if (v > pctMax) { showToast("Maximum " + pctMax + " % en crédits" + (regle2027 ? " dès 2027" : " jusqu'au 31 décembre 2026")); v = pctMax; this.value = v; }
@@ -589,6 +593,7 @@
           render();
         });
 
+
         function setDepot(deduit, aucun) {
           state.depotAucun = !!aucun;
           state.depotDeduit = !!deduit && !state.depotAucun;
@@ -596,15 +601,8 @@
           $("depot-non").setAttribute("aria-checked", (!state.depotDeduit && !state.depotAucun) ? "true" : "false");
           $("depot-aucun").setAttribute("aria-checked", state.depotAucun ? "true" : "false");
         }
-        // Abonnés : le dépôt est toujours conservé comme frais de matériel, jamais déduit (ne touche pas à « Aucun dépôt »).
-        function forcerDepotConserve() {
-          state.depotDeduit = false;
-          $("depot-oui").setAttribute("aria-checked", "false");
-          $("depot-non").setAttribute("aria-checked", state.depotAucun ? "false" : "true");
-          $("depot-aucun").setAttribute("aria-checked", state.depotAucun ? "true" : "false");
-        }
+        // Le dépôt n'a pas de défaut imposé : Cynthia et Dave choisissent à chaque séance si le dépôt est déduit ou non.
         $("depot-oui").addEventListener("click", function () {
-          if (abonneParId(state.creditClientId)) { showToast("Dépôt conservé comme frais de matériel pour les abonnés"); forcerDepotConserve(); render(); return; }
           setDepot(true); render();
         });
         $("depot-non").addEventListener("click", function () { setDepot(false); render(); });
@@ -644,7 +642,7 @@
         $("credit-client").addEventListener("change", function () {
           state.creditClientId = this.value;
           var a = abonneParId(this.value);
-          if (a) { state.clientNom = a.nom; $("client-nom").value = a.nom; forcerDepotConserve(); }
+          if (a) { state.clientNom = a.nom; $("client-nom").value = a.nom; }
           creditManuel = false; signatureAppliquee = "";
           render();
         });
@@ -856,7 +854,7 @@
                   var balPers = creditsData.soldes[pers.id];
                   clientsPerso.splice(persIdx, 1); sauverClientsPerso();
                   for (var q = sel.options.length - 1; q >= 0; q--) if (sel.options[q].value === pers.id) sel.remove(q);
-                  if (state.creditClientId === pers.id) { state.creditClientId = c.id; reprendre = true; forcerDepotConserve(); }
+                  if (state.creditClientId === pers.id) { state.creditClientId = c.id; reprendre = true; }
                   delete creditsData.soldes[pers.id];
                   if (c.solde === undefined || c.solde === null) { if (balPers !== undefined && balPers !== null) creditsData.soldes[c.id] = balPers; }
                   else creditsData.soldes[c.id] = c.solde;
@@ -929,6 +927,7 @@
         });
 
         $("btn-reset").addEventListener("click", function () {
+          state.forfait = null;
           state.dureeMin = 120; state.dureeMinDave = 60; state.gratuitMin = 0; state.prixFixe = 300;
           state.clientNom = ""; $("client-nom").value = "";
           state.creditClientId = ""; $("credit-client").value = ""; creditManuel = false; signatureAppliquee = "";
@@ -1021,8 +1020,9 @@
             html += ligne("Prix fixe du flash", fmt(r.base));
           }
           html += ligne("Total de la séance", fmt(r.base), "total");
+          var labelCredits = state.creditPct + " %";
           if (state.creditPct > 0) {
-            html += ligne("Payé en crédits (" + state.creditPct + " %)", fmt(r.credits), "credits");
+            html += ligne("Payé en crédits (" + labelCredits + ")", fmt(r.credits), "credits");
           } else {
             html += ligne("Payé en crédits (aucun abonnement)", fmt(0), "credits");
           }
@@ -1059,7 +1059,7 @@
             s.push("Flash à prix fixe : " + fmt(r.base));
           }
           s.push("Total de la séance : " + fmt(r.base));
-          s.push("En crédits (" + state.creditPct + " %) : " + fmt(r.credits));
+          s.push("En crédits (" + labelCredits + ") : " + fmt(r.credits));
           s.push("En argent : " + fmt(r.argent));
           if (state.depotAucun) {
             s.push("Dépôt : aucun (entente spéciale)");
