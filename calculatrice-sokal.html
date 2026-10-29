@@ -111,6 +111,7 @@
       .presets { margin-top: 12px; }
       .hint { font-size: 13.5px; color: var(--ink-soft); margin: 10px 0 0; }
       .hint strong { color: var(--ink); }
+      .linklike { background: none; border: none; padding: 0; font: inherit; color: var(--accent); text-decoration: underline; cursor: pointer; }
       .field-row { display: flex; align-items: center; gap: 10px; }
       .field-row label { font-size: 15px; font-weight: 600; }
       input[type="number"], input[type="text"] {
@@ -241,6 +242,7 @@
           <span aria-hidden="true" style="font-weight:700;">$</span>
         </div>
         <p class="hint">Pré-rempli. Modifiable au besoin.</p>
+        <p class="hint" id="forfait-note" style="display:none;"></p>
         <div class="actions" style="margin-top:12px;">
           <button type="button" class="btn btn-primary" id="btn-deduire">Déduire les crédits maintenant</button>
           <button type="button" class="btn btn-ghost" id="btn-annuler-deduction">Annuler la dernière déduction</button>
@@ -486,7 +488,8 @@
           depotDeduit: false,
           depotAucun: false,
           creditClientId: "",
-          forfait: null
+          forfait: null,
+          forfaitIgnore: false
         };
 
         var $ = function (id) { return document.getElementById(id); };
@@ -574,6 +577,7 @@
         var creditChips = document.querySelectorAll(".credit-chip");
         function selectCredit(pct) {
           state.forfait = null; // un pourcentage manuel quitte le forfait
+          state.forfaitIgnore = true;
           if (pct > pctMax && pct !== 55) { pct = pctMax; showToast("Maximum " + pctMax + " % en crédits" + (regle2027 ? " dès 2027" : " jusqu'au 31 décembre 2026")); }
           state.creditPct = pct;
           for (var j = 0; j < creditChips.length; j++) {
@@ -589,6 +593,7 @@
         }
         $("credit-custom").addEventListener("input", function () {
           state.forfait = null; // un pourcentage manuel quitte le forfait
+          state.forfaitIgnore = true;
           var v = parseFloat(this.value.replace(",", "."));
           if (isNaN(v)) { selectCredit(state.creditPct); return; }
           if (v > pctMax) { showToast("Maximum " + pctMax + " % en crédits" + (regle2027 ? " dès 2027" : " jusqu'au 31 décembre 2026")); v = pctMax; this.value = v; }
@@ -648,7 +653,7 @@
           state.creditClientId = this.value;
           var a = abonneParId(this.value);
           if (a) { state.clientNom = a.nom; $("client-nom").value = a.nom; }
-          creditManuel = false; signatureAppliquee = "";
+          creditManuel = false; signatureAppliquee = ""; state.forfaitIgnore = false;
           render();
         });
         $("btn-ajouter-client").addEventListener("click", function () {
@@ -933,6 +938,7 @@
 
         $("btn-reset").addEventListener("click", function () {
           state.forfait = null;
+          state.forfaitIgnore = false;
           state.dureeMin = 120; state.dureeMinDave = 60; state.gratuitMin = 0; state.prixFixe = 300;
           state.clientNom = ""; $("client-nom").value = "";
           state.creditClientId = ""; $("credit-client").value = ""; creditManuel = false; signatureAppliquee = "";
@@ -1097,13 +1103,32 @@
             // toute déduction par bouton d'un montant fractionnaire. Les
             // montants affichés gardent la virgule via fmt().
             // Forfait : pour Pat, Audrey et Ary, les crédits = séance moins
-            // le forfait en argent, pré-rempli automatiquement.
+            // le forfait en argent, pré-rempli automatiquement. Le forfait
+            // se retire avec son bouton ou en choisissant un pourcentage.
             var aF = abonneParId(state.creditClientId);
-            var fMontant = aF ? FORFAITS[aF.id] : null;
+            var fMontant = (!state.forfaitIgnore && aF) ? FORFAITS[aF.id] : null;
             var prefill = (fMontant && r.base > 0) ? Math.max(0, r.base - fMontant) : r.credits;
             state.forfait = fMontant ? aF.id : null;
             $("credit-montant").value = prefill > 0 ? (Math.round(prefill * 100) / 100).toString() : "";
           }
+          // Note de forfait : visible seulement quand le forfait est actif,
+          // avec un bouton pour le retirer (retour au prix normal).
+          (function () {
+            var fnEl = $("forfait-note");
+            var aN = abonneParId(state.creditClientId);
+            if (state.forfait && !state.forfaitIgnore && !creditManuel && aN && FORFAITS[aN.id]) {
+              fnEl.style.display = "";
+              fnEl.innerHTML = "Forfait " + aN.nom + " : " + fmt(FORFAITS[aN.id]) + " en argent, le reste en crédits. " +
+                "<button type=\"button\" id=\"btn-forfait-off\" class=\"linklike\">Retirer le forfait</button>";
+              var bOff = $("btn-forfait-off");
+              if (bOff) bOff.addEventListener("click", function () {
+                state.forfaitIgnore = true; state.forfait = null; render();
+              });
+            } else {
+              fnEl.style.display = "none";
+              fnEl.innerHTML = "";
+            }
+          })();
           if (a) {
             var m = parseFloat(($("credit-montant").value || "").replace(",", "."));
             if (isNaN(m)) m = 0;
