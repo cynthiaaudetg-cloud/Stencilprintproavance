@@ -1086,6 +1086,12 @@
             s.push("Dépôt de " + fmt(state.depot) + " : conservé comme frais de matériel (non déduit)");
             s.push("À recevoir en argent : " + fmt(r.resteArgent));
           }
+          s.push("");
+          s.push("--- Déclaration de l'artiste ---");
+          s.push("Avant chaque client, je nettoie mon poste de travail, mon plateau de travail, les chaises et les lits à l'eau et au savon, puis je les désinfecte avec une solution d'eau de Javel diluée. Un drap propre recouvre la chaise ou le lit et est changé entre chaque client. J'utilise du matériel à usage unique : les pigments sont placés dans des godets jetés après chaque client, et les aiguilles sont jetées dans un contenant prévu à cet effet. Mes gants sont changés entre chaque client et chaque fois que je touche autre chose que le tatouage ou mon espace de travail. J'utilise des produits professionnels de qualité, dont des encres Dynamic avec des dates de péremption valides.");
+          s.push("");
+          s.push("--- Confirmation du client ---");
+          s.push("Je confirme avoir approuvé le stencil avant la séance. Je confirme être satisfait(e) de mon tattoo et que le projet est terminé pour cette session-ci. Je confirme que mon artiste était professionnel(le). Je confirme être arrivé(e) à jeun (ni alcool, ni drogue, ni gueule de bois) pour assurer une bonne guérison. Je confirme avoir dit à mon artiste tout état de santé qui pourrait faire une différence sur mon projet de tatouage ou sur sa guérison. Si j'ai utilisé une crème anesthésiante, je confirme en avoir averti mon artiste d'avance sur le formulaire de consentement. Je confirme que l'endroit était propre, que le matériel était stérile, que mon artiste a bien nettoyé mon tatouage et l'a couvert (Saniderm ou Saran Wrap) pour assurer une protection antibactérienne jusqu'à la maison. Si mon tatouage n'a pas été recouvert, c'est à ma demande unique, exceptionnellement, et mon artiste se dégage des responsabilités liées à cette décision. J'ai constaté qu'un drap propre recouvrait la chaise ou le lit. Tous les soins de guérison sont notés sur mon formulaire de consentement, auquel j'ai toujours accès. Je peux poser des questions à mon artiste en tout temps en cas de doute. Les retouches sont incluses dans les trois mois, ou peuvent être faites lors d'un prochain projet.");
           $("summary").textContent = s.join("\n");
 
           renderCredits(r);
