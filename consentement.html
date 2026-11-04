@@ -1665,6 +1665,25 @@
   document.addEventListener('mousemove', function(e){
     creerGoutte(e.clientX, e.clientY);
   });
+  // Clic : grosse boule 3D qui dégouline
+  document.addEventListener('click', function(e){
+    creerBoule3D(e.clientX, e.clientY);
+  });
+  document.addEventListener('touchend', function(e){
+    var t = e.changedTouches[0];
+    creerBoule3D(t.clientX, t.clientY);
+  }, {passive:true});
+  function creerBoule3D(x, y){
+    var c = couleurs[Math.floor(Math.random()*couleurs.length)];
+    var boule = document.createElement('div');
+    boule.className = 'boule-3d-degouline';
+    boule.style.left = (x - 20) + 'px';
+    boule.style.top = (y - 20) + 'px';
+    boule.style.background = c.fond;
+    boule.style.boxShadow = c.glow + ', inset -5px -5px 10px rgba(0,0,0,.4), inset 5px 5px 10px rgba(255,255,255,.3)';
+    document.body.appendChild(boule);
+    setTimeout(function(){ boule.remove(); }, 1500);
+  }
   // Sur tactile : goutte où on touche
   document.addEventListener('touchstart', function(e){
     var t = e.touches[0];
@@ -1710,6 +1729,22 @@
 }
 /* gouttes visibles aussi au toucher */
 @media (prefers-reduced-motion:reduce){.encre-curseur-goutte{display:none;}}
+/* Boules 3D qui dégoulinent au clic */
+.boule-3d-degouline{
+  position:fixed;
+  width:40px;height:40px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:10000;
+  animation:boule-degouline 1.5s ease-in forwards;
+}
+@keyframes boule-degouline{
+  0%{opacity:1;transform:scale(1);border-radius:50%;}
+  30%{opacity:1;transform:scale(1.2,.8);}
+  60%{opacity:.9;transform:scale(.7,1.4) translateY(20px);border-radius:40% 40% 50% 50% / 30% 30% 70% 70%;}
+  100%{opacity:0;transform:scale(.4,2) translateY(60px);border-radius:30% 30% 50% 50% / 20% 20% 80% 80%;}
+}
+@media (prefers-reduced-motion:reduce){.boule-3d-degouline{display:none;}}
 </style>
   </body>
 </html>
