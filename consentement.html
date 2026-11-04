@@ -584,15 +584,7 @@
         --blue-elec-glow:rgba(0,102,255,.6);
       }
       /* LOGO 3D avec rotation et glow bleu électrique */
-      .logo-wow{
-        position:relative;
-        transform-style:preserve-3d;
-        animation:logo-3d-tourne 8s ease-in-out infinite;
-      }
-      @keyframes logo-3d-tourne{
-        0%,100%{transform:perspective(800px) rotateY(-8deg) rotateX(2deg);}
-        50%{transform:perspective(800px) rotateY(8deg) rotateX(-2deg);}
-      }
+<!-- ancienne règle logo supprimée -->
       .logo-wow img{
         filter:drop-shadow(0 0 24px rgba(0,85,255,.8)) drop-shadow(0 8px 16px rgba(0,0,0,.6));
       }
@@ -754,10 +746,7 @@
       @media (prefers-reduced-motion:reduce){
         body::before,.sec-title{animation:none;}
       }
-      /* ARC-EN-CIEL sur le logo - combiné avec la 3D */
-      .logo-wow{
-        animation:logo-3d-malade 6s ease-in-out infinite, logo-arcenciel 7s linear infinite !important;
-      }
+<!-- déf redondante supprimée -->
       @keyframes logo-arcenciel{
         0%{filter:drop-shadow(0 0 20px rgba(0,85,255,.6)) drop-shadow(0 0 50px rgba(229,9,20,.4)) hue-rotate(0deg);}
         100%{filter:drop-shadow(0 0 20px rgba(0,85,255,.6)) drop-shadow(0 0 50px rgba(229,9,20,.4)) hue-rotate(360deg);}
