@@ -578,10 +578,50 @@
       @media (prefers-reduced-motion:reduce){
         .doc-title,.sec-num,.choice,button[type="submit"]::after,.btn-submit::after{animation:none;}
       }
-      /* ========== BLEU ÉLECTRIQUE + LOGO 3D ========== */
+      /* ========== BLEU FONCÉ ÉLECTRIQUE DOMINANT (comme le site) ========== */
       :root{
-        --blue-elec:#00b4ff;
-        --blue-elec-glow:rgba(0,180,255,.6);
+        --blue-elec:#0066ff;
+        --blue-elec-glow:rgba(0,102,255,.6);
+      }
+      /* LOGO avec étincelle bleue */
+      .logo-wow{
+        position:relative;
+      }
+      .logo-wow::before{
+        content:"✦";
+        position:absolute;top:-10px;right:10px;
+        color:var(--blue-elec);font-size:1.5rem;
+        text-shadow:0 0 12px var(--blue-elec);
+        animation:logo-etincelle 2s ease-in-out infinite;
+        pointer-events:none;
+      }
+      @keyframes logo-etincelle{
+        0%,100%{opacity:.3;transform:scale(.8) rotate(0deg);}
+        50%{opacity:1;transform:scale(1.2) rotate(180deg);}
+      }
+      /* SECTIONS avec bordure bleue lumineuse */
+      section{
+        border:1px solid rgba(0,102,255,.25) !important;
+        box-shadow:0 0 20px rgba(0,102,255,.1);
+      }
+      section:hover{
+        border-color:rgba(0,102,255,.5) !important;
+        box-shadow:0 0 32px rgba(0,102,255,.2);
+      }
+      /* BOUTONS avec brillance bleue */
+      .choice{
+        border:1px solid rgba(0,102,255,.2);
+      }
+      .choice:hover{
+        border-color:rgba(0,102,255,.6);
+        box-shadow:0 0 20px rgba(0,102,255,.3);
+      }
+      .choice[aria-pressed="true"],.choice.selected{
+        border-color:var(--blue-elec);
+        box-shadow:0 0 24px rgba(0,102,255,.4);
+      }
+      @media (prefers-reduced-motion:reduce){
+        .logo-wow::before{animation:none;}
       }
       /* Logo avec glow bleu et effet 3D flottant */
       .brand-word{
