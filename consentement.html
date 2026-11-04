@@ -526,6 +526,181 @@
       .recap dt { color: var(--ink-dim); font-size: 15px; flex: none; }
       .recap dd { margin: 0; font-weight: 700; text-align: right; font-size: 15.5px; }
       #confirmation .done-note { color: var(--ink-soft); max-width: 440px; margin: 22px auto 0; }
+      /* ========== EMBELLISSEMENTS WOW (visuel seulement, rien de fonctionnel modifié) ========== */
+      /* Titre principal avec dégradé animé */
+      .doc-title{
+        background:linear-gradient(180deg,#ffffff 0%,#ffb3b8 45%,var(--red) 100%);
+        background-size:100% 220%;
+        -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+        filter:drop-shadow(2px 2px 0 rgba(0,0,0,.9));
+        animation:titre-consentement 6s ease-in-out infinite;
+      }
+      @keyframes titre-consentement{
+        0%,100%{background-position:50% 0%;}
+        50%{background-position:50% 100%;}
+      }
+      /* Numéros de section lumineux */
+      .sec-num{
+        text-shadow:0 0 12px rgba(229,9,20,.7);
+        animation:sec-num-pulse 3s ease-in-out infinite;
+      }
+      @keyframes sec-num-pulse{
+        0%,100%{text-shadow:0 0 12px rgba(229,9,20,.7);}
+        50%{text-shadow:0 0 20px rgba(229,9,20,1),0 0 32px rgba(229,9,20,.4);}
+      }
+      /* Boutons de choix avec halo au survol */
+      .choice{
+        transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+      }
+      .choice:hover{
+        transform:translateY(-2px);
+        box-shadow:0 0 18px rgba(229,9,20,.3);
+        border-color:rgba(229,9,20,.5);
+      }
+      .choice[aria-pressed="true"],.choice.selected{
+        box-shadow:0 0 22px rgba(229,9,20,.45);
+      }
+      /* Bouton de soumission avec reflet animé */
+      button[type="submit"],.btn-submit{
+        position:relative;overflow:hidden;
+      }
+      button[type="submit"]::after,.btn-submit::after{
+        content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;
+        background:linear-gradient(105deg,transparent,rgba(255,255,255,.25),transparent);
+        transform:skewX(-18deg);
+        animation:submit-reflet 4s ease-in-out infinite;
+        pointer-events:none;
+      }
+      @keyframes submit-reflet{
+        0%,60%{left:-80%;}
+        100%{left:130%;}
+      }
+      @media (prefers-reduced-motion:reduce){
+        .doc-title,.sec-num,.choice,button[type="submit"]::after,.btn-submit::after{animation:none;}
+      }
+      /* ========== BLEU ÉLECTRIQUE + LOGO 3D ========== */
+      :root{
+        --blue-elec:#00b4ff;
+        --blue-elec-glow:rgba(0,180,255,.6);
+      }
+      /* Logo avec glow bleu et effet 3D flottant */
+      .brand-word{
+        filter:drop-shadow(0 0 16px var(--blue-elec-glow)) drop-shadow(0 0 40px rgba(229,9,20,.3));
+        animation:logo-consent-float 5s ease-in-out infinite;
+      }
+      @keyframes logo-consent-float{
+        0%,100%{transform:translateY(0) rotate(-1deg);}
+        50%{transform:translateY(-6px) rotate(1deg);}
+      }
+      /* LOGO IMAGE avec effet WOW maximum */
+      .logo-wow{
+        width:140px;height:auto;display:block;margin:0 auto 16px;
+        filter:drop-shadow(0 0 20px rgba(0,180,255,.6)) drop-shadow(0 0 50px rgba(229,9,20,.4));
+        animation:logo-wow-spin 8s ease-in-out infinite;
+        transform-style:preserve-3d;
+      }
+      @keyframes logo-wow-spin{
+        0%,100%{transform:perspective(600px) rotateY(-8deg) translateY(0);}
+        25%{transform:perspective(600px) rotateY(8deg) translateY(-8px);}
+        50%{transform:perspective(600px) rotateY(-8deg) translateY(0);}
+        75%{transform:perspective(600px) rotateY(8deg) translateY(-8px);}
+      }
+      .logo-wow:hover{
+        animation:logo-wow-tourbillon 1.5s ease-in-out;
+      }
+      @keyframes logo-wow-tourbillon{
+        0%{transform:perspective(600px) rotateY(0deg) scale(1);}
+        50%{transform:perspective(600px) rotateY(180deg) scale(1.15);}
+        100%{transform:perspective(600px) rotateY(360deg) scale(1);}
+      }
+      /* Numéros de section : alternance rouge/bleu */
+      .sec-head:nth-of-type(even) .sec-num,
+      section:nth-of-type(even) .sec-num{
+        text-shadow:0 0 12px var(--blue-elec-glow);
+        animation:sec-num-pulse-blue 3s ease-in-out infinite;
+      }
+      @keyframes sec-num-pulse-blue{
+        0%,100%{text-shadow:0 0 12px var(--blue-elec-glow);}
+        50%{text-shadow:0 0 20px var(--blue-elec),0 0 32px var(--blue-elec-glow);}
+      }
+      /* Sections avec bordure 3D au survol */
+      section{
+        transition:transform .25s ease,box-shadow .25s ease;
+        transform-style:preserve-3d;
+      }
+      section:hover{
+        transform:perspective(1000px) rotateX(1deg);
+        box-shadow:0 8px 32px rgba(0,180,255,.12);
+      }
+      /* Boutons de choix : halo bleu pour les options positives */
+      .choice[data-value="Non"]::after,
+      .choice[data-value="Autorisées"]::after,
+      .choice[data-value="Aucune crème"]::after{
+        content:"";
+      }
+      /* Lien et accents bleus */
+      a{color:var(--blue-elec);}
+      .doc-intro strong{
+        color:var(--blue-elec);
+        text-shadow:0 0 8px var(--blue-elec-glow);
+      }
+      /* PLUS DE BLEU : bordures et accents */
+      .sec-head{
+        border-left:3px solid var(--blue-elec);
+        padding-left:12px;
+      }
+      .sec-head:nth-of-type(odd){
+        border-left-color:var(--red);
+      }
+      section{
+        border:1px solid rgba(0,180,255,.15);
+      }
+      section:hover{
+        border-color:rgba(0,180,255,.4);
+      }
+      /* Bouton principal avec dégradé bleu-rouge */
+      button[type="submit"],.btn-submit{
+        background:linear-gradient(135deg,var(--red-dark) 0%,var(--red) 40%,#0066cc 100%) !important;
+        box-shadow:0 0 24px rgba(0,180,255,.3),0 4px 16px rgba(0,0,0,.4);
+      }
+      button[type="submit"]:hover,.btn-submit:hover{
+        box-shadow:0 0 36px rgba(0,180,255,.5),0 4px 16px rgba(0,0,0,.4);
+      }
+      /* Cases à cocher et champs avec focus bleu */
+      input:focus,textarea:focus,select:focus{
+        border-color:var(--blue-elec) !important;
+        box-shadow:0 0 12px var(--blue-elec-glow) !important;
+        outline:none;
+      }
+      /* WOW SUPPLÉMENTAIRE : fond avec halos bleus animés */
+      body::before{
+        content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+        background:
+          radial-gradient(ellipse at 20% 10%,rgba(0,180,255,.08),transparent 50%),
+          radial-gradient(ellipse at 80% 90%,rgba(229,9,20,.08),transparent 50%);
+        background-size:150% 150%;
+        animation:consent-bg 10s ease-in-out infinite;
+      }
+      @keyframes consent-bg{
+        0%,100%{background-position:0% 0%,100% 100%;}
+        50%{background-position:100% 100%,0% 0%;}
+      }
+      /* Titres de section avec glow bleu pulsant */
+      .sec-title{
+        text-shadow:0 0 16px rgba(0,180,255,.4);
+        animation:sec-title-glow 4s ease-in-out infinite;
+      }
+      @keyframes sec-title-glow{
+        0%,100%{text-shadow:0 0 16px rgba(0,180,255,.4);}
+        50%{text-shadow:0 0 28px rgba(0,180,255,.7),0 0 48px rgba(0,180,255,.3);}
+      }
+      @media (prefers-reduced-motion:reduce){
+        body::before,.sec-title{animation:none;}
+      }
+      @media (prefers-reduced-motion:reduce){
+        .brand-word{animation:none;}
+        section:hover{transform:none;}
+      }
     </style>
   </head>
   <body>
@@ -533,6 +708,7 @@
     <div class="wrap">
 
       <header>
+        <img src="https://cynthiaaudetg-cloud.github.io/logo-tattoo-sokalite-blanc.png" alt="Sokal Tattoo" class="logo-wow" />
         <p class="brand-word" role="img" aria-label="Sokalite Shop">
           <span class="brand-name">Sokal<span class="accent">ite</span></span>
           <span class="brand-shop">Shop</span>
@@ -1273,6 +1449,49 @@
           gererEchecEnvoi();
         });
       });
+    </script>
+    <script>
+/* ===== EFFET MACHINE À ÉCRIRE : le texte se tape lettre par lettre avec curseur (visuel seulement) ===== */
+(function(){
+  var titres = document.querySelectorAll('.doc-title, .sec-title');
+  if(!titres.length || !('IntersectionObserver' in window)) return;
+
+  function typewriter(el){
+    var original = el.getAttribute('data-texte-origine');
+    if(!original || el.getAttribute('data-tape') === '1') return;
+    el.setAttribute('data-tape', '1');
+    var i = 0;
+    el.textContent = '';
+    el.style.borderRight = '3px solid var(--blue-elec, #00b4ff)';
+    el.style.paddingRight = '4px';
+    var interval = setInterval(function(){
+      if(i < original.length){
+        el.textContent += original[i];
+        i++;
+      } else {
+        clearInterval(interval);
+        setTimeout(function(){ el.style.borderRight = 'none'; el.style.paddingRight = '0'; }, 800);
+      }
+    }, 45);
+  }
+
+  titres.forEach(function(t){
+    if(!t.getAttribute('data-texte-origine')){
+      t.setAttribute('data-texte-origine', t.textContent);
+    }
+  });
+
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        typewriter(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold: 0.4 });
+
+  titres.forEach(function(t){ observer.observe(t); });
+})();
     </script>
   </body>
 </html>
