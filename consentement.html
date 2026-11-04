@@ -583,15 +583,24 @@
         --blue-elec:#0066ff;
         --blue-elec-glow:rgba(0,102,255,.6);
       }
-      /* LOGO avec étincelle bleue */
+      /* LOGO 3D avec rotation et glow bleu électrique */
       .logo-wow{
         position:relative;
+        transform-style:preserve-3d;
+        animation:logo-3d-tourne 8s ease-in-out infinite;
+      }
+      @keyframes logo-3d-tourne{
+        0%,100%{transform:perspective(800px) rotateY(-8deg) rotateX(2deg);}
+        50%{transform:perspective(800px) rotateY(8deg) rotateX(-2deg);}
+      }
+      .logo-wow img{
+        filter:drop-shadow(0 0 24px rgba(0,85,255,.8)) drop-shadow(0 8px 16px rgba(0,0,0,.6));
       }
       .logo-wow::before{
         content:"✦";
         position:absolute;top:-10px;right:10px;
-        color:var(--blue-elec);font-size:1.5rem;
-        text-shadow:0 0 12px var(--blue-elec);
+        color:#0055ff;font-size:1.5rem;
+        text-shadow:0 0 12px #0055ff;
         animation:logo-etincelle 2s ease-in-out infinite;
         pointer-events:none;
       }
@@ -599,26 +608,32 @@
         0%,100%{opacity:.3;transform:scale(.8) rotate(0deg);}
         50%{opacity:1;transform:scale(1.2) rotate(180deg);}
       }
-      /* SECTIONS avec bordure bleue lumineuse */
+      /* BLEU ÉLECTRIQUE EN AVANT, MOINS DE ROUGE */
+      .doc-title{
+        background:linear-gradient(90deg,#0055ff,#0066ff,#0055ff) !important;
+        background-size:200% 100% !important;
+        animation:titre-bleu-defile 4s linear infinite !important;
+        -webkit-background-clip:text !important;
+        background-clip:text !important;
+        color:transparent !important;
+      }
+      @keyframes titre-bleu-defile{
+        0%{background-position:200% 0;}
+        100%{background-position:-200% 0;}
+      }
+      /* Sections avec bordures bleues */
       section{
-        border:1px solid rgba(0,102,255,.25) !important;
-        box-shadow:0 0 20px rgba(0,102,255,.1);
+        border:1px solid rgba(0,85,255,.35) !important;
+        box-shadow:0 0 24px rgba(0,85,255,.15);
       }
       section:hover{
-        border-color:rgba(0,102,255,.5) !important;
-        box-shadow:0 0 32px rgba(0,102,255,.2);
+        border-color:rgba(0,85,255,.6) !important;
+        box-shadow:0 0 36px rgba(0,85,255,.25);
       }
-      /* BOUTONS avec brillance bleue */
-      .choice{
-        border:1px solid rgba(0,102,255,.2);
-      }
-      .choice:hover{
-        border-color:rgba(0,102,255,.6);
-        box-shadow:0 0 20px rgba(0,102,255,.3);
-      }
-      .choice[aria-pressed="true"],.choice.selected{
-        border-color:var(--blue-elec);
-        box-shadow:0 0 24px rgba(0,102,255,.4);
+      /* Numéros de section bleus */
+      .sec-num{
+        background:linear-gradient(135deg,#0055ff,#0066ff) !important;
+        box-shadow:0 0 16px rgba(0,85,255,.5) !important;
       }
       @media (prefers-reduced-motion:reduce){
         .logo-wow::before{animation:none;}
@@ -635,7 +650,7 @@
       /* LOGO IMAGE avec effet WOW maximum */
       .logo-wow{
         width:140px;height:auto;display:block;margin:0 auto 16px;
-        filter:drop-shadow(0 0 20px rgba(0,180,255,.6)) drop-shadow(0 0 50px rgba(229,9,20,.4));
+        filter:drop-shadow(0 0 20px rgba(0,85,255,.6)) drop-shadow(0 0 50px rgba(229,9,20,.4));
         animation:logo-wow-spin 8s ease-in-out infinite;
         transform-style:preserve-3d;
       }
@@ -670,7 +685,7 @@
       }
       section:hover{
         transform:perspective(1000px) rotateX(1deg);
-        box-shadow:0 8px 32px rgba(0,180,255,.12);
+        box-shadow:0 8px 32px rgba(0,85,255,.12);
       }
       /* Boutons de choix : halo bleu pour les options positives */
       .choice[data-value="Non"]::after,
@@ -693,18 +708,18 @@
         border-left-color:var(--red);
       }
       section{
-        border:1px solid rgba(0,180,255,.15);
+        border:1px solid rgba(0,85,255,.15);
       }
       section:hover{
-        border-color:rgba(0,180,255,.4);
+        border-color:rgba(0,85,255,.4);
       }
       /* Bouton principal avec dégradé bleu-rouge */
       button[type="submit"],.btn-submit{
         background:linear-gradient(135deg,var(--red-dark) 0%,var(--red) 40%,#0066cc 100%) !important;
-        box-shadow:0 0 24px rgba(0,180,255,.3),0 4px 16px rgba(0,0,0,.4);
+        box-shadow:0 0 24px rgba(0,85,255,.3),0 4px 16px rgba(0,0,0,.4);
       }
       button[type="submit"]:hover,.btn-submit:hover{
-        box-shadow:0 0 36px rgba(0,180,255,.5),0 4px 16px rgba(0,0,0,.4);
+        box-shadow:0 0 36px rgba(0,85,255,.5),0 4px 16px rgba(0,0,0,.4);
       }
       /* Cases à cocher et champs avec focus bleu */
       input:focus,textarea:focus,select:focus{
@@ -716,7 +731,7 @@
       body::before{
         content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
         background:
-          radial-gradient(ellipse at 20% 10%,rgba(0,180,255,.08),transparent 50%),
+          radial-gradient(ellipse at 20% 10%,rgba(0,85,255,.08),transparent 50%),
           radial-gradient(ellipse at 80% 90%,rgba(229,9,20,.08),transparent 50%);
         background-size:150% 150%;
         animation:consent-bg 10s ease-in-out infinite;
@@ -727,12 +742,12 @@
       }
       /* Titres de section avec glow bleu pulsant */
       .sec-title{
-        text-shadow:0 0 16px rgba(0,180,255,.4);
+        text-shadow:0 0 16px rgba(0,85,255,.4);
         animation:sec-title-glow 4s ease-in-out infinite;
       }
       @keyframes sec-title-glow{
-        0%,100%{text-shadow:0 0 16px rgba(0,180,255,.4);}
-        50%{text-shadow:0 0 28px rgba(0,180,255,.7),0 0 48px rgba(0,180,255,.3);}
+        0%,100%{text-shadow:0 0 16px rgba(0,85,255,.4);}
+        50%{text-shadow:0 0 28px rgba(0,85,255,.7),0 0 48px rgba(0,85,255,.3);}
       }
       @media (prefers-reduced-motion:reduce){
         body::before,.sec-title{animation:none;}
@@ -742,12 +757,12 @@
         animation:logo-wow-spin 8s ease-in-out infinite, logo-arcenciel 7s linear infinite !important;
       }
       @keyframes logo-arcenciel{
-        0%{filter:drop-shadow(0 0 20px rgba(0,180,255,.6)) drop-shadow(0 0 50px rgba(229,9,20,.4)) hue-rotate(0deg);}
-        100%{filter:drop-shadow(0 0 20px rgba(0,180,255,.6)) drop-shadow(0 0 50px rgba(229,9,20,.4)) hue-rotate(360deg);}
+        0%{filter:drop-shadow(0 0 20px rgba(0,85,255,.6)) drop-shadow(0 0 50px rgba(229,9,20,.4)) hue-rotate(0deg);}
+        100%{filter:drop-shadow(0 0 20px rgba(0,85,255,.6)) drop-shadow(0 0 50px rgba(229,9,20,.4)) hue-rotate(360deg);}
       }
       /* ROUGE + BLEU équilibrés partout */
       .doc-title{
-        filter:drop-shadow(2px 2px 0 rgba(0,0,0,.9)) drop-shadow(0 0 24px rgba(0,180,255,.3)) !important;
+        filter:drop-shadow(2px 2px 0 rgba(0,0,0,.9)) drop-shadow(0 0 24px rgba(0,85,255,.3)) !important;
       }
       /* MAXIMUM WOW : révélation des sections au scroll */
       section{
@@ -768,7 +783,7 @@
       }
       .choice::before{
         content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;
-        background:linear-gradient(90deg,transparent,rgba(0,180,255,.2),transparent);
+        background:linear-gradient(90deg,transparent,rgba(0,85,255,.2),transparent);
         transition:left .5s ease;
       }
       .choice:hover::before{
@@ -787,16 +802,16 @@
         animation:titre-consentement 6s ease-in-out infinite, titre-flash 4s ease-in-out infinite !important;
       }
       @keyframes titre-flash{
-        0%,92%,100%{filter:drop-shadow(2px 2px 0 rgba(0,0,0,.9)) drop-shadow(0 0 24px rgba(0,180,255,.3));}
-        94%,96%{filter:drop-shadow(2px 2px 0 rgba(0,0,0,.9)) drop-shadow(0 0 48px rgba(0,180,255,1)) drop-shadow(0 0 80px rgba(0,180,255,.6));}
+        0%,92%,100%{filter:drop-shadow(2px 2px 0 rgba(0,0,0,.9)) drop-shadow(0 0 24px rgba(0,85,255,.3));}
+        94%,96%{filter:drop-shadow(2px 2px 0 rgba(0,0,0,.9)) drop-shadow(0 0 48px rgba(0,85,255,1)) drop-shadow(0 0 80px rgba(0,85,255,.6));}
       }
       /* Bouton submit avec flash bleu */
       button[type="submit"],.btn-submit{
         animation:submit-flash 5s ease-in-out infinite;
       }
       @keyframes submit-flash{
-        0%,90%,100%{box-shadow:0 0 24px rgba(0,180,255,.3),0 4px 16px rgba(0,0,0,.4);}
-        93%,97%{box-shadow:0 0 48px rgba(0,180,255,.8),0 0 80px rgba(0,180,255,.4),0 4px 16px rgba(0,0,0,.4);}
+        0%,90%,100%{box-shadow:0 0 24px rgba(0,85,255,.3),0 4px 16px rgba(0,0,0,.4);}
+        93%,97%{box-shadow:0 0 48px rgba(0,85,255,.8),0 0 80px rgba(0,85,255,.4),0 4px 16px rgba(0,0,0,.4);}
       }
       @media (prefers-reduced-motion:reduce){
         .doc-title,button[type="submit"],.btn-submit{animation:none;}
@@ -1566,7 +1581,7 @@
     el.setAttribute('data-tape', '1');
     var i = 0;
     el.textContent = '';
-    el.style.borderRight = '3px solid var(--blue-elec, #00b4ff)';
+    el.style.borderRight = '3px solid var(--blue-elec, #0055ff)';
     el.style.paddingRight = '4px';
     var interval = setInterval(function(){
       if(i < original.length){
