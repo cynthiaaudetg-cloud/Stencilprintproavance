@@ -643,15 +643,12 @@
       .logo-wow{
         width:140px;height:auto;display:block;margin:0 auto 16px;
         transform-style:preserve-3d;
-        animation:logo-3d-malade 6s ease-in-out infinite;
+        animation:logo-3d-malade 4s linear infinite;
         filter:drop-shadow(0 0 20px rgba(0,85,255,.8)) drop-shadow(0 0 60px rgba(0,85,255,.4)) drop-shadow(0 10px 20px rgba(0,0,0,.7));
       }
       @keyframes logo-3d-malade{
-        0%{transform:perspective(800px) rotateY(0deg) rotateX(0deg) translateZ(0) scale(1);}
-        25%{transform:perspective(800px) rotateY(90deg) rotateX(10deg) translateZ(30px) scale(1.05);}
-        50%{transform:perspective(800px) rotateY(180deg) rotateX(0deg) translateZ(0) scale(1);}
-        75%{transform:perspective(800px) rotateY(270deg) rotateX(-10deg) translateZ(30px) scale(1.05);}
-        100%{transform:perspective(800px) rotateY(360deg) rotateX(0deg) translateZ(0) scale(1);}
+        from{transform:rotateY(0deg);}
+        to{transform:rotateY(360deg);}
       }
       .logo-wow:hover{
         animation:logo-3d-explosion 1.2s ease-in-out;
