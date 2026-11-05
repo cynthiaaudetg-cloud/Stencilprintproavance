@@ -1270,8 +1270,10 @@
 
     <script>
       // ============================================================
-      // NOTE (2026-10-18) : envoi AUTOMATIQUE via FormSubmit
-      // (https://formsubmit.co/ajax/cynthia.audet.g@gmail.com).
+      // NOTE (2026-11-05) : envoi AUTOMATIQUE via Web3Forms
+      // (https://api.web3forms.com/submit).
+      // FormSubmit est tombé en panne le 2026-11-05 (erreur 522) :
+      // bascule vers Web3Forms, même courriel destinataire.
       // Les anciens envois (Google Forms, Apps Script) perdaient les
       // signatures en silence : ils sont DÉSACTIVÉS et retirés.
       // La confirmation ne s'affiche QUE si l'envoi réussit.
@@ -1562,7 +1564,7 @@
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
-        // Envoi AUTOMATIQUE vers FormSubmit → courriel instantané à Cynthia.
+        // Envoi AUTOMATIQUE vers Web3Forms → courriel instantané à Cynthia.
         // Le client n'a rien d'autre à faire après avoir signé.
         // La confirmation « Consentement signé! » ne s'affiche QUE si
         // l'envoi a réussi — aucune perte silencieuse possible.
@@ -1577,24 +1579,26 @@
         }
 
         var donnees = {
+          "access_key": "f981a2b9-8f65-4220-b42d-e138c6cb8f7d",
+          "subject": "Nouveau consentement signé : " + nom,
+          "from_name": nom,
           "Nom": nom,
           "Date": fmt.complet,
           "18 ans et plus": "Confirmé (18 ans et plus)",
           "Grossesse / allaitement": state.grossesse,
           "Crème anesthésiante": state.creme,
           "Photos": state.photos,
-          "Artiste": artisteParam || "Cynthia",
-          "_subject": "Nouveau consentement signé : " + nom,
-          "_captcha": "false"
+          "Artiste": artisteParam || "Cynthia"
         };
-        fetch("https://formsubmit.co/ajax/cynthia.audet.g@gmail.com", {
+        fetch("https://api.web3forms.com/submit", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
           body: JSON.stringify(donnees)
         }).then(function (resp) {
           if (!resp.ok) throw new Error("HTTP " + resp.status);
           return resp.json();
-        }).then(function () {
+        }).then(function (res) {
+          if (!res || !res.success) throw new Error("Web3Forms non OK");
           // Succès : sauvegarde locale (pour la relecture en lecture seule) + confirmation.
           try {
             var sauvegardes = JSON.parse(localStorage.getItem('sokal_signatures_backup') || '[]');
