@@ -337,6 +337,7 @@
           <button type="button" class="chip credit-chip" data-pct="50">50 %</button>
           <button type="button" class="chip credit-chip" data-pct="55">55 %</button>
           <button type="button" class="chip credit-chip" data-pct="60">60 %</button>
+          <button type="button" class="chip credit-chip" data-pct="65">65 %</button>
           <button type="button" class="chip credit-chip" data-pct="75">75 %</button>
         </div>
         <div class="field-row" style="margin-top:12px;">
@@ -576,7 +577,7 @@
         var creditChips = document.querySelectorAll(".credit-chip");
         function selectCredit(pct) {
           $("forfait-montant").value = ""; // un pourcentage manuel quitte le forfait
-          if (pct > pctMax && pct !== 55 && pct !== 60) { pct = pctMax; showToast("Maximum " + pctMax + " % en crédits" + (regle2027 ? " dès 2027" : " jusqu'au 31 décembre 2026")); }
+          if (pct > pctMax && pct !== 55 && pct !== 60 && pct !== 65) { pct = pctMax; showToast("Maximum " + pctMax + " % en crédits" + (regle2027 ? " dès 2027" : " jusqu'au 31 décembre 2026")); }
           state.creditPct = pct;
           for (var j = 0; j < creditChips.length; j++) {
             setPressed(creditChips[j], parseInt(creditChips[j].getAttribute("data-pct"), 10) === pct);
@@ -1012,8 +1013,8 @@
           $("gratuit-val").innerHTML = fmtH(state.gratuitMin).replace(" h", " <small>h</small>");
 
           $("credit-hint").innerHTML = regle2027
-            ? "Règle en vigueur : <strong>50 % max en crédits</strong> pour les abonnés (depuis janvier 2027). Les 25 %, 30 % et 35 % servent aux rabais exceptionnels, ex. sur un flash. Les 55 % et 60 % sont réservés aux clientes privilégiées."
-            : "Règle en vigueur : les abonnés peuvent payer <strong>jusqu'à 75 % en crédits jusqu'au 31 décembre 2026</strong>, puis <strong>50 % max à partir de janvier 2027</strong>. Les 25 %, 30 % et 35 % servent aux rabais exceptionnels, ex. sur un flash. Les 55 % et 60 % sont réservés aux clientes privilégiées.";
+            ? "Règle en vigueur : <strong>50 % max en crédits</strong> pour les abonnés (depuis janvier 2027). Les 25 %, 30 % et 35 % servent aux rabais exceptionnels, ex. sur un flash. Les 55 %, 60 % et 65 % sont réservés aux clientes privilégiées."
+            : "Règle en vigueur : les abonnés peuvent payer <strong>jusqu'à 75 % en crédits jusqu'au 31 décembre 2026</strong>, puis <strong>50 % max à partir de janvier 2027</strong>. Les 25 %, 30 % et 35 % servent aux rabais exceptionnels, ex. sur un flash. Les 55 %, 60 % et 65 % sont réservés aux clientes privilégiées.";
 
           var r = calculer();
           var html = "";
