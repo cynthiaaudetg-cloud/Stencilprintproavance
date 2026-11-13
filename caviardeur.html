@@ -781,6 +781,10 @@ function normalizeWithMap(str){
 }
 const PATTERNS = [
   {label:"Courriel",            re:/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/g},
+  {label:"Adresse",             re:/\b\d{1,6}\s*,\s*[a-z][a-z0-9\s.'-]{3,}/g},
+  {label:"Adresse",             re:/\b\d{1,6}\s+(?:rue|avenue|av|boulevard|boul|chemin|route|rang|impasse|allee|place|terrasse|montee|cote|promenade|croissant|street|st|ave|road|rd|drive|dr|lane|ln)\b[a-z0-9\s.'-]*/g},
+  {label:"Adresse (ville)",     re:/[a-z][a-z\s.'-]{2,}\s*\([a-z\s.'-]+\)\s*[a-z]\d[a-z][\s-]?\d[a-z]\d/g},
+  {label:"Adresse (ville)",     re:/[a-z][a-z\s.'-]{2,},\s*(?:qc|quebec|on|ontario|nb|ns|pe|nl|mb|sk|ab|bc)\s+[a-z]\d[a-z][\s-]?\d[a-z]\d/g},
   {label:"N° TPS/TVH",          re:/\b\d{9}\s?rt\s?\d{4}\b/g},
   {label:"N° TVQ",              re:/\b\d{10}\s?tq\s?\d{4}\b/g},
   {label:"N° de compte possible", re:/\b(?:\d{5}[\s-]\d{3}[\s-]\d{7,12}|\d{12,17})\b/g},
