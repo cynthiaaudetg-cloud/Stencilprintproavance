@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Liste de cancellation de dernière minute</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2rem; }
+
+      :root {
+        --bg: #101014;
+        --bg-soft: #17171d;
+        --card: #1b1b22;
+        --line: #2c2c36;
+        --ink: #f4f2ee;
+        --ink-soft: #c9c6cf;
+        --ink-faint: #9a97a5;
+        --red: #ff0a16;
+        --red-dark: #c4000d;
+        --blue: #00b4ff;
+        --green: #2ee6a8;
+        --shadow: 0 18px 50px rgba(0,0,0,.5);
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #f3f1ec;
+          --bg-soft: #eae7e0;
+          --card: #ffffff;
+          --line: #ddd8cf;
+          --ink: #17171c;
+          --ink-soft: #45434d;
+          --ink-faint: #74717e;
+          --shadow: 0 18px 44px rgba(30,20,10,.14);
+        }
+      }
+
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        font-family: "Archivo", system-ui, sans-serif;
+        background:
+          radial-gradient(900px 480px at 85% -10%, rgba(0,180,255,.14), transparent 60%),
+          radial-gradient(800px 460px at -10% 0%, rgba(255,10,22,.13), transparent 55%),
+          var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+      }
+      .wrap { max-width: 640px; margin: 0 auto; padding: 28px 18px 56px; }
+
+      .brand {
+        display: flex; align-items: center; gap: 10px;
+        font-weight: 800; letter-spacing: .14em; font-size: .78rem; text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+      .brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--red); box-shadow: 0 0 12px var(--red); flex: none; }
+      .brand .dot.b { background: var(--blue); box-shadow: 0 0 12px var(--blue); }
+
+      h1 {
+        font-family: "Bebas Neue", "Archivo", sans-serif;
+        font-weight: 400;
+        font-size: clamp(2.5rem, 9vw, 3.9rem);
+        line-height: .98;
+        letter-spacing: .015em;
+        margin: 18px 0 6px;
+      }
+      h1 .accent { color: var(--red); }
+      .lede { font-size: 1.06rem; line-height: 1.55; color: var(--ink-soft); margin: 10px 0 0; max-width: 34rem; }
+      .lede strong { color: var(--ink); }
+
+      .hello {
+        margin-top: 26px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px 20px 22px;
+        box-shadow: var(--shadow);
+      }
+      .hello .hi { font-size: 1.35rem; font-weight: 800; margin: 0 0 6px; }
+      .hello .hi .nom { color: var(--blue); }
+      .hello p { margin: 0; color: var(--ink-soft); line-height: 1.55; font-size: .99rem; }
+
+      .how { margin-top: 22px; display: grid; gap: 10px; }
+      .how .step {
+        display: flex; gap: 14px; align-items: flex-start;
+        background: var(--bg-soft);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+      .how .num {
+        flex: none; width: 30px; height: 30px; border-radius: 50%;
+        display: grid; place-items: center;
+        font-weight: 800; font-size: .92rem;
+        background: var(--ink); color: var(--bg);
+      }
+      .how p { margin: 2px 0 0; line-height: 1.5; font-size: .96rem; color: var(--ink-soft); }
+      .how p strong { color: var(--ink); }
+
+      .choices { margin-top: 26px; display: grid; gap: 12px; }
+      .btn {
+        appearance: none; border: 0; cursor: pointer;
+        font-family: inherit; font-weight: 800;
+        border-radius: 14px;
+        min-height: 64px;
+        padding: 14px 20px;
+        font-size: 1.15rem;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        transition: transform .12s ease, filter .12s ease, opacity .12s ease;
+        text-align: center;
+      }
+      .btn:active { transform: scale(.985); }
+      .btn:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+      .btn-oui {
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        color: #fff;
+        box-shadow: 0 12px 30px rgba(255,10,22,.32);
+      }
+      .btn-oui:hover { filter: brightness(1.08); }
+      .btn-non {
+        background: transparent;
+        color: var(--ink);
+        border: 2px solid var(--line);
+      }
+      .btn-non:hover { border-color: var(--ink-faint); }
+      .btn[disabled] { opacity: .55; cursor: wait; }
+      .btn .sub { display: block; font-size: .8rem; font-weight: 600; opacity: .85; margin-top: 2px; }
+      .btn .stack { display: flex; flex-direction: column; align-items: center; }
+
+      .panel {
+        display: none;
+        margin-top: 26px;
+        border-radius: 14px;
+        padding: 24px 22px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        box-shadow: var(--shadow);
+        text-align: center;
+      }
+      .panel.show { display: block; }
+      .panel .big { font-size: 1.45rem; font-weight: 800; margin: 0 0 8px; line-height: 1.25; }
+      .panel p { margin: 0; color: var(--ink-soft); line-height: 1.55; }
+      .panel-ok { border-color: rgba(46,230,168,.45); }
+      .panel-ok .big { color: var(--green); }
+      .panel-err { border-color: rgba(255,10,22,.5); }
+      .panel-err .big { color: var(--red); }
+      .panel .actions { margin-top: 18px; display: grid; gap: 10px; }
+      .btn-small { min-height: 52px; font-size: 1rem; border-radius: 12px; }
+      .btn-mail {
+        background: var(--blue); color: #06121a; text-decoration: none;
+        box-shadow: 0 10px 24px rgba(0,180,255,.28);
+      }
+      .btn-retry { background: var(--ink); color: var(--bg); }
+
+      .privacy {
+        margin-top: 26px;
+        display: flex; gap: 10px; align-items: flex-start;
+        color: var(--ink-faint); font-size: .9rem; line-height: 1.5;
+      }
+      .privacy svg { flex: none; margin-top: 1px; }
+      footer { margin-top: 34px; color: var(--ink-faint); font-size: .85rem; text-align: center; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .btn { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <div class="brand"><span class="dot"></span> Sokal Tattoo <span class="dot b"></span></div>
+
+      <h1>Liste de cancellation<br /><span class="accent">de dernière minute</span></h1>
+      <p class="lede">Quand un rendez-vous s'annule, une place se libère d'un coup. Les personnes inscrites sur cette liste sont <strong>les seules contactées</strong> pour avancer leur session. Celles qui ne s'inscrivent pas gardent leur date, sans jamais être dérangées.</p>
+
+      <section class="hello" id="blocChoix">
+        <p class="hi">Bonjour <span class="nom" id="nomAffiche">!</span></p>
+        <p id="texteNom">Ton nom est déjà rempli, tu n'as rien à écrire. Un seul clic suffit pour dire si tu veux être sur la liste ou non.</p>
+
+        <div class="choices">
+          <button type="button" class="btn btn-oui" id="btnOui">
+            <span class="stack">Oui, je m'inscris<span class="sub">Contacte-moi si une place se libère</span></span>
+          </button>
+          <button type="button" class="btn btn-non" id="btnNon">
+            <span class="stack">Non, merci<span class="sub">Je garde ma date, ne me contacte pas pour ça</span></span>
+          </button>
+        </div>
+      </section>
+
+      <div class="how" aria-label="Comment ça marche">
+        <div class="step"><span class="num">1</span><p><strong>Tu cliques Oui.</strong> Ton inscription s'envoie directement à Cynthia, avec ton nom. Rien d'autre à remplir.</p></div>
+        <div class="step"><span class="num">2</span><p><strong>Une place se libère.</strong> Cynthia regarde sa liste et écrit seulement aux personnes inscrites, sur Messenger.</p></div>
+        <div class="step"><span class="num">3</span><p><strong>Tu décides.</strong> La nouvelle date te convient? Tu avances ta session. Sinon, tu gardes ta date originale, sans problème.</p></div>
+      </div>
+
+      <section class="panel panel-ok" id="panneauOk" role="status">
+        <p class="big">C'est fait, tu es sur la liste!</p>
+        <p id="texteOk">Ton inscription est envoyée à Cynthia. Si une place se libère, elle va t'écrire sur Messenger pour te proposer d'avancer ta session. Tu peux fermer cette page.</p>
+      </section>
+
+      <section class="panel" id="panneauNon" role="status">
+        <p class="big">Aucun problème!</p>
+        <p>Tu gardes ta date comme prévu et tu ne seras pas contacté pour les places qui se libèrent. Rien n'a été enregistré. Tu peux fermer cette page.</p>
+      </section>
+
+      <section class="panel panel-err" id="panneauErreur" role="alert">
+        <p class="big">Oups, l'envoi n'a pas fonctionné</p>
+        <p>Ton inscription n'a pas pu se rendre à Cynthia. Réessaie une fois, ou envoie-lui ton Oui par courriel en un clic :</p>
+        <div class="actions">
+          <button type="button" class="btn btn-small btn-retry" id="btnReessayer">Réessayer l'inscription</button>
+          <a class="btn btn-small btn-mail" id="lienCourriel" href="#">Envoyer mon Oui par courriel</a>
+        </div>
+      </section>
+
+      <div class="privacy">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 10V8a6 6 0 1 1 12 0v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+        <span>La liste reste privée : les inscriptions s'envoient directement à Cynthia et elle est la seule à les voir. Rien n'est affiché publiquement.</span>
+      </div>
+
+      <footer>Sokal Tattoo — liste de cancellation de dernière minute</footer>
+    </main>
+
+    <script>
+      (function () {
+        var COURRIEL_CYNTHIA = "cynthia.audet.g@gmail.com";
+        var ENDPOINT = "https://formsubmit.co/ajax/" + COURRIEL_CYNTHIA;
+
+        var params = new URLSearchParams(window.location.search);
+        var nom = (params.get("nom") || "").trim();
+        // Nettoyage léger : pas de caractères de contrôle, longueur raisonnable.
+        nom = nom.replace(/[\u0000-\u001f\u007f]/g, "").slice(0, 80);
+
+        var nomAffiche = document.getElementById("nomAffiche");
+        var texteNom = document.getElementById("texteNom");
+        if (nom) {
+          nomAffiche.textContent = nom + " !";
+        } else {
+          nomAffiche.textContent = "!";
+          texteNom.textContent = "Un seul clic suffit pour dire si tu veux être sur la liste ou non. Ton inscription part directement chez Cynthia.";
+        }
+
+        var blocChoix = document.getElementById("blocChoix");
+        var panneauOk = document.getElementById("panneauOk");
+        var panneauNon = document.getElementById("panneauNon");
+        var panneauErreur = document.getElementById("panneauErreur");
+        var btnOui = document.getElementById("btnOui");
+        var btnNon = document.getElementById("btnNon");
+        var btnReessayer = document.getElementById("btnReessayer");
+        var texteOk = document.getElementById("texteOk");
+        var envoiEnCours = false;
+
+        function dateHeureQuebec() {
+          try {
+            return new Intl.DateTimeFormat("fr-CA", {
+              timeZone: "America/Toronto",
+              year: "numeric", month: "2-digit", day: "2-digit",
+              hour: "2-digit", minute: "2-digit", hour12: false
+            }).format(new Date());
+          } catch (e) {
+            return new Date().toISOString();
+          }
+        }
+
+        function construireLienCourriel() {
+          var sujet = "Oui — Liste de cancellation de dernière minute";
+          var corps = "Bonjour Cynthia,\n\nOui, je veux être sur ta liste de cancellation de dernière minute.\n\nNom : " + (nom || "(lien ouvert sans nom)") + "\nDate : " + dateHeureQuebec();
+          return "mailto:" + COURRIEL_CYNTHIA + "?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(corps);
+        }
+        document.getElementById("lienCourriel").href = construireLienCourriel();
+
+        function afficherPanneau(lequel) {
+          panneauOk.classList.toggle("show", lequel === "ok");
+          panneauNon.classList.toggle("show", lequel === "non");
+          panneauErreur.classList.toggle("show", lequel === "erreur");
+          if (lequel) {
+            var cible = lequel === "ok" ? panneauOk : (lequel === "non" ? panneauNon : panneauErreur);
+            cible.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }
+
+        function envoyerInscription() {
+          if (envoiEnCours) return;
+          envoiEnCours = true;
+          btnOui.disabled = true;
+          btnNon.disabled = true;
+          btnOui.querySelector(".stack").firstChild.textContent = "Envoi en cours…";
+          afficherPanneau(null);
+
+          var controller = ("AbortController" in window) ? new AbortController() : null;
+          var timeoutId = controller ? setTimeout(function () { controller.abort(); }, 20000) : null;
+
+          var donnees = {
+            _subject: "Nouvelle inscription — Liste de cancellation de dernière minute",
+            _template: "table",
+            _captcha: "false",
+            "Nom Messenger": nom || "(lien ouvert sans nom)",
+            "Liste": "Cancellation de dernière minute — Sokal Tattoo",
+            "Réponse": "Oui, je m'inscris",
+            "Date d'inscription": dateHeureQuebec()
+          };
+
+          fetch(ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(donnees),
+            signal: controller ? controller.signal : undefined
+          }).then(function (reponse) {
+            if (timeoutId) clearTimeout(timeoutId);
+            return reponse.json().catch(function () { return null; }).then(function (corps) {
+              var succes = reponse.ok && corps && (corps.success === true || corps.success === "true");
+              if (succes) {
+                if (nom) {
+                  texteOk.textContent = "Merci " + nom + " ! Ton inscription est envoyée à Cynthia. Si une place se libère, elle va t'écrire sur Messenger pour te proposer d'avancer ta session. Tu peux fermer cette page.";
+                }
+                blocChoix.style.display = "none";
+                afficherPanneau("ok");
+              } else {
+                gererEchec();
+              }
+            });
+          }, function () {
+            if (timeoutId) clearTimeout(timeoutId);
+            gererEchec();
+          });
+        }
+
+        function gererEchec() {
+          envoiEnCours = false;
+          btnOui.disabled = false;
+          btnNon.disabled = false;
+          btnOui.querySelector(".stack").firstChild.textContent = "Oui, je m'inscris";
+          document.getElementById("lienCourriel").href = construireLienCourriel();
+          afficherPanneau("erreur");
+        }
+
+        btnOui.addEventListener("click", envoyerInscription);
+        btnReessayer.addEventListener("click", function () {
+          afficherPanneau(null);
+          envoyerInscription();
+        });
+        btnNon.addEventListener("click", function () {
+          // Non : rien n'est envoyé ni enregistré, on ferme simplement le choix.
+          blocChoix.style.display = "none";
+          afficherPanneau("non");
+        });
+      })();
+    </script>
+  </body>
+</html>
