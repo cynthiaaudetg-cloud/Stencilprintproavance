@@ -223,6 +223,17 @@
       .btn .sub { display: block; font-size: .8rem; font-weight: 600; opacity: .88; margin-top: 2px; }
       .btn .stack { display: flex; flex-direction: column; align-items: center; }
 
+      /* ===== DÉSINSCRIPTION : discret, sous le formulaire ===== */
+      .desinscription { margin-top: 20px; text-align: center; padding: 18px 16px 4px; }
+      .desinscription p { margin: 0 0 12px; color: var(--ink-faint); font-size: .92rem; line-height: 1.5; }
+      .btn-desinscrire { appearance: none; background: transparent; border: 1.5px solid var(--line); color: var(--ink-soft); font-family: inherit; font-weight: 700; font-size: .95rem; border-radius: 6px; min-height: 48px; padding: 11px 20px; cursor: pointer; transition: border-color .2s ease, color .2s ease, box-shadow .2s ease, transform .15s ease; }
+      .btn-desinscrire:hover { border-color: var(--mauve); color: #fff; box-shadow: 0 0 16px rgba(176,107,255,.28); transform: translateY(-1px); }
+      .btn-desinscrire:focus-visible { outline: 3px solid var(--jaune); outline-offset: 3px; }
+      .btn-desinscrire:active { transform: scale(.985); }
+      .btn-desinscrire[disabled] { opacity: .55; cursor: wait; }
+      .panel-desinscrit { border: 2px solid var(--mauve); box-shadow: var(--shadow), 6px 6px 0 rgba(176,107,255,.28), 0 0 32px rgba(176,107,255,.18); }
+      .panel-desinscrit .big { color: var(--mauve); text-shadow: 0 0 18px var(--glow-mauve); }
+
       /* ===== PANNEAUX ===== */
       .panel { display: none; margin-top: 26px; border-radius: 6px; padding: 26px 22px; border: 1px solid var(--line); background: var(--card); box-shadow: var(--shadow); text-align: center; position: relative; overflow: hidden; }
       .panel.show { display: block; animation: pop .45s cubic-bezier(.2,1.4,.4,1) both; }
@@ -434,6 +445,11 @@
         </div>
       </section>
 
+      <div class="desinscription reveal d4" id="zoneDesinscription">
+        <p>Déjà sur la liste, mais tu ne veux plus recevoir de demandes quand une place se libère?</p>
+        <button type="button" class="btn-desinscrire" id="btnDesinscrire">Se désinscrire de la liste d'attente</button>
+      </div>
+
       <div class="how reveal d4" aria-label="Comment ça marche">
         <div class="step"><span class="num">1</span><p><strong>Tu cliques Oui.</strong> Ton inscription s'envoie directement à Cynthia, avec ton nom. Rien d'autre à remplir.</p></div>
         <div class="step"><span class="num">2</span><p><strong>Une place se libère.</strong> Cynthia regarde sa liste et écrit seulement aux personnes inscrites, sur Messenger.</p></div>
@@ -456,6 +472,20 @@
         <div class="actions">
           <button type="button" class="btn btn-small btn-retry" id="btnReessayer">Réessayer l'inscription</button>
           <a class="btn btn-small btn-mail" id="lienCourriel" href="#">Envoyer mon Oui par courriel</a>
+        </div>
+      </section>
+
+      <section class="panel panel-desinscrit" id="panneauDesinscrit" role="status">
+        <p class="big">C'est fait, tu es désinscrit</p>
+        <p id="texteDesinscrit">Ta demande de désinscription a été envoyée à Cynthia. Elle va te retirer de la liste d'attente et tu ne recevras plus de demandes en cas d'annulation. Tu peux fermer cette page.</p>
+      </section>
+
+      <section class="panel panel-err" id="panneauDesinscriptionErreur" role="alert">
+        <p class="big">Oups, l'envoi n'a pas fonctionné</p>
+        <p>Ta demande de désinscription n'a pas pu se rendre à Cynthia. Réessaie une fois, ou envoie-la-lui par courriel en un clic :</p>
+        <div class="actions">
+          <button type="button" class="btn btn-small btn-retry" id="btnReessayerDesinscription">Réessayer la désinscription</button>
+          <a class="btn btn-small btn-mail" id="lienCourrielDesinscription" href="#">Envoyer ma désinscription par courriel</a>
         </div>
       </section>
 
@@ -489,11 +519,18 @@
         var panneauOk = document.getElementById("panneauOk");
         var panneauNon = document.getElementById("panneauNon");
         var panneauErreur = document.getElementById("panneauErreur");
+        var panneauDesinscrit = document.getElementById("panneauDesinscrit");
+        var panneauDesinscriptionErreur = document.getElementById("panneauDesinscriptionErreur");
+        var zoneDesinscription = document.getElementById("zoneDesinscription");
         var btnOui = document.getElementById("btnOui");
         var btnNon = document.getElementById("btnNon");
         var btnReessayer = document.getElementById("btnReessayer");
+        var btnDesinscrire = document.getElementById("btnDesinscrire");
+        var btnReessayerDesinscription = document.getElementById("btnReessayerDesinscription");
         var texteOk = document.getElementById("texteOk");
+        var texteDesinscrit = document.getElementById("texteDesinscrit");
         var envoiEnCours = false;
+        var envoiDesinscriptionEnCours = false;
 
         function dateHeureQuebec() {
           try {
@@ -513,6 +550,13 @@
           return "mailto:" + COURRIEL_CYNTHIA + "?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(corps);
         }
         document.getElementById("lienCourriel").href = construireLienCourriel();
+
+        function construireLienCourrielDesinscription() {
+          var sujet = "Désinscription — Liste de cancellation";
+          var corps = "Bonjour Cynthia,\n\nJe veux me désinscrire de ta liste de cancellation de dernière minute. Retire-moi de la liste d'attente, je ne veux plus recevoir de demandes en cas d'annulation.\n\nNom : " + (nom || "(lien ouvert sans nom)") + "\nDate : " + dateHeureQuebec();
+          return "mailto:" + COURRIEL_CYNTHIA + "?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(corps);
+        }
+        document.getElementById("lienCourrielDesinscription").href = construireLienCourrielDesinscription();
 
         function lancerConfettis() {
           if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -541,8 +585,10 @@
           panneauOk.classList.toggle("show", lequel === "ok");
           panneauNon.classList.toggle("show", lequel === "non");
           panneauErreur.classList.toggle("show", lequel === "erreur");
+          panneauDesinscrit.classList.toggle("show", lequel === "desinscrit");
+          panneauDesinscriptionErreur.classList.toggle("show", lequel === "desinscription-erreur");
           if (lequel) {
-            var cible = lequel === "ok" ? panneauOk : (lequel === "non" ? panneauNon : panneauErreur);
+            var cible = lequel === "ok" ? panneauOk : (lequel === "non" ? panneauNon : (lequel === "desinscrit" ? panneauDesinscrit : (lequel === "desinscription-erreur" ? panneauDesinscriptionErreur : panneauErreur)));
             cible.scrollIntoView({ behavior: "smooth", block: "center" });
           }
         }
@@ -603,6 +649,59 @@
           afficherPanneau("erreur");
         }
 
+        function envoyerDesinscription() {
+          if (envoiDesinscriptionEnCours) return;
+          envoiDesinscriptionEnCours = true;
+          btnDesinscrire.disabled = true;
+          btnDesinscrire.textContent = "Envoi en cours…";
+          afficherPanneau(null);
+
+          var controller = ("AbortController" in window) ? new AbortController() : null;
+          var timeoutId = controller ? setTimeout(function () { controller.abort(); }, 20000) : null;
+
+          var donnees = {
+            _subject: "Désinscription — Liste de cancellation",
+            _template: "table",
+            _captcha: "false",
+            "Nom Messenger": nom || "(lien ouvert sans nom)",
+            "Liste": "Cancellation de dernière minute — Sokal Tattoo",
+            "Réponse": "Je me désinscris, retire-moi de la liste",
+            "Date de désinscription": dateHeureQuebec()
+          };
+
+          fetch(ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(donnees),
+            signal: controller ? controller.signal : undefined
+          }).then(function (reponse) {
+            if (timeoutId) clearTimeout(timeoutId);
+            return reponse.json().catch(function () { return null; }).then(function (corps) {
+              var succes = reponse.ok && corps && (corps.success === true || corps.success === "true");
+              if (succes) {
+                if (nom) {
+                  texteDesinscrit.textContent = "Merci " + nom + " ! Ta demande de désinscription a été envoyée à Cynthia. Elle va te retirer de la liste d'attente et tu ne recevras plus de demandes en cas d'annulation. Tu peux fermer cette page.";
+                }
+                if (zoneDesinscription) zoneDesinscription.style.display = "none";
+                afficherPanneau("desinscrit");
+              } else {
+                gererEchecDesinscription();
+              }
+            });
+          }, function () {
+            if (timeoutId) clearTimeout(timeoutId);
+            gererEchecDesinscription();
+          });
+        }
+
+        function gererEchecDesinscription() {
+          envoiDesinscriptionEnCours = false;
+          btnDesinscrire.disabled = false;
+          btnDesinscrire.textContent = "Se désinscrire de la liste d'attente";
+          document.getElementById("lienCourrielDesinscription").href = construireLienCourrielDesinscription();
+          afficherPanneau("desinscription-erreur");
+        }
+
         btnOui.addEventListener("click", envoyerInscription);
         btnReessayer.addEventListener("click", function () {
           afficherPanneau(null);
@@ -611,6 +710,11 @@
         btnNon.addEventListener("click", function () {
           blocChoix.style.display = "none";
           afficherPanneau("non");
+        });
+        btnDesinscrire.addEventListener("click", envoyerDesinscription);
+        btnReessayerDesinscription.addEventListener("click", function () {
+          afficherPanneau(null);
+          envoyerDesinscription();
         });
       })();
     </script>
