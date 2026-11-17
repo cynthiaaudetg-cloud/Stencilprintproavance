@@ -515,10 +515,10 @@
     <script>
       (function () {
         var COURRIEL_CYNTHIA = "cynthia.audet.g@gmail.com";
-        // Point de terminaison classique de FormSubmit (formulaire HTML),
-        // qui accepte les envois encodés en formulaire. La variante /ajax/
-        // exige du JSON et sa réponse n'est pas lisible par la page.
-        var ENDPOINT = "https://formsubmit.co/" + COURRIEL_CYNTHIA;
+        // On revient à la variante /ajax/ en JSON : c'est elle qui envoie
+        // le courriel de façon fiable (vérifié par les inscriptions reçues).
+        // L'envoi en formulaire ne s'est pas rendu dans les tests.
+        var ENDPOINT = "https://formsubmit.co/ajax/" + COURRIEL_CYNTHIA;
 
         var params = new URLSearchParams(window.location.search);
         var nom = (params.get("nom") || "").trim();
@@ -644,7 +644,7 @@
           var controller = ("AbortController" in window) ? new AbortController() : null;
           var timeoutId = controller ? setTimeout(function () { controller.abort(); }, 45000) : null;
 
-          var donnees = new URLSearchParams({
+          var donnees = {
             _subject: "Nouvelle inscription — Liste de cancellation de dernière minute",
             _template: "table",
             _captcha: "false",
@@ -652,25 +652,28 @@
             "Liste": "Cancellation de dernière minute — Sokal Tattoo",
             "Réponse": "Oui, je m'inscris",
             "Date d'inscription": dateHeureQuebec()
-          });
+          };
 
-          // Envoi en mode "no-cors" : la réponse de FormSubmit n'est pas lisible
-          // par la page (le courriel arrivait quand même, mais la page affichait
-          // le panneau d'erreur). En no-cors, si la requête aboutit, l'envoi est
-          // parti : on montre la confirmation.
+          // Envoi JSON : le courriel part de façon fiable. On montre la
+          // confirmation dès que le serveur répond 200, sans exiger de
+          // lire son JSON (il n'est pas toujours lisible par la page).
           fetch(ENDPOINT, {
             method: "POST",
-            mode: "no-cors",
-            body: donnees,
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(donnees),
             signal: controller ? controller.signal : undefined
-          }).then(function () {
+          }).then(function (reponse) {
             if (timeoutId) clearTimeout(timeoutId);
-            if (nom) {
-              texteOk.textContent = "Merci " + nom + " ! Ton inscription est envoyée à Cynthia. Si une place se libère, elle va t'écrire sur Messenger pour te proposer d'avancer ta session. Tu peux fermer cette page.";
+            if (reponse.ok) {
+              if (nom) {
+                texteOk.textContent = "Merci " + nom + " ! Ton inscription est envoyée à Cynthia. Si une place se libère, elle va t'écrire sur Messenger pour te proposer d'avancer ta session. Tu peux fermer cette page.";
+              }
+              blocChoix.style.display = "none";
+              afficherPanneau("ok");
+              lancerConfettis();
+            } else {
+              gererEchec();
             }
-            blocChoix.style.display = "none";
-            afficherPanneau("ok");
-            lancerConfettis();
           }, function () {
             if (timeoutId) clearTimeout(timeoutId);
             gererEchec();
@@ -696,7 +699,7 @@
           var controller = ("AbortController" in window) ? new AbortController() : null;
           var timeoutId = controller ? setTimeout(function () { controller.abort(); }, 45000) : null;
 
-          var donnees = new URLSearchParams({
+          var donnees = {
             _subject: "Désinscription — Liste de cancellation",
             _template: "table",
             _captcha: "false",
@@ -704,22 +707,26 @@
             "Liste": "Cancellation de dernière minute — Sokal Tattoo",
             "Réponse": "Je me désinscris, retire-moi de la liste",
             "Date de désinscription": dateHeureQuebec()
-          });
+          };
 
-          // Même raison que l'inscription : la réponse de FormSubmit n'est pas
-          // lisible par la page, alors on confirme dès que la requête aboutit.
+          // Même raison que l'inscription : on confirme dès que le serveur
+          // répond 200, sans exiger de lire son JSON.
           fetch(ENDPOINT, {
             method: "POST",
-            mode: "no-cors",
-            body: donnees,
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(donnees),
             signal: controller ? controller.signal : undefined
-          }).then(function () {
+          }).then(function (reponse) {
             if (timeoutId) clearTimeout(timeoutId);
-            if (nom) {
-              texteDesinscrit.textContent = "Merci " + nom + " ! Ta demande de désinscription a été envoyée à Cynthia. Elle va te retirer de la liste d'attente et tu ne recevras plus de demandes en cas d'annulation. Tu peux fermer cette page.";
+            if (reponse.ok) {
+              if (nom) {
+                texteDesinscrit.textContent = "Merci " + nom + " ! Ta demande de désinscription a été envoyée à Cynthia. Elle va te retirer de la liste d'attente et tu ne recevras plus de demandes en cas d'annulation. Tu peux fermer cette page.";
+              }
+              if (zoneDesinscription) zoneDesinscription.style.display = "none";
+              afficherPanneau("desinscrit");
+            } else {
+              gererEchecDesinscription();
             }
-            if (zoneDesinscription) zoneDesinscription.style.display = "none";
-            afficherPanneau("desinscrit");
           }, function () {
             if (timeoutId) clearTimeout(timeoutId);
             gererEchecDesinscription();
