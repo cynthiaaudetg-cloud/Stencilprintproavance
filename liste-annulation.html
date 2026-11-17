@@ -515,7 +515,10 @@
     <script>
       (function () {
         var COURRIEL_CYNTHIA = "cynthia.audet.g@gmail.com";
-        var ENDPOINT = "https://formsubmit.co/ajax/" + COURRIEL_CYNTHIA;
+        // Point de terminaison classique de FormSubmit (formulaire HTML),
+        // qui accepte les envois encodés en formulaire. La variante /ajax/
+        // exige du JSON et sa réponse n'est pas lisible par la page.
+        var ENDPOINT = "https://formsubmit.co/" + COURRIEL_CYNTHIA;
 
         var params = new URLSearchParams(window.location.search);
         var nom = (params.get("nom") || "").trim();
