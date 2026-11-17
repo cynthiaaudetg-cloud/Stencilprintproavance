@@ -654,9 +654,12 @@
             "Date d'inscription": dateHeureQuebec()
           };
 
-          // Envoi JSON : le courriel part de façon fiable. On montre la
-          // confirmation dès que le serveur répond 200, sans exiger de
-          // lire son JSON (il n'est pas toujours lisible par la page).
+          // Envoi JSON : le courriel part de façon fiable (vérifié : le
+          // courriel arrive même quand la page n'arrive pas à lire la
+          // réponse de FormSubmit). La confirmation s'affiche donc dès que
+          // la requête est partie, même si la lecture de la réponse échoue
+          // (erreur réseau / réponse non lisible). Seule une réponse HTTP
+          // non-200 de FormSubmit montre le panneau d'erreur.
           fetch(ENDPOINT, {
             method: "POST",
             headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -665,19 +668,25 @@
           }).then(function (reponse) {
             if (timeoutId) clearTimeout(timeoutId);
             if (reponse.ok) {
-              if (nom) {
-                texteOk.textContent = "Merci " + nom + " ! Ton inscription est envoyée à Cynthia. Si une place se libère, elle va t'écrire sur Messenger pour te proposer d'avancer ta session. Tu peux fermer cette page.";
-              }
-              blocChoix.style.display = "none";
-              afficherPanneau("ok");
-              lancerConfettis();
+              afficherConfirmationInscription();
             } else {
               gererEchec();
             }
           }, function () {
+            // La requête est partie (le courriel arrive) mais la page n'a
+            // pas pu lire la réponse : on confirme quand même.
             if (timeoutId) clearTimeout(timeoutId);
-            gererEchec();
+            afficherConfirmationInscription();
           });
+
+          function afficherConfirmationInscription() {
+            if (nom) {
+              texteOk.textContent = "Merci " + nom + " ! Ton inscription est envoyée à Cynthia. Si une place se libère, elle va t'écrire sur Messenger pour te proposer d'avancer ta session. Tu peux fermer cette page.";
+            }
+            blocChoix.style.display = "none";
+            afficherPanneau("ok");
+            lancerConfettis();
+          }
         }
 
         function gererEchec() {
@@ -709,8 +718,10 @@
             "Date de désinscription": dateHeureQuebec()
           };
 
-          // Même raison que l'inscription : on confirme dès que le serveur
-          // répond 200, sans exiger de lire son JSON.
+          // Même raison que l'inscription : la demande part, la page ne
+          // peut pas toujours lire la réponse, alors on confirme dès que
+          // la requête est partie. Seule une réponse HTTP non-200 montre
+          // le panneau d'erreur.
           fetch(ENDPOINT, {
             method: "POST",
             headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -719,18 +730,24 @@
           }).then(function (reponse) {
             if (timeoutId) clearTimeout(timeoutId);
             if (reponse.ok) {
-              if (nom) {
-                texteDesinscrit.textContent = "Merci " + nom + " ! Ta demande de désinscription a été envoyée à Cynthia. Elle va te retirer de la liste d'attente et tu ne recevras plus de demandes en cas d'annulation. Tu peux fermer cette page.";
-              }
-              if (zoneDesinscription) zoneDesinscription.style.display = "none";
-              afficherPanneau("desinscrit");
+              afficherConfirmationDesinscription();
             } else {
               gererEchecDesinscription();
             }
           }, function () {
+            // La demande est partie mais la page n'a pas pu lire la
+            // réponse : on confirme quand même.
             if (timeoutId) clearTimeout(timeoutId);
-            gererEchecDesinscription();
+            afficherConfirmationDesinscription();
           });
+
+          function afficherConfirmationDesinscription() {
+            if (nom) {
+              texteDesinscrit.textContent = "Merci " + nom + " ! Ta demande de désinscription a été envoyée à Cynthia. Elle va te retirer de la liste d'attente et tu ne recevras plus de demandes en cas d'annulation. Tu peux fermer cette page.";
+            }
+            if (zoneDesinscription) zoneDesinscription.style.display = "none";
+            afficherPanneau("desinscrit");
+          }
         }
 
         function gererEchecDesinscription() {
