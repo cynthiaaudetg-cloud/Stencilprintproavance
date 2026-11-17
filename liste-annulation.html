@@ -193,6 +193,15 @@
       .hello p { margin: 0; color: var(--ink-soft); line-height: 1.55; font-size: .99rem; position: relative; z-index: 1; }
       .hello .choices { position: relative; z-index: 1; }
 
+      /* ===== NOM MANQUANT : la personne écrit son nom avant de cliquer ===== */
+      .zone-nom { position: relative; z-index: 1; margin-top: 18px; display: none; text-align: left; }
+      .zone-nom.visible { display: block; }
+      .zone-nom label { display: block; font-weight: 800; font-size: .98rem; margin-bottom: 8px; color: var(--ink); }
+      .zone-nom input { width: 100%; box-sizing: border-box; appearance: none; background: #0a0a0c; color: var(--ink); border: 2px solid var(--jaune); border-radius: 6px; font-family: inherit; font-size: 1.05rem; font-weight: 700; padding: 13px 14px; box-shadow: 4px 4px 0 #000, 0 0 18px var(--glow-jaune); }
+      .zone-nom input:focus { outline: 3px solid var(--mauve); outline-offset: 2px; }
+      .zone-nom input::placeholder { color: var(--ink-faint); font-weight: 600; }
+      .zone-nom .indice { margin: 8px 0 0; font-size: .88rem; color: var(--ink-soft); }
+
       /* ===== ÉTAPES ===== */
       .how { margin-top: 22px; display: grid; gap: 10px; }
       .how .step { position: relative; display: flex; gap: 14px; align-items: flex-start; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 6px; padding: 15px 16px; overflow: hidden; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
@@ -435,6 +444,12 @@
         <p class="hi">Bonjour <span class="nom" id="nomAffiche">!</span></p>
         <p id="texteNom">Ton nom est déjà rempli, tu n'as rien à écrire. Un seul clic suffit pour dire si tu veux être sur la liste ou non.</p>
 
+        <div class="zone-nom" id="zoneNom">
+          <label for="champNom">Écris ton nom ici avant de cliquer</label>
+          <input type="text" id="champNom" placeholder="Ton nom (ex. Marie Tremblay)" autocomplete="name" maxlength="80" />
+          <p class="indice">Comme ça, Cynthia sait c'est qui qui s'inscrit. Sans nom, le bouton Oui et la désinscription restent bloqués.</p>
+        </div>
+
         <div class="choices">
           <button type="button" class="btn btn-oui" id="btnOui">
             <span class="stack">Oui, je m'inscris<span class="sub">Contacte-moi si une place se libère</span></span>
@@ -508,11 +523,31 @@
 
         var nomAffiche = document.getElementById("nomAffiche");
         var texteNom = document.getElementById("texteNom");
-        if (nom) {
-          nomAffiche.textContent = nom + " !";
+        var zoneNom = document.getElementById("zoneNom");
+        var champNom = document.getElementById("champNom");
+        var nomPreRempli = !!nom;
+
+        function nettoyerNom(valeur) {
+          return (valeur || "").replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 80);
+        }
+        function rafraichirNom() {
+          nomAffiche.textContent = nom ? nom + " !" : "!";
+          var nomValide = !!nom;
+          btnOui.disabled = !nomValide || envoiEnCours;
+          btnNon.disabled = envoiEnCours;
+          btnDesinscrire.disabled = !nomValide || envoiDesinscriptionEnCours;
+          document.getElementById("lienCourriel").href = construireLienCourriel();
+          document.getElementById("lienCourrielDesinscription").href = construireLienCourrielDesinscription();
+        }
+        if (nomPreRempli) {
+          zoneNom.classList.remove("visible");
         } else {
-          nomAffiche.textContent = "!";
-          texteNom.textContent = "Un seul clic suffit pour dire si tu veux être sur la liste ou non. Ton inscription part directement chez Cynthia.";
+          texteNom.textContent = "Ton nom n'était pas dans le lien, écris-le juste ici avant de cliquer Oui ou Non, comme ça Cynthia sait c'est qui.";
+          zoneNom.classList.add("visible");
+          champNom.addEventListener("input", function () {
+            nom = nettoyerNom(champNom.value);
+            rafraichirNom();
+          });
         }
 
         var blocChoix = document.getElementById("blocChoix");
@@ -531,6 +566,7 @@
         var texteDesinscrit = document.getElementById("texteDesinscrit");
         var envoiEnCours = false;
         var envoiDesinscriptionEnCours = false;
+        rafraichirNom();
 
         function dateHeureQuebec() {
           try {
@@ -546,14 +582,14 @@
 
         function construireLienCourriel() {
           var sujet = "Oui — Liste de cancellation de dernière minute";
-          var corps = "Bonjour Cynthia,\n\nOui, je veux être sur ta liste de cancellation de dernière minute.\n\nNom : " + (nom || "(lien ouvert sans nom)") + "\nDate : " + dateHeureQuebec();
+          var corps = "Bonjour Cynthia,\n\nOui, je veux être sur ta liste de cancellation de dernière minute.\n\nNom : " + nom + "\nDate : " + dateHeureQuebec();
           return "mailto:" + COURRIEL_CYNTHIA + "?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(corps);
         }
         document.getElementById("lienCourriel").href = construireLienCourriel();
 
         function construireLienCourrielDesinscription() {
           var sujet = "Désinscription — Liste de cancellation";
-          var corps = "Bonjour Cynthia,\n\nJe veux me désinscrire de ta liste de cancellation de dernière minute. Retire-moi de la liste d'attente, je ne veux plus recevoir de demandes en cas d'annulation.\n\nNom : " + (nom || "(lien ouvert sans nom)") + "\nDate : " + dateHeureQuebec();
+          var corps = "Bonjour Cynthia,\n\nJe veux me désinscrire de ta liste de cancellation de dernière minute. Retire-moi de la liste d'attente, je ne veux plus recevoir de demandes en cas d'annulation.\n\nNom : " + nom + "\nDate : " + dateHeureQuebec();
           return "mailto:" + COURRIEL_CYNTHIA + "?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(corps);
         }
         document.getElementById("lienCourrielDesinscription").href = construireLienCourrielDesinscription();
@@ -594,6 +630,7 @@
         }
 
         function envoyerInscription() {
+          if (!nom) { if (champNom) champNom.focus(); return; }
           if (envoiEnCours) return;
           envoiEnCours = true;
           btnOui.disabled = true;
@@ -608,7 +645,7 @@
             _subject: "Nouvelle inscription — Liste de cancellation de dernière minute",
             _template: "table",
             _captcha: "false",
-            "Nom Messenger": nom || "(lien ouvert sans nom)",
+            "Nom Messenger": nom,
             "Liste": "Cancellation de dernière minute — Sokal Tattoo",
             "Réponse": "Oui, je m'inscris",
             "Date d'inscription": dateHeureQuebec()
@@ -642,14 +679,14 @@
 
         function gererEchec() {
           envoiEnCours = false;
-          btnOui.disabled = false;
-          btnNon.disabled = false;
+          rafraichirNom();
           btnOui.querySelector(".stack").firstChild.textContent = "Oui, je m'inscris";
           document.getElementById("lienCourriel").href = construireLienCourriel();
           afficherPanneau("erreur");
         }
 
         function envoyerDesinscription() {
+          if (!nom) { if (champNom) champNom.focus(); return; }
           if (envoiDesinscriptionEnCours) return;
           envoiDesinscriptionEnCours = true;
           btnDesinscrire.disabled = true;
@@ -663,7 +700,7 @@
             _subject: "Désinscription — Liste de cancellation",
             _template: "table",
             _captcha: "false",
-            "Nom Messenger": nom || "(lien ouvert sans nom)",
+            "Nom Messenger": nom,
             "Liste": "Cancellation de dernière minute — Sokal Tattoo",
             "Réponse": "Je me désinscris, retire-moi de la liste",
             "Date de désinscription": dateHeureQuebec()
@@ -696,7 +733,7 @@
 
         function gererEchecDesinscription() {
           envoiDesinscriptionEnCours = false;
-          btnDesinscrire.disabled = false;
+          rafraichirNom();
           btnDesinscrire.textContent = "Se désinscrire de la liste d'attente";
           document.getElementById("lienCourrielDesinscription").href = construireLienCourrielDesinscription();
           afficherPanneau("desinscription-erreur");
