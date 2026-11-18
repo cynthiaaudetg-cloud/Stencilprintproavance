@@ -42,10 +42,10 @@ main{padding:4px 12px 0}
 .btn-peau.actif{background:linear-gradient(135deg,var(--rouge),#d3112a);border-color:var(--rouge);color:#fff}
 .peau-resultat{margin:0 2px 12px}
 .peau-resultat p{font-size:12.5px;color:var(--muted);margin-bottom:8px}
-.chips{display:flex;gap:7px;flex-wrap:wrap}
-.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bord);background:var(--carte);color:var(--texte);font-size:12.5px;font-weight:700;padding:7px 11px;border-radius:999px;cursor:pointer}
+.chips{display:flex;gap:10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--bord);background:var(--carte);color:var(--texte);font-size:13.5px;font-weight:700;padding:10px 14px;border-radius:999px;cursor:pointer;min-height:44px}
 .chip:active{background:var(--carte2)}
-.chip .dot{width:14px;height:14px;border-radius:50%;background:var(--chip);border:1px solid rgba(255,255,255,.45);flex:0 0 auto}
+.chip .dot{width:18px;height:18px;border-radius:50%;background:var(--chip);border:1px solid rgba(255,255,255,.45);flex:0 0 auto}
 .card{display:flex;gap:11px;background:var(--carte);border:1px solid var(--bord);border-radius:14px;padding:11px;margin-bottom:9px;cursor:pointer}
 .card:active{background:var(--carte2)}
 .pastille{flex:0 0 52px;height:52px;border-radius:12px;border:2px solid rgba(255,255,255,.25)}
@@ -80,15 +80,17 @@ footer{margin:22px 14px 0;border-top:1px solid var(--bord);padding-top:12px;font
 footer b{color:var(--texte)}
 footer p{margin-bottom:8px}
 /* Modale recette en gros */
-#modale{position:fixed;inset:0;z-index:50;display:none;background:rgba(0,0,0,.82);align-items:flex-end;justify-content:center}
+#modale{position:fixed;inset:0;z-index:50;display:none;background:rgba(0,0,0,.82);align-items:center;justify-content:center}
 #modale.ouverte{display:flex}
-.boite{background:#17171b;border:1px solid var(--bord);border-radius:20px 20px 0 0;width:100%;max-width:560px;padding:0 0 26px;max-height:88vh;overflow:auto}
+.boite{position:relative;background:#17171b;border:1px solid var(--bord);border-radius:20px;width:calc(100% - 32px);max-width:560px;padding:0 0 26px;max-height:86vh;overflow:auto}
 .barre-couleur{height:110px;border-radius:20px 20px 0 0}
 .boite h2{font-size:24px;padding:16px 20px 4px}
 .boite .gouttes{font-size:17px;line-height:1.5;padding:8px 20px}
 .boite .astuce{font-size:14px;color:var(--muted);padding:6px 20px 0}
 .boite .vu-gros{font-size:13px;color:var(--bleu);font-weight:700;padding:8px 20px 0}
 .fermer{display:block;width:calc(100% - 40px);margin:18px auto 0;padding:13px;border:none;border-radius:999px;background:linear-gradient(135deg,var(--rouge),#d3112a);color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+.btn-retour{display:block;width:calc(100% - 40px);margin:14px auto 0;padding:13px;border:2px solid var(--bleu);border-radius:999px;background:linear-gradient(135deg,var(--rouge),#d3112a);color:#fff;font-size:17px;font-weight:800;cursor:pointer}
+.btn-x{position:absolute;top:10px;right:10px;width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.6);font-size:19px;font-weight:800;cursor:pointer;z-index:2}
 </style>
 </head>
 <body>
@@ -241,11 +243,13 @@ footer p{margin-bottom:8px}
 <p><b>Dynamic Color Co :</b> Blanc à mélanger = WD1. Heavy White (HWD1) = blanc franc seulement, ne se mélange pas. Triple White (TWD) = blanc opaque.</p>
 <p>Flash : couleurs échantillonnées sur les images de tes flashs (citron, chien ballon, cardinal, coccinelle, bougie, crâne et lys, oiseau de paradis, geai bleu, félin turquoise, félin, lynx, lynx magenta et teal, petit ourson, oiseau, pirate, fleur mauve, fleur jaune, colibri, santa muerte).</p>
 <p><b>Mes flashs :</b> seulement les flashs réservés avec dépôt reçu, couleurs saturées prêtes pour la peau, touche une couleur pour voir sa recette en gouttes.</p>
-<p>Sokal Tattoo — v2.11, 18 novembre 2026</p>
+<p>Sokal Tattoo — v2.12, 18 novembre 2026</p>
 </footer>
 <div id="modale" role="dialog" aria-modal="true">
 <div class="boite">
 <div class="barre-couleur" id="m-couleur"></div>
+<button class="btn-x" id="m-x" aria-label="Fermer">✕</button>
+<button class="btn-retour" id="m-retour">← Retour</button>
 <h2 id="m-nom"></h2>
 <p class="gouttes" id="m-recette"></p>
 <p class="astuce" id="m-conseil"></p>
@@ -278,12 +282,18 @@ document.querySelectorAll(".card").forEach(function(c){
     ouvrirRecette(c);
   });
 });
-function fermer(){modale.classList.remove("ouverte");}
+var posDefilement=0;
+function fermer(){modale.classList.remove("ouverte");document.body.style.overflow="";document.documentElement.style.overflow="";window.scrollTo(0,posDefilement);}
 document.getElementById("m-fermer").addEventListener("click",fermer);
+document.getElementById("m-retour").addEventListener("click",fermer);
+document.getElementById("m-x").addEventListener("click",fermer);
 modale.addEventListener("click",function(e){if(e.target===modale)fermer();});
 /* Dégradés cliquables : chaque pastille ouvre la recette en gros, comme la carte */
 function ouvrirRecette(c){
   if(!c)return;
+  posDefilement=window.scrollY;
+  document.body.style.overflow="hidden";
+  document.documentElement.style.overflow="hidden";
   document.getElementById("m-couleur").style.background=c.dataset.hex;
   document.getElementById("m-nom").textContent=c.dataset.nom;
   document.getElementById("m-recette").textContent=c.dataset.recette;
@@ -295,8 +305,8 @@ function ouvrirRecette(c){
 document.querySelectorAll(".deg-sw").forEach(function(s){
   s.addEventListener("click",function(){
     var carte=document.getElementById(s.dataset.cible);
-    ouvrirRecette(carte);
     mettreEnEvidence(carte);
+    setTimeout(function(){ouvrirRecette(carte);},350);
   });
 });
 /* Boutons type de peau : montrent les couleurs qui fitent */
@@ -323,15 +333,12 @@ document.querySelectorAll(".chip:not(.chip-flash)").forEach(function(ch){
     setTimeout(function(){mettreEnEvidence(document.getElementById(ch.dataset.carte));},90);
   });
 });
-/* Pastilles des flashs : sautent au bon onglet et ouvrent la recette en gros */
+/* Pastilles des flashs : ouvrent la recette en gros SANS changer l'onglet
+   et SANS faire défiler la page ; fermer ramène à Mes flashs, même endroit. */
 document.querySelectorAll(".chip-flash").forEach(function(ch){
   ch.addEventListener("click",function(){
-    montrer(ch.dataset.page,true);
-    setTimeout(function(){
-      var carte=document.getElementById(ch.dataset.carte);
-      ouvrirRecette(carte);
-      mettreEnEvidence(carte);
-    },90);
+    var carte=document.getElementById(ch.dataset.carte);
+    ouvrirRecette(carte);
   });
 });
 })();
