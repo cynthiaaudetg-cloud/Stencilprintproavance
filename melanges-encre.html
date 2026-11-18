@@ -218,7 +218,7 @@ footer p{margin-bottom:8px}
 <p>Les teintes montrées sont approximatives : la vraie couleur dépend de la peau et de la guérison (20 à 30 % plus pâle une fois guéri). Mélange un peu plus saturé que la cible.</p>
 <p><b>Dynamic Color Co :</b> Blanc à mélanger = WD1. Heavy White (HWD1) = blanc franc seulement, ne se mélange pas. Triple White (TWD) = blanc opaque.</p>
 <p>Flash : couleurs échantillonnées sur les images de tes flashs (citron, chien ballon, cardinal, coccinelle, bougie, crâne et lys, oiseau de paradis, geai bleu, félin turquoise, félin, lynx).</p>
-<p>Sokal Tattoo — v2.6, 18 novembre 2026</p>
+<p>Sokal Tattoo — v2.7, 18 novembre 2026</p>
 </footer>
 <div id="modale" role="dialog" aria-modal="true">
 <div class="boite">
@@ -241,33 +241,39 @@ function montrer(id,garder){
 }
 function mettreEnEvidence(el){
   if(!el)return;
-  el.scrollIntoView({behavior:"smooth",block:"center"});
   el.classList.remove("cible");
   void el.offsetWidth;
   el.classList.add("cible");
   setTimeout(function(){el.classList.remove("cible");},2600);
+  try{el.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}
 }
 tabs.forEach(function(t){t.addEventListener("click",function(){montrer(t.dataset.page);});});
 montrer("page-pastels");
 var modale=document.getElementById("modale");
 document.querySelectorAll(".card").forEach(function(c){
   c.addEventListener("click",function(){
-    document.getElementById("m-couleur").style.background=c.dataset.hex;
-    document.getElementById("m-nom").textContent=c.dataset.nom;
-    document.getElementById("m-recette").textContent=c.dataset.recette;
-    document.getElementById("m-conseil").textContent=c.dataset.conseil;
-    var vu=c.querySelector(".vu");
-    document.getElementById("m-vu").textContent=vu?vu.textContent:"";
-    modale.classList.add("ouverte");
+    ouvrirRecette(c);
   });
 });
 function fermer(){modale.classList.remove("ouverte");}
 document.getElementById("m-fermer").addEventListener("click",fermer);
 modale.addEventListener("click",function(e){if(e.target===modale)fermer();});
-/* Dégradés cliquables : chaque pastille amène à sa recette */
+/* Dégradés cliquables : chaque pastille ouvre la recette en gros, comme la carte */
+function ouvrirRecette(c){
+  if(!c)return;
+  document.getElementById("m-couleur").style.background=c.dataset.hex;
+  document.getElementById("m-nom").textContent=c.dataset.nom;
+  document.getElementById("m-recette").textContent=c.dataset.recette;
+  document.getElementById("m-conseil").textContent=c.dataset.conseil;
+  var vu=c.querySelector(".vu");
+  document.getElementById("m-vu").textContent=vu?vu.textContent:"";
+  modale.classList.add("ouverte");
+}
 document.querySelectorAll(".deg-sw").forEach(function(s){
   s.addEventListener("click",function(){
-    mettreEnEvidence(document.getElementById(s.dataset.cible));
+    var carte=document.getElementById(s.dataset.cible);
+    ouvrirRecette(carte);
+    mettreEnEvidence(carte);
   });
 });
 /* Boutons type de peau : montrent les couleurs qui fitent */
