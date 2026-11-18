@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Timelapse Sokal</title>
+<style>
+  :root{
+    --rouge:#ff0a16; --bleu:#00b4ff; --fond:#0d0d0f; --carte:#1b1b20;
+    --texte:#f5f5f5; --texte-doux:#b8b8c0; --bord:#2e2e36;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; background:var(--fond); color:var(--texte);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:18px; line-height:1.45; padding-bottom:60px;
+  }
+  header{
+    padding:26px 20px 10px; text-align:center;
+    background:radial-gradient(120% 100% at 50% 0%, #2a0a12 0%, var(--fond) 65%);
+  }
+  h1{
+    margin:0; font-size:38px; font-weight:900; letter-spacing:.5px;
+    background:linear-gradient(90deg,var(--rouge),#ff5c7a 35%,var(--bleu));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sous-titre{color:var(--texte-doux); max-width:560px; margin:10px auto 0; font-size:17px;}
+  main{max-width:720px; margin:0 auto; padding:0 16px;}
+  .carte{
+    background:var(--carte); border:1px solid var(--bord); border-radius:18px;
+    padding:20px; margin-top:18px;
+  }
+  h2{margin:0 0 8px; font-size:22px;}
+  h2 .num{
+    display:inline-block; width:32px; height:32px; line-height:32px; text-align:center;
+    border-radius:50%; background:var(--rouge); color:#fff; font-size:18px; margin-right:8px;
+  }
+  p{margin:6px 0;}
+  .doux{color:var(--texte-doux); font-size:16px;}
+  .gros-bouton{
+    display:block; width:100%; min-height:64px; margin-top:14px;
+    border:0; border-radius:16px; cursor:pointer;
+    font-size:21px; font-weight:800; color:#fff;
+    background:linear-gradient(90deg,var(--rouge),#ff2e4d);
+    box-shadow:0 6px 24px rgba(255,10,22,.35);
+  }
+  .gros-bouton:active{transform:scale(.98);}
+  .gros-bouton:disabled{opacity:.45; box-shadow:none; cursor:default;}
+  .gros-bouton.bleu{
+    background:linear-gradient(90deg,#0090d6,var(--bleu));
+    box-shadow:0 6px 24px rgba(0,180,255,.3);
+  }
+  .gros-bouton.secondaire{
+    background:#2a2a31; color:var(--texte); box-shadow:none; border:1px solid var(--bord);
+  }
+  #zone-depot{
+    border:2px dashed #55555f; border-radius:16px; padding:26px 14px; text-align:center;
+    color:var(--texte-doux); margin-top:12px;
+  }
+  #zone-depot.survol{border-color:var(--bleu); background:rgba(0,180,255,.08);}
+  #apercu{max-width:100%; max-height:320px; border-radius:12px; margin-top:12px; display:none;}
+  #grille-etapes{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px;
+  }
+  .etape{ text-align:center; }
+  .etape canvas{
+    width:100%; aspect-ratio:1080/1350; border-radius:8px; background:#fff;
+    display:block; border:1px solid var(--bord);
+  }
+  .etape .nom{font-size:12px; color:var(--texte-doux); margin-top:4px; line-height:1.25;}
+  .etape .numero{
+    display:inline-block; background:var(--rouge); color:#fff; border-radius:50%;
+    width:20px; height:20px; line-height:20px; font-size:12px; font-weight:700;
+  }
+  #barre-fond{
+    height:16px; background:#2a2a31; border-radius:99px; overflow:hidden; margin-top:12px;
+  }
+  #barre{height:100%; width:0%; border-radius:99px;
+    background:linear-gradient(90deg,var(--rouge),var(--bleu)); transition:width .3s;}
+  #statut{font-size:19px; font-weight:700; margin-top:10px;}
+  #video{width:100%; border-radius:14px; background:#000; margin-top:12px; display:block;}
+  #erreur{
+    display:none; background:#3a0d12; border:1px solid var(--rouge); color:#ffd7da;
+    border-radius:14px; padding:14px; margin-top:16px; font-size:17px;
+  }
+  footer{max-width:720px; margin:26px auto 0; padding:0 20px; text-align:center; color:var(--texte-doux); font-size:15px;}
+  .pastille{
+    display:inline-block; padding:2px 10px; border-radius:99px; font-size:13px; font-weight:700;
+    background:rgba(0,180,255,.15); color:var(--bleu); border:1px solid rgba(0,180,255,.4);
+  }
+  .cache{display:none !important;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Timelapse Sokal</h1>
+  <p class="sous-titre">Transforme ton flash en timelapse, comme si tu le dessinais au crayon, étape par étape. <span class="pastille">100&nbsp;% sur ton téléphone</span></p>
+</header>
+
+<main>
+  <section class="carte" id="sec-choix">
+    <h2><span class="num">1</span>Choisis ton image finale</h2>
+    <p>Prends juste ton flash fini, celui que tu veux montrer. C'est l'appli qui dessine les 16 étapes toute seule : croquis, contour, points, ombrage, noir plein, puis les couleurs une à la fois.</p>
+    <div id="zone-depot">Touche ici pour choisir ton image<br><span style="font-size:15px">ou glisse ton image dans ce cadre</span></div>
+    <input type="file" id="fichier" accept="image/*" class="cache">
+    <img id="apercu" alt="Ton flash">
+    <button class="gros-bouton" id="btn-etapes" disabled>Voir mes 16 étapes</button>
+  </section>
+
+  <section class="carte cache" id="sec-etapes">
+    <h2><span class="num">2</span>Vérifie tes 16 étapes</h2>
+    <p class="doux">C'est comme ça que ton dessin va se faire, dans ton ordre : contour bien fait, points, noir très noir, puis les couleurs une à la fois. Si ça te ressemble, génère ta vidéo.</p>
+    <div id="grille-etapes"></div>
+    <button class="gros-bouton bleu" id="btn-video">Générer ma vidéo</button>
+  </section>
+
+  <section class="carte cache" id="sec-progres">
+    <h2><span class="num">3</span>Je fais ta vidéo…</h2>
+    <div id="statut">Je prépare ton image…</div>
+    <div id="barre-fond"><div id="barre"></div></div>
+    <p class="doux" id="detail-progres"></p>
+  </section>
+
+  <section class="carte cache" id="sec-video">
+    <h2><span class="num">4</span>Ta vidéo est prête !</h2>
+    <video id="video" controls playsinline preload="metadata"></video>
+    <a id="btn-telecharger" class="gros-bouton" style="text-align:center; line-height:64px; text-decoration:none;" download="timelapse-sokal.mp4">Télécharger ma vidéo</a>
+    <button class="gros-bouton secondaire" id="btn-refaire">Refaire une autre vidéo</button>
+    <p class="doux" style="margin-top:12px">Astuce : sur iPhone, touche la vidéo puis « Partager » pour l'envoyer sur TikTok ou Facebook.</p>
+  </section>
+
+  <div id="erreur" role="alert"></div>
+</main>
+
+<footer>
+  Tout se fait sur ton téléphone, aucune image n'est envoyée nulle part.<br>
+  Ton dessin reste appliqué du début à la fin : une fois tracé, il ne bouge plus.
+</footer>
+
+<script>
+'use strict';
+/* =====================================================================
+   TIMELAPSE SOKAL — tout local, aucune image n'est envoyée nulle part.
+   Méthode (d'après la grille 16 étapes du citron et la vidéo de
+   référence « lignée ») : une seule image fixe (le final) et on ajoute
+   tout au long, en continu, sans fondu.
+   Ordre : croquis pâle → croquis net → contour noir fin → éclaboussures
+   → noir plein (qui se répand du haut vers le bas) → points (Bayer)
+   → ombrage gris → vert → jaune → orange → final.
+   ===================================================================== */
+const W = 1080, H = 1350, N = W * H;
+const INTRO_IMAGES = 15;      // le croquis se dessine de haut en bas
+const IMAGES_PAR_ETAPE = 15;  // chaque étape prend le même temps (les couleurs vont vite, à la fin)
+const IMAGES_FINAL = 45;      // maintien du final : 1,5 s
+const FPS = 30;
+
+const $ = id => document.getElementById(id);
+const NOMS_ETAPES = [
+  'Croquis pâle','Croquis net','Contour noir','Éclaboussures',
+  'Noir plein','Points légers','Points denses','Pepper shading',
+  'Ombrage gris','Ombrage étendu','Ombrage foncé','Vert',
+  'Jaune (1re passe)','Jaune étendu','Orange + couleur','Final'
+];
+// couleur prioritaire par étape (familles : 0 jaune, 1 vert, 2 orange)
+const PRIORITE = {12:1, 13:0, 14:0, 15:2};
+
+let finalData = null;   // Uint8ClampedArray RGBA de l'image finale (1080x1350)
+let sketchData = null;  // Uint8ClampedArray RGBA du croquis (étape 1)
+let plan = null;        // {croquisIdx, etapes:[{idx, nb}] } ordre de révélation
+let videoURL = null;
+
+const BAYER = [
+  [0,32,8,40,2,34,10,42],[48,16,56,24,50,18,58,26],
+  [12,44,4,36,14,46,6,38],[60,28,52,20,62,30,54,22],
+  [3,35,11,43,1,33,9,41],[51,19,59,27,49,17,57,25],
+  [15,47,7,39,13,45,5,37],[63,31,55,23,61,29,53,21]
+];
+
+function erreur(msg){
+  const e = $('erreur');
+  e.textContent = msg;
+  e.style.display = 'block';
+  e.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function effacerErreur(){ $('erreur').style.display = 'none'; }
+function tick(){ return new Promise(r => setTimeout(r, 0)); }
+function attendre(ms){ return new Promise(r => setTimeout(r, ms)); }
+function progres(pct, texte, detail){
+  $('barre').style.width = Math.round(pct) + '%';
+  if (texte) $('statut').textContent = texte;
+  if (detail !== undefined) $('detail-progres').textContent = detail;
+}
+
+/* ---------------- utilitaires image ---------------- */
+function creerCanvas(w, h){
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return c;
+}
+// luminance, saturation (0-255), teinte HSV (degrés), valeur
+function analyserPixels(rgba){
+  const L = new Float32Array(N), S255 = new Float32Array(N),
+        hue = new Float32Array(N), V = new Float32Array(N);
+  for (let i = 0, p = 0; i < N; i++, p += 4){
+    const r = rgba[p], g = rgba[p+1], b = rgba[p+2];
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    L[i] = 0.299*r + 0.587*g + 0.114*b;
+    S255[i] = d;
+    V[i] = mx / 255;
+    let h = 0;
+    if (d > 0){
+      if (mx === r) h = (60 * ((g - b) / d) + 360) % 360;
+      else if (mx === g) h = 60 * ((b - r) / d) + 120;
+      else h = 60 * ((r - g) / d) + 240;
+    }
+    hue[i] = h;
+  }
+  return {L, S255, hue, V};
+}
+// familles : 0 jaune, 1 vert, 2 orange, 3 noir, 4 gris, 5 autre
+function familleDe(r, g, b){
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  const sat = mx > 0 ? d / mx : 0, val = mx / 255;
+  const lum = 0.299*r + 0.587*g + 0.114*b;
+  if (val < 0.32) return 3;
+  if (sat < 0.25 && lum < 215) return 4;
+  if (sat >= 0.25 && val >= 0.32){
+    let h = 0;
+    if (d > 0){
+      if (mx === r) h = (60 * ((g - b) / d) + 360) % 360;
+      else if (mx === g) h = 60 * ((b - r) / d) + 120;
+      else h = 60 * ((r - g) / d) + 240;
+    }
+    if (h >= 18 && h < 38) return 2;
+    if (h >= 38 && h < 68) return 0;
+    if (h >= 68 && h < 165) return 1;
+  }
+  return 5;
+}
+function familleGrossiere(f){ // jaune+orange fusionnés en « chaud » (0)
+  if (f === 2) return 0;
+  if (f === 3) return 2;
+  if (f === 4) return 3;
+  if (f === 5) return 4;
+  return f; // 0 chaud, 1 vert
+}
+function famillesImage(rgba){
+  const fam = new Uint8Array(N);
+  for (let i = 0, p = 0; i < N; i++, p += 4){
+    fam[i] = familleDe(rgba[p], rgba[p+1], rgba[p+2]);
+  }
+  return fam;
+}
+// Sobel sur L et sur S*255, on garde le max ; seuil 300
+function contoursSobel(L, S255){
+  const mag = new Float32Array(N);
+  const gx = [-1,0,1,-2,0,2,-1,0,1], gy = [-1,-2,-1,0,0,0,1,2,1];
+  const srcs = [L, S255];
+  for (const src of srcs){
+    for (let y = 1; y < H-1; y++){
+      let idx = y*W + 1;
+      for (let x = 1; x < W-1; x++, idx++){
+        let sx = 0, sy = 0, k = 0;
+        for (let dy = -1; dy <= 1; dy++){
+          const row = (y+dy)*W;
+          for (let dx = -1; dx <= 1; dx++, k++){
+            const v = src[row + x + dx];
+            sx += v * gx[k]; sy += v * gy[k];
+          }
+        }
+        const m = Math.abs(sx) + Math.abs(sy);
+        if (m > mag[idx]) mag[idx] = m;
+      }
+    }
+  }
+  const edge = new Uint8Array(N);
+  for (let i = 0; i < N; i++) if (mag[i] > 300) edge[i] = 1;
+  return edge;
+}
+function dilater(mask){
+  const out = new Uint8Array(N);
+  for (let y = 0; y < H; y++){
+    for (let x = 0; x < W; x++){
+      let v = 0;
+      for (let dy = -1; dy <= 1 && !v; dy++){
+        const yy = y + dy;
+        if (yy < 0 || yy >= H) continue;
+        for (let dx = -1; dx <= 1; dx++){
+          const xx = x + dx;
+          if (xx < 0 || xx >= W) continue;
+          if (mask[yy*W + xx]){ v = 1; break; }
+        }
+      }
+      out[y*W + x] = v;
+    }
+  }
+  return out;
+}
+// étiquetage des composantes connexes (8 voisins), deux passes + union-find
+function etiqueter(mask){
+  const labels = new Int32Array(N);
+  const parent = [0];
+  function trouver(a){
+    while (parent[a] !== a){ parent[a] = parent[parent[a]]; a = parent[a]; }
+    return a;
+  }
+  function unir(a, b){
+    a = trouver(a); b = trouver(b);
+    if (a !== b) parent[Math.max(a,b)] = Math.min(a,b);
+  }
+  let prochain = 1;
+  const voisins = [[-1,-1],[-1,0],[-1,1],[0,-1]];
+  for (let y = 0; y < H; y++){
+    for (let x = 0; x < W; x++){
+      const i = y*W + x;
+      if (!mask[i]) continue;
+      let best = 0;
+      for (const [dy,dx] of voisins){
+        const yy = y+dy, xx = x+dx;
+        if (yy < 0 || xx < 0 || xx >= W) continue;
+        const l = labels[yy*W + xx];
+        if (l){ if (!best || l < best) best = l; }
+      }
+      if (!best){ parent.push(prochain); labels[i] = prochain; prochain++; }
+      else {
+        labels[i] = best;
+        for (const [dy,dx] of voisins){
+          const yy = y+dy, xx = x+dx;
+          if (yy < 0 || xx < 0 || xx >= W) continue;
+          const l = labels[yy*W + xx];
+          if (l && l !== best) unir(best, l);
+        }
+      }
+    }
+  }
+  const tailles = new Int32Array(prochain);
+  for (let i = 0; i < N; i++){
+    if (labels[i]){
+      const r = trouver(labels[i]);
+      labels[i] = r;
+      tailles[r]++;
+    }
+  }
+  return {labels, tailles};
+}
+// distance de chanfrein (3-4) en demi-résolution, pour l'ordre de révélation
+function distanceChanfrein(masqueEncre){
+  const w2 = W >> 1, h2 = H >> 1;
+  const INF = 1e9;
+  const d = new Float32Array(w2 * h2);
+  for (let y = 0; y < h2; y++){
+    for (let x = 0; x < w2; x++){
+      let v = 0;
+      for (let dy = 0; dy < 2 && !v; dy++)
+        for (let dx = 0; dx < 2 && !v; dx++)
+          if (masqueEncre[(2*y+dy)*W + 2*x+dx]) v = 1;
+      d[y*w2 + x] = v ? 0 : INF;
+    }
+  }
+  for (let y = 0; y < h2; y++){
+    for (let x = 0; x < w2; x++){
+      const i = y*w2 + x;
+      let m = d[i];
+      if (x > 0) m = Math.min(m, d[i-1] + 3);
+      if (y > 0) m = Math.min(m, d[i-w2] + 3);
+      if (x > 0 && y > 0) m = Math.min(m, d[i-w2-1] + 4);
+      if (x < w2-1 && y > 0) m = Math.min(m, d[i-w2+1] + 4);
+      d[i] = m;
+    }
+  }
+  for (let y = h2-1; y >= 0; y--){
+    for (let x = w2-1; x >= 0; x--){
+      const i = y*w2 + x;
+      let m = d[i];
+      if (x < w2-1) m = Math.min(m, d[i+1] + 3);
+      if (y < h2-1) m = Math.min(m, d[i+w2] + 3);
+      if (x < w2-1 && y < h2-1) m = Math.min(m, d[i+w2+1] + 4);
+      if (x > 0 && y < h2-1) m = Math.min(m, d[i+w2-1] + 4);
+      d[i] = m;
+    }
+  }
+  return {d, w2};
+}
+
+/* ---------------- construction des 16 étapes ---------------- */
+let analyse = null; // {L, S255, sat01, hue, V, sombre, bord, eclab, coulPrinc, jaune, vert, orange, jaunePrinc, medSat, famFinal, grossFinal}
+let croquisIdx = null;
+
+function medianeValeurs(vals){
+  const a = Array.from(vals).sort((x,y)=>x-y);
+  return a.length ? a[Math.floor(a.length/2)] : 0.5;
+}
+
+async function analyserImage(){
+  const {L, S255, hue, V} = analyserPixels(finalData);
+  const sat01 = new Float32Array(N);
+  for (let i = 0; i < N; i++) sat01[i] = S255[i] / 255;
+  const sombre = new Uint8Array(N);
+  for (let i = 0; i < N; i++) if (L[i] < 90) sombre[i] = 1;
+
+  progres(8, 'Je trace ton croquis…');
+  await tick();
+  // contours Sobel (traits fins, aucune dilatation)
+  let bord = contoursSobel(L, S255);
+  // retirer les contours des petits points (composantes sombres < 25 px)
+  const labS = etiqueter(sombre);
+  const petit = new Uint8Array(N);
+  for (let i = 0; i < N; i++){
+    const l = labS.labels[i];
+    if (l && labS.tailles[l] > 0 && labS.tailles[l] < 25) petit[i] = 1;
+  }
+  const petitD = dilater(petit);
+  for (let i = 0; i < N; i++) if (petitD[i]) bord[i] = 0;
+
+  let idMaxSombre = 0, maxSombre = 0;
+  for (let l = 1; l < labS.tailles.length; l++)
+    if (labS.tailles[l] > maxSombre){ maxSombre = labS.tailles[l]; idMaxSombre = l; }
+  const eclab = new Uint8Array(N);
+  for (let i = 0; i < N; i++){
+    const l = labS.labels[i];
+    if (l && l !== idMaxSombre && labS.tailles[l] >= 25) eclab[i] = 1;
+  }
+  const nbBords = bord.reduce((a,b)=>a+b, 0);
+  if (nbBords < 2000) throw new Error('Je ne vois pas de dessin sur ton image. Essaie une autre photo, avec un fond clair et un contour net.');
+
+  // composante colorée principale
+  const colore = new Uint8Array(N);
+  for (let i = 0; i < N; i++) if (sat01[i] > 0.25) colore[i] = 1;
+  const labC = etiqueter(colore);
+  let idMaxCol = 0, maxCol = 0;
+  for (let l = 1; l < labC.tailles.length; l++)
+    if (labC.tailles[l] > maxCol){ maxCol = labC.tailles[l]; idMaxCol = l; }
+  const coulPrinc = new Uint8Array(N);
+  for (let i = 0; i < N; i++) if (labC.labels[i] === idMaxCol) coulPrinc[i] = 1;
+
+  const famFinal = famillesImage(finalData);
+  const grossFinal = new Uint8Array(N);
+  for (let i = 0; i < N; i++) grossFinal[i] = familleGrossiere(famFinal[i]);
+
+  const jaune = new Uint8Array(N), vert = new Uint8Array(N), orange = new Uint8Array(N);
+  for (let i = 0; i < N; i++){
+    if (sat01[i] >= 0.25 && V[i] >= 0.32){
+      if (hue[i] >= 38 && hue[i] < 68) jaune[i] = 1;
+      else if (hue[i] >= 68 && hue[i] < 165) vert[i] = 1;
+      else if (hue[i] >= 18 && hue[i] < 38) orange[i] = 1;
+    }
+  }
+  const jaunePrinc = new Uint8Array(N);
+  const satsJaune = [];
+  for (let i = 0; i < N; i++){
+    if (jaune[i] && coulPrinc[i]){ jaunePrinc[i] = 1; satsJaune.push(sat01[i]); }
+  }
+  const medSat = medianeValeurs(satsJaune);
+
+  analyse = {L, S255, sat01, hue, V, sombre, bord, eclab, coulPrinc,
+             jaune, vert, orange, jaunePrinc, medSat, famFinal, grossFinal};
+  return nbBords;
+}
+
+// points Bayer 8x8 en blocs 2x2 px ; seuil de noirceur
+function masquePoints(shade, seuil){
+  const out = new Uint8Array(N);
+  const w2 = W >> 1, h2 = H >> 1;
+  for (let by = 0; by < h2; by++){
+    for (let bx = 0; bx < w2; bx++){
+      let s = 0;
+      for (let dy = 0; dy < 2; dy++)
+        for (let dx = 0; dx < 2; dx++)
+          s += shade[(2*by+dy)*W + 2*bx+dx];
+      s /= 4;
+      if (s <= seuil) continue;
+      const prob = ((s - seuil) / (1 - seuil)) * 0.6;
+      if (prob > BAYER[by % 8][bx % 8] / 64){
+        for (let dy = 0; dy < 2; dy++)
+          for (let dx = 0; dx < 2; dx++)
+            out[(2*by+dy)*W + 2*bx+dx] = 1;
+      }
+    }
+  }
+  return out;
+}
+
+async function construireEtapes(){
+  const A = analyse;
+  const shade = new Float32Array(N);
+  for (let i = 0; i < N; i++) shade[i] = (255 - A.L[i]) / 255;
+
+  const revel = new Int16Array(N).fill(16);
+  const assigne = new Uint8Array(N);
+  const ordreCle = new Float32Array(N); // distance (ou y pour l'étape 5)
+  const rangGroupe = new Int8Array(N);
+  const encre = new Uint8Array(N); // encre cumulée des étapes précédentes
+  const cur = new Uint8ClampedArray(N * 4).fill(255);
+  const imgData = new ImageData(W, H);
+  const tmpCanvas = creerCanvas(W, H);
+  const tmpCtx = tmpCanvas.getContext('2d');
+  const grille = $('grille-etapes');
+  grille.innerHTML = '';
+
+  const messages = {
+    1:'Je trace ton croquis…', 2:'Je trace ton croquis…', 3:'Je trace ton contour…',
+    4:'J’ajoute tes éclaboussures…', 5:'Je mets ton noir plein…',
+    6:'Je mets tes points…', 7:'Je mets tes points…', 8:'Je mets tes points…',
+    9:'Je mets ton ombrage gris…', 10:'Je mets ton ombrage gris…', 11:'Je mets ton ombrage gris…',
+    12:'Je prépare tes couleurs…', 13:'Je prépare tes couleurs…',
+    14:'Je prépare tes couleurs…', 15:'Je prépare tes couleurs…', 16:'Je finis ton dessin…'
+  };
+
+  // famille grossière d'une couleur unie (gris g ou noir)
+  function famGris(g){
+    if (g < 82) return 2;      // noir
+    if (g < 215) return 3;     // gris
+    return 4;                  // autre (très pâle)
+  }
+
+  // applique une étape : masque + fonction couleur (i -> [r,g,b]) + famille grossière
+  // retourne la liste des pixels nouvellement révélés à cette étape
+  function appliquerEtape(k, masque, couleur, famFixe){
+    const nouveaux = [];
+    for (let i = 0, p = 0; i < N; i++, p += 4){
+      if (!masque[i]) continue;
+      const c = couleur(i);
+      cur[p] = c[0]; cur[p+1] = c[1]; cur[p+2] = c[2]; cur[p+3] = 255;
+      if (!assigne[i]){
+        // 'final' : la couleur posée EST le final, la famille correspond toujours.
+        // Sinon, famille grossière de la couleur posée (gris ou noir).
+        const f = famFixe === 'final' ? A.grossFinal[i]
+          : (famFixe !== undefined ? famFixe : famGris(c[0]));
+        if (f === A.grossFinal[i]){
+          revel[i] = k; assigne[i] = 1; nouveaux.push(i);
+        }
+      }
+    }
+    return nouveaux;
+  }
+
+  const dotsCum = new Uint8Array(N);
+  function nouveauxPoints(seuil){
+    const d = masquePoints(shade, seuil);
+    const ajout = new Uint8Array(N);
+    for (let i = 0; i < N; i++) if (d[i] && !dotsCum[i]){ ajout[i] = 1; dotsCum[i] = 1; }
+    return ajout;
+  }
+
+  const etapesDef = [];
+  // 1 croquis pâle : traits fins gris 190
+  etapesDef.push({masque: A.bord, couleur: () => [190,190,190]});
+  // 2 croquis net : mêmes traits, gris 130
+  etapesDef.push({masque: A.bord, couleur: () => [130,130,130]});
+  // 3 contour noir : mêmes traits fins, noirs
+  etapesDef.push({masque: A.bord, couleur: () => [0,0,0]});
+  // 4 contour + éclaboussures sombres détachées
+  etapesDef.push({masque: A.eclab, couleur: () => [0,0,0]});
+  // 5 noir plein : tous les pixels sombres
+  etapesDef.push({masque: A.sombre, couleur: () => [0,0,0]});
+  // 6-8 points Bayer
+  etapesDef.push({points: 0.75});
+  etapesDef.push({points: 0.5});
+  etapesDef.push({points: 0.25});
+  // 9-11 lavis gris (L du final, seulement là où c'est encore blanc)
+  etapesDef.push({lavis: 0.45});
+  etapesDef.push({lavis: 0.25});
+  etapesDef.push({lavis: 0.05});
+  // 12 vert principal
+  etapesDef.push({masque: null, couleurFinal: (i) => A.vert[i] && A.coulPrinc[i]});
+  // 13 jaune principal, moitié la plus saturée
+  etapesDef.push({masque: null, couleurFinal: (i) => A.jaunePrinc[i] && A.sat01[i] >= A.medSat});
+  // 14 jaune principal, tout
+  etapesDef.push({masque: null, couleurFinal: (i) => !!A.jaunePrinc[i]});
+  // 15 orange + couleurs détachées
+  etapesDef.push({masque: null, couleurFinal: (i) =>
+    !!A.orange[i] || ((A.jaune[i] || A.vert[i]) && !A.coulPrinc[i])});
+  // 16 final exact
+  etapesDef.push({final: true});
+
+  for (let k = 1; k <= 16; k++){
+    const def = etapesDef[k-1];
+    let masque, nouveaux;
+    progres(8 + (k/16)*42, messages[k]);
+    if (def.points !== undefined){
+      masque = nouveauxPoints(def.points);
+      nouveaux = appliquerEtape(k, masque, () => [0,0,0]);
+    } else if (def.lavis !== undefined){
+      const thr = def.lavis;
+      masque = new Uint8Array(N);
+      for (let i = 0, p = 0; i < N; i++, p += 4){
+        if (shade[i] > thr && cur[p] === 255) masque[i] = 1;
+      }
+      nouveaux = appliquerEtape(k, masque, (i) => {
+        const g = Math.round(A.L[i]);
+        return [g, g, g];
+      });
+    } else if (def.couleurFinal){
+      masque = new Uint8Array(N);
+      for (let i = 0; i < N; i++) if (def.couleurFinal(i)) masque[i] = 1;
+      nouveaux = appliquerEtape(k, masque, (i) => {
+        const p = i*4;
+        return [finalData[p], finalData[p+1], finalData[p+2]];
+      }, 'final');
+    } else if (def.final){
+      cur.set(finalData);
+      nouveaux = [];
+    } else {
+      masque = def.masque;
+      nouveaux = appliquerEtape(k, masque, def.couleur);
+    }
+
+    // distance à l'encre des étapes précédentes (pour l'ordre de révélation)
+    if (k >= 2 && k !== 5){
+      const {d, w2} = distanceChanfrein(encre);
+      for (const i of nouveaux){
+        const x = i % W, y = (i / W) | 0;
+        ordreCle[i] = d[(y >> 1) * w2 + (x >> 1)];
+      }
+    } else if (k === 5){
+      for (const i of nouveaux) ordreCle[i] = (i / W) | 0; // le noir se répand du haut vers le bas
+    }
+    if (masque) for (let i = 0; i < N; i++) if (masque[i]) encre[i] = 1;
+    if (def.final) for (let i = 0; i < N; i++) encre[i] = 1;
+
+    // miniature de l'étape pour la grille de vérification
+    imgData.data.set(cur);
+    tmpCtx.putImageData(imgData, 0, 0);
+    const cell = document.createElement('div');
+    cell.className = 'etape';
+    const cv = document.createElement('canvas');
+    cv.width = 162; cv.height = 203;
+    cv.getContext('2d').drawImage(tmpCanvas, 0, 0, 162, 203);
+    const nom = document.createElement('div');
+    nom.className = 'nom';
+    nom.innerHTML = '<span class="numero">' + k + '</span> ' + NOMS_ETAPES[k-1];
+    cell.appendChild(cv); cell.appendChild(nom);
+    grille.appendChild(cell);
+
+    if (k === 1) sketchData = new Uint8ClampedArray(cur);
+    await tick();
+  }
+
+  // croquis (intro) : pixels de l'étape 1, de haut en bas
+  const croquis = [];
+  for (let i = 0; i < N; i++) if (A.bord[i]) croquis.push(i);
+  croquisIdx = new Uint32Array(croquis); // déjà en ordre y,x (balayage ligne par ligne)
+
+  // ordre de révélation : par étape, puis rang de groupe, puis distance / y, puis y, x
+  progres(52, 'Je mets ton dessin en ordre…');
+  await tick();
+  const parEtape = {};
+  for (let k = 2; k <= 16; k++) parEtape[k] = [];
+  for (let i = 0; i < N; i++){
+    const L = A.L[i];
+    const toutBlanc = L >= 245 && A.S255[i] <= 40;
+    if (toutBlanc) continue;
+    let k = revel[i];
+    if (k < 2) k = 2;
+    parEtape[k].push(i);
+  }
+  const etapes = [];
+  for (let k = 2; k <= 16; k++){
+    const idx = parEtape[k];
+    if (!idx.length){ etapes.push({idx: new Uint32Array(0)}); continue; }
+    // rangs de groupe : couleur prioritaire d'abord, puis par taille
+    const comptes = [0,0,0,0,0,0];
+    for (const i of idx) comptes[analyse.famFinal[i]]++;
+    const prio = PRIORITE[k];
+    let ordreG;
+    if (prio !== undefined && comptes[prio] > 0){
+      ordreG = [prio].concat([0,1,2,3,4,5].filter(g => g !== prio && comptes[g] > 0)
+        .sort((a,b) => comptes[b] - comptes[a]));
+    } else {
+      ordreG = [0,1,2,3,4,5].filter(g => comptes[g] > 0)
+        .sort((a,b) => comptes[b] - comptes[a]);
+    }
+    const rangMap = new Int8Array(6);
+    ordreG.forEach((g, r) => { rangMap[g] = r; });
+    for (const i of idx) rangGroupe[i] = rangMap[analyse.famFinal[i]];
+    idx.sort((a, b) => {
+      const ra = rangGroupe[a], rb = rangGroupe[b];
+      if (ra !== rb) return ra - rb;
+      const da = ordreCle[a], db = ordreCle[b];
+      if (da !== db) return da - db;
+      const ya = (a / W) | 0, yb = (b / W) | 0;
+      if (ya !== yb) return ya - yb;
+      return (a % W) - (b % W);
+    });
+    etapes.push({idx: new Uint32Array(idx)});
+  }
+  plan = {croquisIdx, etapes};
+  progres(58, 'Tes 16 étapes sont prêtes !');
+  return true;
+}
+
+/* ---------------- enregistrement vidéo ---------------- */
+function choisirMime(){
+  if (typeof MediaRecorder === 'undefined') return null;
+  const essais = [
+    'video/mp4;codecs="avc1.42E01E,mp4a.40.2"',
+    'video/mp4',
+    'video/webm;codecs=vp9',
+    'video/webm;codecs=vp8',
+    'video/webm'
+  ];
+  for (const m of essais){
+    try { if (MediaRecorder.isTypeSupported(m)) return m; } catch (e) { /* continuer */ }
+  }
+  return '';
+}
+
+async function genererVideo(){
+  if (!plan || !finalData || !sketchData)
+    throw new Error('Il manque ton dessin. Recommence depuis le début.');
+  const canvasTest = creerCanvas(2, 2);
+  if (typeof MediaRecorder === 'undefined' || !canvasTest.captureStream)
+    throw new Error('Ton navigateur ne peut pas enregistrer de vidéo comme ça. Essaie avec Safari sur ton iPhone, à jour.');
+
+  const canvas = creerCanvas(W, H);
+  const ctx = canvas.getContext('2d');
+  const acc = ctx.createImageData(W, H);
+  acc.data.fill(255);
+  const finalImgData = new ImageData(new Uint8ClampedArray(finalData), W, H);
+
+  const mime = choisirMime();
+  if (mime === null) throw new Error('Ton navigateur ne peut pas enregistrer de vidéo comme ça.');
+  const rec = new MediaRecorder(canvas.captureStream(FPS),
+    mime ? {mimeType: mime, videoBitsPerSecond: 12000000}
+         : {videoBitsPerSecond: 12000000});
+  const morceaux = [];
+  rec.ondataavailable = (e) => { if (e.data && e.data.size) morceaux.push(e.data); };
+  const arrete = new Promise((res) => { rec.onstop = res; });
+  rec.start(250);
+
+  const totalImages = INTRO_IMAGES + plan.etapes.length * IMAGES_PAR_ETAPE + IMAGES_FINAL;
+  let no = 0;
+  async function presenter(){
+    ctx.putImageData(acc, 0, 0);
+    no++;
+    if (no % 15 === 0) progres(58 + (no / totalImages) * 40, 'J’enregistre ta vidéo…', Math.round(no / FPS * 10) / 10 + ' s sur 9,5 s');
+    await attendre(1000 / FPS);
+  }
+
+  // 1) le croquis se dessine de haut en bas, depuis une page blanche
+  for (let f = 0; f < INTRO_IMAGES; f++){
+    const deb = Math.floor(f * croquisIdx.length / INTRO_IMAGES);
+    const fin = Math.floor((f + 1) * croquisIdx.length / INTRO_IMAGES);
+    for (let j = deb; j < fin; j++){
+      const p = croquisIdx[j] * 4;
+      acc.data[p] = sketchData[p]; acc.data[p+1] = sketchData[p+1];
+      acc.data[p+2] = sketchData[p+2]; acc.data[p+3] = 255;
+    }
+    await presenter();
+  }
+  // 2) révélation continue : chaque étape prend le même temps, quantités égales par image
+  for (const etape of plan.etapes){
+    const idx = etape.idx, nb = idx.length;
+    for (let f = 0; f < IMAGES_PAR_ETAPE; f++){
+      const deb = Math.floor(f * nb / IMAGES_PAR_ETAPE);
+      const fin = Math.floor((f + 1) * nb / IMAGES_PAR_ETAPE);
+      for (let j = deb; j < fin; j++){
+        const p = idx[j] * 4;
+        acc.data[p] = finalData[p]; acc.data[p+1] = finalData[p+1];
+        acc.data[p+2] = finalData[p+2]; acc.data[p+3] = 255;
+      }
+      await presenter();
+    }
+  }
+  // 3) maintien du final 1,5 s
+  for (let f = 0; f < IMAGES_FINAL; f++){
+    ctx.putImageData(finalImgData, 0, 0);
+    no++;
+    if (no % 15 === 0) progres(58 + (no / totalImages) * 40, 'J’enregistre ta vidéo…');
+    await attendre(1000 / FPS);
+  }
+
+  await attendre(200);
+  rec.stop();
+  await arrete;
+
+  const blob = new Blob(morceaux, {type: rec.mimeType || 'video/mp4'});
+  if (videoURL) URL.revokeObjectURL(videoURL);
+  videoURL = URL.createObjectURL(blob);
+  // L'extension suit le vrai codec : Chrome annonce « video/mp4 » mais
+  // enregistre en VP9 ; Safari enregistre en H.264 (vrai mp4).
+  const mt = (blob.type || '') + ' ' + (rec.mimeType || '');
+  const estVp = /vp9|vp8/i.test(mt);
+  const ext = (!estVp && /mp4/i.test(mt)) ? 'mp4' : 'webm';
+  const lien = $('btn-telecharger');
+  lien.href = videoURL;
+  lien.setAttribute('download', 'timelapse-sokal.' + ext);
+  lien.textContent = 'Télécharger ma vidéo' + (ext === 'mp4' ? '' : ' (.webm)');
+  const video = $('video');
+  video.src = videoURL;
+  video.load();
+  return {duree: totalImages / FPS, taille: blob.size, ext};
+}
+
+/* ---------------- interface ---------------- */
+function chargerImageFichier(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); res(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('image illisible')); };
+    img.src = url;
+  });
+}
+
+async function chargerFichier(file){
+  effacerErreur();
+  if (!file || !file.type || file.type.indexOf('image/') !== 0){
+    erreur('Ce fichier-là, c’est pas une image. Choisis une photo de ton flash (JPG ou PNG).');
+    return;
+  }
+  try {
+    const img = await chargerImageFichier(file);
+    if (img.naturalWidth < 100 || img.naturalHeight < 100)
+      throw new Error('Image trop petite.');
+    const c = creerCanvas(W, H);
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    const s = Math.min(W / img.naturalWidth, H / img.naturalHeight);
+    const dw = Math.round(img.naturalWidth * s), dh = Math.round(img.naturalHeight * s);
+    ctx.drawImage(img, (W - dw) >> 1, (H - dh) >> 1, dw, dh);
+    const id = ctx.getImageData(0, 0, W, H);
+    finalData = new Uint8ClampedArray(id.data);
+    plan = null; sketchData = null; analyse = null;
+    const ap = $('apercu');
+    ap.src = c.toDataURL('image/jpeg', 0.85);
+    ap.style.display = 'block';
+    $('btn-etapes').disabled = false;
+    $('sec-etapes').classList.add('cache');
+    $('sec-video').classList.add('cache');
+    $('sec-progres').classList.add('cache');
+  } catch (e){
+    erreur('Je n’arrive pas à lire ton image. Essaie une autre photo (JPG ou PNG).');
+  }
+}
+
+$('zone-depot').addEventListener('click', () => $('fichier').click());
+$('fichier').addEventListener('change', (e) => {
+  if (e.target.files && e.target.files[0]) chargerFichier(e.target.files[0]);
+  e.target.value = '';
+});
+['dragover','dragenter'].forEach(ev => $('zone-depot').addEventListener(ev, (e) => {
+  e.preventDefault(); $('zone-depot').classList.add('survol');
+}));
+['dragleave','drop'].forEach(ev => $('zone-depot').addEventListener(ev, (e) => {
+  e.preventDefault(); $('zone-depot').classList.remove('survol');
+}));
+$('zone-depot').addEventListener('drop', (e) => {
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) chargerFichier(f);
+});
+
+$('btn-etapes').addEventListener('click', async () => {
+  if (!finalData) return;
+  effacerErreur();
+  $('btn-etapes').disabled = true;
+  $('sec-progres').classList.remove('cache');
+  $('sec-etapes').classList.add('cache');
+  $('sec-video').classList.add('cache');
+  progres(2, 'Je prépare ton image…');
+  try {
+    await tick();
+    const nb = await analyserImage();
+    progres(8, 'Je trace ton croquis…', nb.toLocaleString('fr-CA') + ' traits détectés');
+    await construireEtapes();
+    progres(100, 'Tes 16 étapes sont prêtes !');
+    await attendre(300);
+    $('sec-progres').classList.add('cache');
+    $('sec-etapes').classList.remove('cache');
+    $('sec-etapes').scrollIntoView({behavior:'smooth', block:'start'});
+  } catch (e){
+    $('sec-progres').classList.add('cache');
+    $('btn-etapes').disabled = false;
+    erreur(e && e.message ? e.message : 'Oups, quelque chose a planté. Essaie une autre image.');
+  }
+});
+
+$('btn-video').addEventListener('click', async () => {
+  effacerErreur();
+  $('btn-video').disabled = true;
+  $('sec-progres').classList.remove('cache');
+  $('sec-video').classList.add('cache');
+  progres(58, 'J’enregistre ta vidéo…', 'Reste sur cette page, ça prend environ 10 secondes.');
+  try {
+    const info = await genererVideo();
+    progres(100, 'Ta vidéo est prête !', 'Durée : ' + info.duree.toFixed(1) + ' s');
+    await attendre(300);
+    $('sec-progres').classList.add('cache');
+    $('sec-video').classList.remove('cache');
+    $('sec-video').scrollIntoView({behavior:'smooth', block:'start'});
+    $('btn-video').disabled = false;
+  } catch (e){
+    $('sec-progres').classList.add('cache');
+    $('btn-video').disabled = false;
+    erreur(e && e.message ? e.message : 'Oups, l’enregistrement a planté. Essaie de fermer les autres applis et recommence.');
+  }
+});
+
+$('btn-refaire').addEventListener('click', () => {
+  if (videoURL) URL.revokeObjectURL(videoURL);
+  videoURL = null; finalData = null; sketchData = null; plan = null; analyse = null;
+  $('video').removeAttribute('src');
+  $('video').load();
+  $('apercu').style.display = 'none';
+  $('btn-etapes').disabled = true;
+  $('sec-etapes').classList.add('cache');
+  $('sec-video').classList.add('cache');
+  $('sec-progres').classList.add('cache');
+  $('sec-choix').scrollIntoView({behavior:'smooth', block:'start'});
+});
+</script>
+</body>
+</html>
